@@ -1,0 +1,160 @@
+/* === HOME PAGE === */
+.home-container {
+  width: 100vw;
+  height: 100vh;
+  margin: 0;
+  padding: 0;
+  background-image: url('../imagenes/Fondo.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  position: relative;
+  overflow: hidden;
+}
+
+.home-container::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(9, 21, 44, 0.566); /* tono azul oscuro con transparencia */
+  z-index: 1;
+}
+
+
+/* ---- NAVBAR ---- */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 4rem;
+  background-color: rgba(9, 21, 44, 0.808); /* azul oscuro semi transparente */
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+.logo-section {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+}
+
+.logo-img {
+  height: 42px;
+}
+
+.logo-text {
+  font-family: 'Changa', sans-serif;
+  font-size: 1.8rem;
+  font-weight: 600;
+  color: white;
+}
+
+/* ---- MENU ---- */
+.nav-links {
+  display: flex;
+  list-style: none;
+  gap: 2rem;
+}
+
+.nav-links a {
+  color: white;
+  text-decoration: none;
+  font-family: 'Outfit', sans-serif;
+  font-weight: 500;
+  font-size: 1rem;
+  transition: color 0.3s ease;
+}
+
+.nav-links a.active {
+  color: #a44bbe; /* lavanda */
+  background: none; /* elimina el cuadro */
+  border: none;
+}
+
+.nav-links a:hover {
+  color: #e5eac6;
+}
+
+/* ---- BOTON LOGIN ---- */
+.btn-login {
+  background-color: #a44bbe;
+  border: none;
+  padding: 0.6rem 1.4rem;
+  border-radius: 25px;
+  color: white;
+  font-weight: 500;
+  font-family: 'Outfit', sans-serif;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.btn-login:hover {
+  background-color: #7d148b;
+}
+
+/* ---- SECCION PRINCIPAL ---- */
+.hero {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 8%; /* margen lateral cómodo */
+  position: relative;
+  z-index: 2; /* sobre el overlay oscuro */
+}
+
+.hero-text {
+  max-width: 550px;
+}
+
+.hero-text h1 {
+  font-family: 'Changa', sans-serif;
+  font-size: 4rem;
+  line-height: 1.2;
+  margin-bottom: 1.2rem;
+}
+
+.hero-text p {
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.5rem;
+  color: #d8d8d8;
+  margin-bottom: 2rem;
+  font-style: italic;
+}
+
+.btn-primary {
+  background: linear-gradient(90deg, #7d148b, #24112a);
+  border: none;
+  color: white;
+  padding: 0.9rem 1.8rem;
+  border-radius: 30px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+  font-family: 'Outfit', sans-serif;
+}
+
+.btn-primary:hover {
+  transform: scale(1.05);
+}
+
+.navbar,
+.hero {
+  position: relative;
+  z-index: 2;
+}
+
+/* ---- IMAGEN PRINCIPAL ---- */
+.hero-image img {
+  max-width: 520px;
+  animation: float 3s ease-in-out infinite;
+
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
