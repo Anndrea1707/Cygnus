@@ -1,9 +1,10 @@
+// src/pages/Home.jsx
 import React from 'react';
 import './Home.css';
 import cube from '../imagenes/CuboPrincipal.png';
 import logo from '../imagenes/logo.png';
 
-export default function Home() {
+export default function Home({ onLoginClick }) {
   return (
     <section className="home-container">
       <nav className="navbar">
@@ -18,7 +19,9 @@ export default function Home() {
           <li><a href="#nosotros">Sobre nosotros</a></li>
         </ul>
 
-        <button className="btn-login">Iniciar Sesión</button>
+        <button className="btn-login" onClick={onLoginClick}>
+          Iniciar Sesión
+        </button>
       </nav>
 
       <div className="hero">
