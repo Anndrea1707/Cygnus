@@ -1,0 +1,165 @@
+/* === REGISTRO PAGE === */
+.registro-background {
+    width: 100vw;
+    height: 100vh;
+    margin: 0;
+    padding: 0;
+    background-image: url('../imagenes/login.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: 'Outfit', sans-serif;
+  }
+  
+  .registro-background::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(9, 21, 44, 0.566);
+    z-index: 1;
+  }
+  
+  /* Contenedor principal */
+  .registro-container {
+    background-color: #b868ff; /* lavanda pastel */
+    border-radius: 25px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4), 0 0 0 4px rgba(255, 255, 255, 0.1);
+    width: 340px;
+    padding: 25px;
+    text-align: center;
+    color: white;
+    backdrop-filter: blur(5px);
+    animation: fadeIn 1.2s ease;
+    position: relative;
+    z-index: 2;
+    font-family: 'Outfit', sans-serif;
+  }
+  
+  /* Cabecera */
+  .registro-header {
+    margin-bottom: 20px;
+  }
+  
+  .registro-header h1 {
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin: 5px 0 15px;
+    font-family: 'Changa', sans-serif;
+  }
+  
+  .cohete-img {
+    width: 80px;
+    height: 80px;
+    animation: float 2.5s ease-in-out infinite;
+    margin-bottom: 10px;
+  }
+  
+  /* Formulario */
+  .registro-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+  }
+  
+  /* Campos de entrada */
+  .input-group {
+    position: relative;
+    width: 100%;
+  }
+  
+  .input-group input {
+    width: 100%;
+    padding: 10px 12px;
+    border: none;
+    border-radius: 25px;
+    background-color: #a44bbe; /* lavanda */
+    color: #fff;
+    font-size: 0.95rem;
+    outline: none;
+    transition: 0.3s;
+    font-family: 'Outfit', sans-serif;
+    box-sizing: border-box;
+  }
+  
+  .input-group input::placeholder {
+    color: #f0e6ff;
+    font-family: 'Outfit', sans-serif;
+  }
+  
+  .input-group input:focus {
+    background-color: #b05cc9;
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+  }
+  
+  /* Botón */
+  .register-btn {
+    width: 100%;
+    background-color: #1d175a;
+    color: white;
+    padding: 10px;
+    border: none;
+    border-radius: 25px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: transform 0.3s ease, background-color 0.3s ease;
+    margin-top: 10px;
+    font-weight: 600;
+    font-family: 'Outfit', sans-serif;
+    box-sizing: border-box;
+  }
+  
+  .register-btn:hover {
+    transform: scale(1.03);
+    background-color: #2a227a;
+    box-shadow: 0px 0px 15px rgba(255, 255, 255, 0.2);
+  }
+  
+  /* Botón de retroceso */
+  .back-btn {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    background: none;
+    border: none;
+    color: white;
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.95rem;
+    cursor: pointer;
+    padding: 8px 12px;
+    border-radius: 20px;
+    transition: background-color 0.2s;
+    z-index: 1000;
+  }
+  
+  .back-btn:hover {
+    background-color: rgba(255, 255, 255, 0.15);
+  }
+  
+  /* Animaciones */
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(15px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  @keyframes float {
+    0%, 100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-8px);
+    }
+  }
