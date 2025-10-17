@@ -119,6 +119,81 @@ export default function Home({ onLoginClick }) {
           <button className="carousel-btn right" onClick={nextSlide}>❯</button>
         </div>
       </section>
+      {/* ===== SECCIÓN DE VENTAJAS ===== */}
+      <section className="features-section">
+        <h2>¿Por qué aprender con Cygnus?</h2>
+        <p className="features-subtitle">
+          Cygnus combina tecnología y pedagogía para ofrecerte una experiencia de aprendizaje única.
+        </p>
+
+        <div className="features-grid">
+          <div className="feature-card">
+            <span className="feature-icon">🎯</span>
+            <h3>Aprendizaje Adaptativo</h3>
+            <p>Cygnus ajusta el contenido a tu ritmo y nivel, garantizando que siempre avances.</p>
+          </div>
+
+          <div className="feature-card">
+            <span className="feature-icon">💡</span>
+            <h3>Recordatorios Inteligentes</h3>
+            <p>Repite los temas justo cuando estás a punto de olvidarlos, gracias al modelo de la curva del olvido.</p>
+          </div>
+
+          <div className="feature-card">
+            <span className="feature-icon">📈</span>
+            <h3>Progreso Medible</h3>
+            <p>Visualiza tu crecimiento con estadísticas y gráficos de rendimiento en tiempo real.</p>
+          </div>
+
+          <div className="feature-card">
+            <span className="feature-icon">🤝</span>
+            <h3>Comunidad Activa</h3>
+            <p>Aprende junto a otros usuarios, comparte retos y forma parte de una red de aprendizaje colaborativo.</p>
+          </div>
+        </div>
+        <div className="features-button">
+          <button className="btn-start">Comenzar ahora</button>
+        </div>
+      </section>
+      {/* ===== SECCIÓN DE RETOS Y LOGROS ===== */}
+      <section className="achievements-section" id="retos">
+        <div className="achievements-content">
+          <div className="achievements-header">
+            <i className="fas fa-rocket achievements-icon"></i>
+            <h2>Retos y Logros</h2>
+            <p>
+              Gana medallas por cada clase completada y copas por finalizar cursos.
+              ¡Súmate al desafío y alcanza la cima del conocimiento!
+            </p>
+          </div>
+
+          <div className="achievements-grid">
+            <div className="achievement-card">
+              <img src="https://cdn-icons-png.flaticon.com/128/10393/10393612.png" alt="Medalla Bronce" />
+              <h3>Medalla de Bronce</h3>
+              <p>Otorgada al completar clases básicas. ¡Todo comienzo cuenta!</p>
+            </div>
+
+            <div className="achievement-card">
+              <img src="https://cdn-icons-png.flaticon.com/128/10393/10393610.png" alt="Medalla Plata" />
+              <h3>Medalla de Plata</h3>
+              <p>Logra clases de nivel intermedio. ¡Tu progreso se nota!</p>
+            </div>
+
+            <div className="achievement-card">
+              <img src="https://cdn-icons-png.flaticon.com/128/10393/10393609.png" alt="Medalla Oro" />
+              <h3>Medalla de Oro</h3>
+              <p>Completa clases avanzadas y demuestra tu maestría.</p>
+            </div>
+
+            <div className="achievement-card special">
+              <img src="https://cdn-icons-png.flaticon.com/128/11173/11173370.png" alt="Copa del Saber" />
+              <h3>Copa del Saber</h3>
+              <p>Premio especial por finalizar un curso completo con éxito. 🏆</p>
+            </div>
+          </div>
+        </div>
+      </section>
     </div>
   );
 }
