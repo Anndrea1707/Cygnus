@@ -1,3 +1,8 @@
+/* 🔧 Evita desplazamiento horizontal global */
+html, body {
+  overflow-x: hidden;
+}
+
 /* === HOME PAGE === */
 .home-container {
   width: 100vw;
@@ -8,6 +13,7 @@
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
+  background-attachment: scroll; /* 👈 para que el fondo NO quede fijo */
   position: relative;
   overflow: hidden;
 }
@@ -22,7 +28,6 @@
   background: rgba(9, 21, 44, 0.566); /* tono azul oscuro con transparencia */
   z-index: 1;
 }
-
 
 /* ---- NAVBAR ---- */
 .navbar {
@@ -104,6 +109,7 @@
   padding: 0 8%; /* margen lateral cómodo */
   position: relative;
   z-index: 2; /* sobre el overlay oscuro */
+  height: 100vh;
 }
 
 .hero-text {
@@ -151,10 +157,186 @@
 .hero-image img {
   max-width: 520px;
   animation: float 3s ease-in-out infinite;
-
 }
 
 @keyframes float {
   0%, 100% { transform: translateY(0); }
   50% { transform: translateY(-10px); }
+}
+
+/* === SECCIÓN 2: BUSCADOR Y TÍTULO === */
+.search-section {
+  background-color: #09152c; /* azul oscuro de tu paleta */
+  padding: 100px 20px;
+  text-align: center;
+  color: #ffffff;
+}
+
+.search-section h2 {
+  font-family: 'Changa', sans-serif;
+  font-size: 2.4rem;
+  margin-bottom: 40px;
+  color: #ffffff;
+  letter-spacing: 1px;
+}
+
+/* --- Barra de búsqueda --- */
+.search-bar {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.search-bar input {
+  width: 60%;
+  max-width: 500px;
+  padding: 14px 18px;
+  border-radius: 30px;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  outline: none;
+  font-size: 1rem;
+  font-family: 'Outfit', sans-serif;
+  background: rgba(255, 255, 255, 0.85); /* Blanco transparente */
+  color: #09152c; /* texto oscuro */
+  transition: all 0.3s ease;
+  box-shadow: 0 0 0px rgba(164, 75, 190, 0); /* sin brillo por defecto */
+}
+
+/* --- Efecto cuando se escribe o selecciona --- */
+.search-bar input:focus {
+  border-color: #a44bbe;
+  box-shadow: 0 0 10px rgba(164, 75, 190, 0.7); /* brillo lavanda */
+  background: rgba(255, 255, 255, 0.95);
+}
+
+/* --- Botón Buscar --- */
+.search-bar button {
+  background-color: #a44bbe;
+  color: white;
+  padding: 14px 30px;
+  border: none;
+  border-radius: 30px;
+  cursor: pointer;
+  font-size: 1rem;
+  font-family: 'Outfit', sans-serif;
+  transition: all 0.3s ease;
+  box-shadow: 0 0 0px rgba(255, 255, 255, 0);
+}
+
+/* --- Interacción con hover --- */
+.search-bar button:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 15px rgba(164, 75, 190, 0.7); /* brillo morado */
+  background: linear-gradient(90deg, #a44bbe, #7d148b);
+}
+
+/* ===== CARRUSEL ===== */
+.carousel-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 3rem auto;
+  max-width: 1200px;
+  overflow: visible; /* ✅ permite que las tarjetas crezcan sin recortarse */
+  padding: 1rem 0;
+}
+
+.carousel {
+  display: flex;
+  gap: 2rem;
+  transition: all 0.6s ease;
+}
+
+.course-card {
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 20px;
+  overflow: hidden;
+  width: 340px;
+  backdrop-filter: blur(8px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+  transition: transform 0.3s ease, box-shadow 0.3s ease, filter 0.3s ease;
+  padding: 5px;
+}
+
+.course-card:hover {
+  transform: scale(1.07);
+  box-shadow: 0 10px 30px rgba(164, 75, 190, 0.5);
+  filter: brightness(1.1);
+  z-index: 2; /* ✅ hace que se superponga sobre las demás */
+}
+
+.course-card img {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  border-top-left-radius: 20px;
+  border-top-right-radius: 20px;
+}
+
+.course-info {
+  padding: 1rem;
+  color: white;
+}
+
+.course-info h3 {
+  font-family: 'Changa', sans-serif;
+  margin-bottom: 0.5rem;
+}
+
+.course-info p {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.9rem;
+  color: #ddd;
+}
+
+/* ===== FLECHAS MEJORADAS ===== */
+.carousel-btn {
+  background: rgba(255, 255, 255, 0.08);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  color: #ffffff;
+  border-radius: 50%;
+  width: 55px;
+  height: 55px;
+  font-size: 1.6rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(6px);
+  box-shadow: 0 0 10px rgba(164, 75, 190, 0.2);
+  z-index: 3;
+}
+
+.carousel-btn:hover {
+  background: linear-gradient(135deg, #a44bbe, #7d148b);
+  border-color: transparent;
+  color: #fff;
+  box-shadow: 0 0 15px rgba(164, 75, 190, 0.6);
+  transform: translateY(-50%) scale(1.15);
+}
+
+.carousel-btn.left {
+  left: -70px;
+}
+
+.carousel-btn.right {
+  right: -70px;
+}
+
+/* ✨ animación de brillo pulsante para dar más vida */
+@keyframes pulse {
+  0% { box-shadow: 0 0 6px rgba(164, 75, 190, 0.3); }
+  50% { box-shadow: 0 0 18px rgba(164, 75, 190, 0.6); }
+  100% { box-shadow: 0 0 6px rgba(164, 75, 190, 0.3); }
+}
+
+.carousel-btn:hover {
+  animation: pulse 1.2s infinite alternate;
 }
