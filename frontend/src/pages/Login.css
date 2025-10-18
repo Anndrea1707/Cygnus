@@ -4,7 +4,7 @@
   height: 100vh;
   margin: 0;
   padding: 0;
-  background-image: url('../imagenes/login.png');
+  background-image: url('../imagenes/login.jpg');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -29,9 +29,9 @@
 
 /* Contenedor principal */
 .login-container {
-  background-color: #b868ff; /* ✅ Lavanda pastel */
+  background-color: #b868ff;
   border-radius: 25px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4), 0 0 0 4px rgba(255, 255, 255, 0.1); /* ✅ Sombra más definida + borde brillante */
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4), 0 0 0 4px rgba(255, 255, 255, 0.1);
   width: 340px;
   padding: 25px;
   text-align: center;
@@ -80,7 +80,7 @@
   font-family: 'Changa', sans-serif;
 }
 
-/* Campos de entrada */
+/* === Input Groups === */
 .input-group {
   position: relative;
   margin-bottom: 15px;
@@ -93,15 +93,17 @@
   top: 50%;
   transform: translateY(-50%);
   width: 20px;
+  height: auto;
   opacity: 0.9;
+  pointer-events: none; /* ✅ Evita que el ícono interfiera con clics */
 }
 
 .input-group input {
   width: 100%;
-  padding: 10px 12px 10px 45px;
+  padding: 10px 45px 10px 50px; /* ✅ Padding izquierdo: 50px, derecho: 45px */
   border: none;
   border-radius: 25px;
-  background-color: #a44bbe; /* ✅ Lavanda para los campos */
+  background-color: #a44bbe;
   color: #fff;
   font-size: 0.95rem;
   outline: none;
@@ -116,14 +118,53 @@
 }
 
 .input-group input:focus {
-  background-color: #b05cc9; /* ligero claroscuro al enfocar */
+  background-color: #b05cc9;
   box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+}
+
+/* === Toggle contraseña (ojo) === */
+.password-wrapper {
+  position: relative;
+}
+
+.toggle-password {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s;
+  z-index: 2;
+}
+
+.toggle-password:hover {
+  transform: translateY(-50%) scale(1.1);
+}
+
+.eye-icon {
+  width: 18px;
+  height: 18px;
+  filter: brightness(1.2);
+  transition: transform 0.2s, filter 0.2s;
+}
+
+.eye-icon:hover {
+  filter: brightness(1.5);
+  transform: scale(1.1);
 }
 
 /* Botón */
 .login-btn {
   width: 100%;
-  background-color: #1d175a; /* ✅ Color solicitado */
+  background-color: #1d175a;
   color: white;
   padding: 10px;
   border: none;
@@ -139,7 +180,7 @@
 
 .login-btn:hover {
   transform: scale(1.03);
-  background-color: #2a227a; /* ligero hover más claro */
+  background-color: #2a227a;
   box-shadow: 0px 0px 15px rgba(255, 255, 255, 0.2);
 }
 
@@ -152,11 +193,33 @@
   text-decoration: none;
   transition: 0.3s;
   font-family: 'Outfit', sans-serif;
+  cursor: pointer;
 }
 
 .register-link:hover {
   color: #ffd1ff;
   text-shadow: 0px 0px 10px #e879f9;
+}
+
+/* Botón de retroceso */
+.back-btn {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  background: none;
+  border: none;
+  color: white;
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.95rem;
+  cursor: pointer;
+  padding: 8px 12px;
+  border-radius: 20px;
+  transition: background-color 0.2s;
+  z-index: 1000;
+}
+
+.back-btn:hover {
+  background-color: rgba(255, 255, 255, 0.15);
 }
 
 /* Animaciones */
@@ -178,25 +241,4 @@
   50% {
     transform: translateY(-8px);
   }
-}
-/* Botón de retroceso */
-.back-btn {
-  position: absolute;
-  top: 20px;
-  left: 20px;
-  background: none;
-  border: none;
-  color: white;
-  font-family: 'Outfit', sans-serif;
-  font-size: 0.95rem;
-  cursor: pointer;
-  padding: 8px 12px;
-  border-radius: 20px;
-  transition: background-color 0.2s;
-  z-index: 1000; /* asegura que esté sobre todo */
-  text-decoration: none;
-}
-
-.back-btn:hover {
-  background-color: rgba(255, 255, 255, 0.15);
 }
