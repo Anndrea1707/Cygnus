@@ -29,7 +29,7 @@
 
 /* Contenedor principal */
 .login-container {
-  background-color: #b868ff;
+  background-color: #d163f2;
   border-radius: 25px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4), 0 0 0 4px rgba(255, 255, 255, 0.1);
   width: 340px;
@@ -67,7 +67,7 @@
 
 /* Formulario */
 .login-form {
-  background-color: rgba(255, 255, 255, 0.15);
+  background-color: rgba(255, 255, 255, 0.414);
   padding: 20px;
   border-radius: 20px;
   margin-top: 10px;
@@ -197,7 +197,7 @@
 }
 
 .register-link:hover {
-  color: #ffd1ff;
+  color: #a44bbe;
   text-shadow: 0px 0px 10px #e879f9;
 }
 

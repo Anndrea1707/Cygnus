@@ -1,5 +1,6 @@
 /* 🎨 PALETA DE COLORES */
 :root {
+  --color-lavandaClaro: #d163f2;   /* Lavanda claro */
   --color-primary: #a44bbe;        /* Lavanda */
   --color-primary-dark: #7d148b;   /* Lavanda oscuro */
   --color-dark: #09152c;           /* Azul oscuro */
@@ -399,7 +400,7 @@ html, body {
 
 .feature-icon {
   font-size: 2.5rem;
-  margin-bottom: 1rem;
+  margin-bottom: 0.5rem;
   display: inline-block;
 }
 
@@ -414,6 +415,12 @@ html, body {
   font-family: 'Outfit', sans-serif;
   color: var(--color-subtext);
   font-size: 0.95rem;
+}
+
+.feature-card img {
+  width: 80px;
+  margin-bottom: 1rem;
+  transition: transform 0.4s ease;
 }
 
 /* === BOTÓN “COMENZAR AHORA” SECCION 2 === */
@@ -549,4 +556,217 @@ html, body {
     rgba(255, 255, 255, 0.05)
   );
   border: 1px solid var(--color-hover-shadow);
+}
+
+/* === SECCIÓN DE TESTIMONIOS (actualizada) === */
+.testimonials-section {
+  background-color: var(--color-dark);
+  color: var(--color-light);
+  text-align: center;
+  padding: 100px 20px;
+  position: relative;
+  overflow: hidden;
+}
+
+.testimonials-section h2 {
+  font-family: 'Changa', sans-serif;
+  font-size: 2.4rem;
+  margin-bottom: 3rem;
+  color: var(--color-light);
+  letter-spacing: 1px;
+}
+
+/* Contenedor del carrusel */
+.testimonial-carousel {
+  position: relative;
+  width: 100%;
+  max-width: 700px;
+  margin: 0 auto;
+  height: 300px; /* altura fija para evitar saltos */
+}
+
+/* Cada testimonio ocupa el mismo espacio, centrado */
+.testimonial {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  opacity: 0;
+  transform: scale(0.95);
+  transition: opacity 1s ease, transform 1s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 0 20px;
+  box-sizing: border-box;
+}
+
+/* Animación de aparición secuencial */
+.testimonial:nth-child(1) {
+  animation: fadeInOut 15s infinite;
+  animation-delay: 0s;
+}
+
+.testimonial:nth-child(2) {
+  animation: fadeInOut 15s infinite;
+  animation-delay: 5s;
+}
+
+.testimonial:nth-child(3) {
+  animation: fadeInOut 15s infinite;
+  animation-delay: 10s;
+}
+
+/* Avatar */
+.testimonial-avatar {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 0 20px var(--color-hover-shadow);
+  animation: float 3s ease-in-out infinite;
+}
+
+/* Nombre */
+.testimonial h3 {
+  font-family: 'Changa', sans-serif;
+  font-size: 1.3rem;
+  color: var(--color-primary);
+  margin-bottom: 1rem;
+}
+
+/* Texto */
+.testimonial p {
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.1rem;
+  color: var(--color-light-text);
+  line-height: 1.6;
+  max-width: 600px;
+}
+
+/* Animación de aparición y desaparición */
+@keyframes fadeInOut {
+  0%, 100% {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  5%, 30% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  33.33%, 100% {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+}
+
+/* Animación flotante del avatar */
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+/* === FOOTER / FRONTING === */
+.footer {
+  background: linear-gradient(180deg, var(--color-dark), #000000);
+  color: var(--color-light);
+  text-align: center;
+  padding: 60px 20px 30px;
+  font-family: 'Outfit', sans-serif;
+  position: relative;
+  overflow: hidden;
+}
+
+.footer-content p {
+  margin: 6px 0;
+  color: var(--color-subtext);
+  font-size: 0.95rem;
+}
+
+.footer-title {
+  font-family: 'Changa', sans-serif;
+  font-size: 1.4rem;
+  color: var(--color-primary);
+  margin-bottom: 10px;
+}
+
+.footer-line {
+  width: 80%;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--color-primary),
+    transparent
+  );
+  margin: 20px auto;
+  opacity: 0.6;
+}
+
+.footer-rights {
+  font-size: 0.85rem;
+  color: var(--color-light-text);
+  margin-top: 10px;
+}
+
+/* === BOTÓN VOLVER ARRIBA === */
+.scroll-top-btn {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  background: var(--color-lavandaClaro);
+  border: none;
+  border-radius: 50%;
+  width: 55px;
+  height: 55px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.4s ease;
+  box-shadow: 0 0 12px rgba(164, 75, 190, 0.5);
+  z-index: 1000;
+}
+
+.scroll-top-btn.visible {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.scroll-icon {
+  width: 28px;
+  height: 28px;
+  filter: brightness(1.2) drop-shadow(0 0 4px rgba(255, 255, 255, 0.5));
+  transition: transform 0.3s ease, filter 0.3s ease;
+}
+
+.scroll-top-btn:hover {
+  background: var(--color-primary);
+  transform: scale(1.1);
+  box-shadow: 0 0 18px rgba(164, 75, 190, 0.7);
+}
+
+.scroll-top-btn:hover .scroll-icon {
+  filter: brightness(1.8);
+}
+
+/* Pequeña animación de entrada */
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(15px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
