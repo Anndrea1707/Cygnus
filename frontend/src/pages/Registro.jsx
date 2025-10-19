@@ -14,31 +14,41 @@ function Registro({ onBackToLogin }) {
     fecha_nacimiento: "",
     contrasena: "",
     confirmar_contrasena: "",
+    aceptarTerminos: false,
   });
 
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-  // ✅ Manejar cambios en los inputs
+  // ✅ Validar entrada de texto
   const handleChange = (e) => {
+    const { name, value, type, checked } = e.target;
+
+    if (name === "cedula" && !/^\d*$/.test(value)) return; // solo números
+    if (name === "nombre_completo" && /[0-9]/.test(value)) return; // sin números
+
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value,
+      [name]: type === "checkbox" ? checked : value,
     });
   };
 
-  // ✅ Manejar envío del formulario
+  // ✅ Envío del formulario
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Verificar contraseñas
+    if (!formData.aceptarTerminos) {
+      alert("⚠️ Debes aceptar los términos y condiciones.");
+      return;
+    }
+
     if (formData.contrasena !== formData.confirmar_contrasena) {
       alert("⚠️ Las contraseñas no coinciden");
       return;
     }
 
     try {
-      const response = await fetch("http://localhost:4000/api/registro", {
+      const response = await fetch("/api/registro", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
@@ -48,7 +58,7 @@ function Registro({ onBackToLogin }) {
 
       if (response.ok) {
         alert(data.mensaje);
-        onBackToLogin(); // 👈 Redirige al Login.jsx
+        onBackToLogin();
       } else {
         alert(data.mensaje || "❌ Error al registrar usuario");
       }
@@ -58,15 +68,17 @@ function Registro({ onBackToLogin }) {
     }
   };
 
+  const handleTerminos = () => {
+    alert(
+      "🔒 Tus datos personales están protegidos.\n\nEste registro se realiza únicamente con fines académicos. La información se mantiene privada y segura según nuestra política de datos."
+    );
+  };
+
   return (
     <div
       className="registro-background"
       style={{ backgroundImage: `url(${fondo})` }}
     >
-      <button className="back-btn" onClick={onBackToLogin}>
-        ← Volver al inicio
-      </button>
-
       <div className="registro-container">
         <div className="registro-header">
           <img src={cohete} alt="Cohete" className="cohete-img" />
@@ -78,7 +90,7 @@ function Registro({ onBackToLogin }) {
             <input
               type="text"
               name="cedula"
-              placeholder="Cédula"
+              placeholder="Documento"
               value={formData.cedula}
               onChange={handleChange}
               required
@@ -131,7 +143,9 @@ function Registro({ onBackToLogin }) {
               type="button"
               className="toggle-password"
               onClick={() => setShowPassword(!showPassword)}
-              aria-label={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
+              aria-label={
+                showPassword ? "Ocultar contraseña" : "Mostrar contraseña"
+              }
             >
               <img
                 src={showPassword ? ojoAbierto : ojoCerrado}
@@ -146,7 +160,7 @@ function Registro({ onBackToLogin }) {
             <input
               type={showConfirmPassword ? "text" : "password"}
               name="confirmar_contrasena"
-              placeholder="Confirmar Contraseña"
+              placeholder="Confirmar contraseña"
               value={formData.confirmar_contrasena}
               onChange={handleChange}
               required
@@ -154,9 +168,7 @@ function Registro({ onBackToLogin }) {
             <button
               type="button"
               className="toggle-password"
-              onClick={() =>
-                setShowConfirmPassword(!showConfirmPassword)
-              }
+              onClick={() => setShowConfirmPassword(!showConfirmPassword)}
               aria-label={
                 showConfirmPassword
                   ? "Ocultar confirmación"
@@ -171,9 +183,26 @@ function Registro({ onBackToLogin }) {
             </button>
           </div>
 
+          {/* Checkbox */}
+          <div className="checkbox-group">
+            <input
+              type="checkbox"
+              name="aceptarTerminos"
+              checked={formData.aceptarTerminos}
+              onChange={handleChange}
+            />
+            <label onClick={handleTerminos}>
+              Acepto los términos y condiciones
+            </label>
+          </div>
+
           <button type="submit" className="register-btn">
             Registrar
           </button>
+
+          <p className="back-text" onClick={onBackToLogin}>
+            ← Volver al inicio
+          </p>
         </form>
       </div>
     </div>

@@ -1,5 +1,13 @@
 {
+  "name": "cygnus",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Proyecto Cygnus con backend y frontend sincronizados",
+  "scripts": {
+    "dev": "concurrently \"npm run dev --prefix backend\" \"npm run dev --prefix frontend\"",
+    "install-all": "npm install --prefix backend && npm install --prefix frontend"
+  },
   "devDependencies": {
-    "nodemon": "^3.1.10"
+    "concurrently": "^9.2.1"
   }
 }

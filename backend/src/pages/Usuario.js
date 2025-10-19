@@ -20,6 +20,3 @@ const usuarioSchema = new mongoose.Schema(
 // ✅ Exportar correctamente el modelo
 const Usuario = mongoose.model("Usuario", usuarioSchema);
 module.exports = Usuario;
-
-await nuevoUsuario.save();
-console.log("✅ Usuario guardado correctamente:", nuevoUsuario);

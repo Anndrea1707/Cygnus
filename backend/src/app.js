@@ -1,61 +1,22 @@
-// ===============================
-// 🌌 Cygnus Backend - app.js
-// ===============================
+require('dotenv').config({ path: "./.env" }); // 👈 Ahora lee el .env dentro de /backend
 
-// Cargar variables de entorno
-require("dotenv").config({ path: "../.env" });
+console.log("🔍 URI de conexión:", process.env.MONGO_URI);
 
-// Dependencias
-const express = require("express");
-const mongoose = require("mongoose");
-const cors = require("cors");
+const express = require('express');
+const mongoose = require('mongoose');
+const cors = require('cors');
 
-// Inicialización del servidor
 const app = express();
-
-// ===============================
-// 🧩 MIDDLEWARES
-// ===============================
-
-// Permitir peticiones del frontend (Vite usa el puerto 5173)
-app.use(
-  cors({
-    origin: "http://localhost:5173", // Cambia si tu frontend usa otro puerto
-    methods: ["GET", "POST"],
-    credentials: true,
-  })
-);
-
-// Parsear JSON del body
 app.use(express.json());
+app.use(cors());
 
-// ===============================
-// 🌐 RUTAS
-// ===============================
+// ✅ Rutas
+app.use('/api/registro', require('./pages/Registro'));
 
-app.use("/api/registro", require("./pages/Registro"));
-
-// Ruta de prueba
-app.get("/", (req, res) => {
-  res.send("🚀 Servidor Cygnus funcionando correctamente");
-});
-
-// ===============================
-// 💾 CONEXIÓN A MONGODB
-// ===============================
-
-mongoose
-  .connect(process.env.MONGO_URI)
-  .then(() => console.log("✅ Conectado a MongoDB"))
-  .catch((err) =>
-    console.error("❌ Error al conectar a MongoDB:", err.message)
-  );
-
-// ===============================
-// ⚡ PUERTO DEL SERVIDOR
-// ===============================
+// ✅ Conexión a MongoDB
+mongoose.connect(process.env.MONGO_URI)
+  .then(() => console.log('✅ Conectado a MongoDB'))
+  .catch(err => console.error('❌ Error al conectar a MongoDB:', err));
 
 const PORT = process.env.PORT || 4000;
-app.listen(PORT, () =>
-  console.log(`🚀 Servidor corriendo en http://localhost:${PORT}`)
-);
+app.listen(PORT, () => console.log(`Servidor corriendo en http://localhost:${PORT}`));
