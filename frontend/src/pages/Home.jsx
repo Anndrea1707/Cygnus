@@ -2,6 +2,9 @@ import React, { useState, useEffect } from 'react';
 import './Home.css';
 import cube from '../imagenes/CuboPrincipal.png';
 import logo from '../imagenes/logo.png';
+import NavbarPrincipal from '../components/NavbarPrincipal';
+import Footer from '../components/Footer';
+
 
 const cursos = [
   {
@@ -36,7 +39,7 @@ const cursos = [
   },
 ];
 
-export default function Home({ onLoginClick }) {
+export default function Home({ currentPage, onLoginClick, onNavigate }) {
   const [index, setIndex] = useState(0);
   const [testimonialIndex, setTestimonialIndex] = useState(0);
   const [showScroll, setShowScroll] = useState(false);
@@ -98,23 +101,11 @@ export default function Home({ onLoginClick }) {
     <div>
       {/* ===== SECCIÓN HERO PRINCIPAL ===== */}
       <section className="home-container" id="inicio">
-        <nav className="navbar">
-          <div className="logo-section">
-            <img src={logo} alt="Logo Cygnus" className="logo-img" />
-            <span className="logo-text">CYGNUS</span>
-          </div>
-
-          <ul className="nav-links">
-            <li><a href="#inicio" className="active">Inicio</a></li>
-            <li><a href="#cursos">Cursos</a></li>
-            <li><a href="#nosotros">Sobre nosotros</a></li>
-          </ul>
-
-          <button className="btn-login" onClick={onLoginClick}>
-            Iniciar Sesión
-          </button>
-        </nav>
-
+        <NavbarPrincipal
+          currentPage={currentPage}
+          onLoginClick={onLoginClick}
+          onNavigate={onNavigate}
+        />
         <div className="hero">
           <div className="hero-text">
             <h1>Aprendizaje adaptativo a tu medida.</h1>
@@ -266,15 +257,7 @@ export default function Home({ onLoginClick }) {
 
 
       {/* ===== FOOTER / FRONTING ===== */}
-      <footer className="footer">
-        <div className="footer-content">
-          <p>Desarrollado por <strong>Melissa Hernández & Ángel Hernández</strong></p>
-          <p>Universidad Tecnológica de Santander - UTS</p>
-          <p>Bucaramanga, Santander</p>
-        </div>
-        <div className="footer-line"></div>
-        <p className="footer-rights">© 2025 Cygnus. Todos los derechos reservados.</p>
-      </footer>
+      <Footer />
     </div>
   );
 }
