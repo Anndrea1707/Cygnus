@@ -6,7 +6,7 @@ export default function NavbarPrincipal({ currentPage, onLoginClick, onNavigate 
   return (
     <nav className="navbar">
       <div className="logo-section">
-        <img src={logo} alt="Logo Cygnus" className="logo-img" />
+        <img src={logo} alt="Logo Cygnus" className="logo-img" onClick={() => onNavigate("home")}/>
         <span className="logo-text">CYGNUS</span>
       </div>
 
@@ -35,6 +35,15 @@ export default function NavbarPrincipal({ currentPage, onLoginClick, onNavigate 
             onClick={() => onNavigate("sobreNosotros")}
           >
             Sobre nosotros
+          </button>
+        </li>
+
+        <li>
+          <button
+            className={currentPage === "ayuda" ? "nav-btn active" : "nav-btn"}
+            onClick={() => onNavigate("ayuda")}
+          >
+            Ayuda
           </button>
         </li>
       </ul>

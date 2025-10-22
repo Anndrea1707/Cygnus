@@ -4,6 +4,7 @@ import Home from './pages/Home';
 import Login from './pages/Login';
 import Registro from './pages/Registro';
 import SobreNosotros from './pages/SobreNosotros';
+import Ayuda from './pages/Ayuda';
 
 function App() {
   const [currentPage, setCurrentPage] = useState('home'); // Control de navegación
@@ -42,6 +43,13 @@ function App() {
           currentPage={currentPage}
           onNavigate={handleNavigate}
           onLoginClick={handleLoginClick}
+        />
+      )}
+      {currentPage === 'ayuda' && (
+        <Ayuda
+          currentPage={currentPage}
+          onLoginClick={handleLoginClick}
+          onNavigate={handleNavigate}
         />
       )}
     </>
