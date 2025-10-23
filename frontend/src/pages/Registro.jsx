@@ -1,5 +1,5 @@
 // src/pages/Registro.jsx
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./Registro.css";
 import fondo from "../imagenes/login.jpg";
 import cohete from "../imagenes/cohete.png";
@@ -19,13 +19,33 @@ function Registro({ onBackToLogin }) {
 
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [mensajeEstado, setMensajeEstado] = useState("Debes completar todos los campos");
+
+  // ✅ Verificar campos llenos y actualizar mensaje dinámico
+  useEffect(() => {
+    const camposLlenos =
+      formData.cedula &&
+      formData.nombre_completo &&
+      formData.correo &&
+      formData.fecha_nacimiento &&
+      formData.contrasena &&
+      formData.confirmar_contrasena;
+
+    if (!camposLlenos) {
+      setMensajeEstado("Debes completar todos los campos");
+    } else if (!formData.aceptarTerminos) {
+      setMensajeEstado("No olvides aceptar los términos y condiciones");
+    } else {
+      setMensajeEstado("");
+    }
+  }, [formData]);
 
   // ✅ Validar entrada de texto
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
 
-    if (name === "cedula" && !/^\d*$/.test(value)) return; // solo números
-    if (name === "nombre_completo" && /[0-9]/.test(value)) return; // sin números
+    if (name === "cedula" && !/^\d*$/.test(value)) return; // Solo números
+    if (name === "nombre_completo" && /[0-9]/.test(value)) return; // Sin números
 
     setFormData({
       ...formData,
@@ -36,6 +56,19 @@ function Registro({ onBackToLogin }) {
   // ✅ Envío del formulario
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    const camposLlenos =
+      formData.cedula &&
+      formData.nombre_completo &&
+      formData.correo &&
+      formData.fecha_nacimiento &&
+      formData.contrasena &&
+      formData.confirmar_contrasena;
+
+    if (!camposLlenos) {
+      alert("⚠️ Por favor completa todos los campos antes de continuar.");
+      return;
+    }
 
     if (!formData.aceptarTerminos) {
       alert("⚠️ Debes aceptar los términos y condiciones.");
@@ -73,6 +106,18 @@ function Registro({ onBackToLogin }) {
       "🔒 Tus datos personales están protegidos.\n\nEste registro se realiza únicamente con fines académicos. La información se mantiene privada y segura según nuestra política de datos."
     );
   };
+
+  const camposCompletos =
+    formData.cedula &&
+    formData.nombre_completo &&
+    formData.correo &&
+    formData.fecha_nacimiento &&
+    formData.contrasena &&
+    formData.confirmar_contrasena;
+
+  const botonDeshabilitado = !(
+    camposCompletos && formData.aceptarTerminos
+  );
 
   return (
     <div
@@ -196,9 +241,18 @@ function Registro({ onBackToLogin }) {
             </label>
           </div>
 
-          <button type="submit" className="register-btn">
+          <button
+            type="submit"
+            className={`register-btn ${botonDeshabilitado ? "disabled" : ""}`}
+            disabled={botonDeshabilitado}
+          >
             Registrar
           </button>
+
+          {/* Mensaje dinámico */}
+          {mensajeEstado && (
+            <p className="estado-mensaje">{mensajeEstado}</p>
+          )}
 
           <p className="back-text" onClick={onBackToLogin}>
             ← Volver al inicio

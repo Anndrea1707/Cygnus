@@ -1,18 +1,58 @@
-// src/pages/Login.jsx
 import React, { useState } from "react";
 import "./Login.css";
 import fondo from "../imagenes/login.jpg";
 import cohete from "../imagenes/cohete.png";
 import usuarioIcon from "../imagenes/usuario.png";
 import estrella from "../imagenes/estrella-fugaz.png";
-import ojoCerrado from "../imagenes/ojo-cerrado.png"; 
-import ojoAbierto from "../imagenes/ojo.png";        
+import ojoCerrado from "../imagenes/ojo-cerrado.png";
+import ojoAbierto from "../imagenes/ojo.png";
 
-function Login({ onBackToHome, onRegisterClick }) {
+function Login({ onBackToHome, onRegisterClick, onLoginSuccess }) {
   const [showPassword, setShowPassword] = useState(false);
+  const [correo, setCorreo] = useState("");
+  const [contrasena, setContrasena] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  // ✅ Manejo del envío del formulario
+  const handleLogin = async (e) => {
+    e.preventDefault();
+
+    if (!correo || !contrasena) {
+      alert("⚠️ Por favor, completa todos los campos.");
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      const response = await fetch("/api/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ correo, contrasena }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        alert(data.mensaje);
+        // 👇 Llamamos al Home o página principal
+        if (onLoginSuccess) onLoginSuccess(data.usuario);
+      } else {
+        alert(data.mensaje || "❌ Error al iniciar sesión");
+      }
+    } catch (error) {
+      console.error("Error al iniciar sesión:", error);
+      alert("❌ Error de conexión con el servidor.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
-    <div className="login-background" style={{ backgroundImage: `url(${fondo})` }}>
+    <div
+      className="login-background"
+      style={{ backgroundImage: `url(${fondo})` }}
+    >
       <button className="back-btn" onClick={onBackToHome}>
         ← Volver al inicio
       </button>
@@ -24,13 +64,19 @@ function Login({ onBackToHome, onRegisterClick }) {
           <img src={cohete} alt="Cohete" className="cohete-img" />
         </div>
 
-        <div className="login-form">
+        <form className="login-form" onSubmit={handleLogin}>
           <h3>LOGIN</h3>
 
-          {/* Campo Usuario */}
+          {/* Campo Correo */}
           <div className="input-group">
             <img src={usuarioIcon} alt="Usuario" className="input-icon" />
-            <input type="text" placeholder="Usuario" />
+            <input
+              type="email"
+              placeholder="Correo"
+              value={correo}
+              onChange={(e) => setCorreo(e.target.value)}
+              required
+            />
           </div>
 
           {/* Campo Contraseña */}
@@ -39,13 +85,17 @@ function Login({ onBackToHome, onRegisterClick }) {
             <input
               type={showPassword ? "text" : "password"}
               placeholder="Contraseña"
-              className="password-input"
+              value={contrasena}
+              onChange={(e) => setContrasena(e.target.value)}
+              required
             />
             <button
               type="button"
               className="toggle-password"
               onClick={() => setShowPassword(!showPassword)}
-              aria-label={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
+              aria-label={
+                showPassword ? "Ocultar contraseña" : "Mostrar contraseña"
+              }
             >
               <img
                 src={showPassword ? ojoAbierto : ojoCerrado}
@@ -55,15 +105,18 @@ function Login({ onBackToHome, onRegisterClick }) {
             </button>
           </div>
 
-          <button className="login-btn">Entrar</button>
-          <span 
-            className="register-link" 
+          <button type="submit" className="login-btn" disabled={loading}>
+            {loading ? "Ingresando..." : "Entrar"}
+          </button>
+
+          <span
+            className="register-link"
             onClick={onRegisterClick}
-            style={{ cursor: 'pointer' }}
+            style={{ cursor: "pointer" }}
           >
             Registrate
           </span>
-        </div>
+        </form>
       </div>
     </div>
   );

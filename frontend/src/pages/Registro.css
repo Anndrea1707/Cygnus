@@ -2,56 +2,42 @@
 .registro-background {
   width: 100vw;
   height: 100vh;
-  margin: 0;
-  padding: 0;
   background-image: url('../imagenes/login.png');
   background-size: cover;
   background-position: center;
-  background-repeat: no-repeat;
-  position: relative;
-  overflow: hidden;
   display: flex;
   justify-content: center;
   align-items: center;
   font-family: 'Outfit', sans-serif;
+  overflow: hidden;
 }
 
-.registro-background::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(9, 21, 44, 0.566);
-  z-index: 1;
-}
-
-/* Contenedor principal */
+/* Contenedor */
 .registro-container {
-  background-color: #d163f2; /* lavanda pastel */
+  background-color: #d163f2;
   border-radius: 25px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4), 0 0 0 4px rgba(255, 255, 255, 0.1);
-  width: 340px;
-  padding: 25px;
-  text-align: center;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+  width: 380px;
+  max-height: 90vh;
+  padding: 30px;
   color: white;
-  backdrop-filter: blur(5px);
-  animation: fadeIn 1.2s ease;
-  position: relative;
-  z-index: 2;
-  font-family: 'Outfit', sans-serif;
+  backdrop-filter: blur(6px);
+  overflow-y: auto;
+  scroll-behavior: smooth;
+  scrollbar-width: none; /* 🔹 Scroll invisible */
+  -ms-overflow-style: none;
+}
+.registro-container::-webkit-scrollbar {
+  display: none;
 }
 
-/* Cabecera */
 .registro-header {
-  margin-bottom: 20px;
+  margin-bottom: 25px;
+  text-align: center;
 }
-
 .registro-header h1 {
-  font-size: 1.8rem;
+  font-size: 1.9rem;
   font-weight: 700;
-  margin: 5px 0 15px;
   font-family: 'Changa', sans-serif;
 }
 
@@ -69,84 +55,42 @@
   gap: 15px;
 }
 
-/* === CAMPOS DE ENTRADA === */
-.input-group {
-  position: relative;
+/* ✅ Inputs específicos del registro (sin íconos) */
+.registro-container .input-group {
+  margin-bottom: 15px;
   width: 100%;
 }
 
-/* 🔹 Inputs normales (sin ícono) */
-.input-group input {
+.registro-container .input-group input {
   width: 100%;
   border: none;
   border-radius: 25px;
   background-color: #a44bbe;
   color: #fff;
   font-size: 0.95rem;
+  padding: 10px 15px; /* ← Solo padding normal, sin espacio para ícono */
   outline: none;
   transition: 0.3s;
   font-family: 'Outfit', sans-serif;
   box-sizing: border-box;
 }
 
-/* 🔹 Inputs tipo fecha */
-.input-group input[type="date"] {
-  color-scheme: dark; /* para que el calendario sea visible en tema oscuro */
-  padding-right: 15px;
-}
-
-/* 🔹 Inputs con ícono (contraseñas) */
-.password-wrapper input {
-  padding-right: 48px; /* espacio extra para el ícono del ojo */
-}
-
-/* Placeholder */
-.input-group input::placeholder {
-  color: #f0e6ff;
-  font-family: 'Outfit', sans-serif;
-}
-
-.input-group input:focus {
+.registro-container .input-group input:focus {
   background-color: #b05cc9;
   box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
 }
 
-/* === Ícono del ojo (mostrar contraseña) === */
-.toggle-password {
-  position: absolute;
-  right: 15px;
-  top: 50%;
-  transform: translateY(-50%);
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 0;
-  width: 22px;
-  height: 22px;
+/* Checkbox */
+.registro-container .checkbox-group {
   display: flex;
   align-items: center;
-  justify-content: center;
-  transition: transform 0.2s ease;
-  z-index: 2;
+  gap: 8px;
+  font-size: 0.9rem;
+  margin-top: 10px;
+  justify-content: flex-start;
 }
 
-.toggle-password:hover {
-  transform: translateY(-50%) scale(1.1);
-}
-
-.eye-icon {
-  width: 18px;
-  height: 18px;
-  filter: brightness(1.2);
-  transition: transform 0.2s, filter 0.2s;
-}
-
-.eye-icon:hover {
-  filter: brightness(1.5);
-  transform: scale(1.1);
-}
-
-/* === BOTONES === */
+/* Botón principal */
 .register-btn {
   width: 100%;
   background-color: #1d175a;
@@ -156,57 +100,45 @@
   border-radius: 25px;
   font-size: 1rem;
   cursor: pointer;
-  transition: transform 0.3s ease, background-color 0.3s ease;
-  margin-top: 10px;
+  transition: all 0.3s ease;
+  margin-top: 15px;
   font-weight: 600;
-  font-family: 'Outfit', sans-serif;
-  box-sizing: border-box;
 }
-
 .register-btn:hover {
   transform: scale(1.03);
   background-color: #2a227a;
-  box-shadow: 0px 0px 15px rgba(255, 255, 255, 0.2);
+}
+.register-btn.disabled {
+  background-color: #7d7d7d;
+  cursor: not-allowed;
+  transform: none;
 }
 
-/* === BOTÓN VOLVER === */
-.back-btn {
-  position: absolute;
-  top: 20px;
-  left: 20px;
-  background: none;
-  border: none;
-  color: white;
-  font-family: 'Outfit', sans-serif;
-  font-size: 0.95rem;
+/* Mensaje dinámico */
+.estado-mensaje {
+  margin-top: 8px;
+  font-size: 0.85rem;
+  color: #fff;
+  opacity: 0.9;
+  text-align: center;
+  animation: fadeIn 0.5s ease;
+}
+
+/* Volver */
+.back-text {
+  margin-top: 12px;
+  color: #fff;
+  font-size: 0.9rem;
   cursor: pointer;
-  padding: 8px 12px;
-  border-radius: 20px;
-  transition: background-color 0.2s;
-  z-index: 1000;
+  text-decoration: underline;
+  transition: 0.3s;
+  text-align: center;
 }
-
-.back-btn:hover {
-  background-color: rgba(255, 255, 255, 0.15);
-}
-
-/* === ANIMACIONES === */
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(15px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+.back-text:hover {
+  color: #c8a3f2;
 }
 
 @keyframes float {
-  0%, 100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-8px);
-  }
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
 }

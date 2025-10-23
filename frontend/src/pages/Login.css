@@ -85,6 +85,9 @@
   position: relative;
   margin-bottom: 15px;
   width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .input-icon {
@@ -95,12 +98,13 @@
   width: 20px;
   height: auto;
   opacity: 0.9;
-  pointer-events: none; /* ✅ Evita que el ícono interfiera con clics */
+  pointer-events: none;
+  z-index: 2; /* Asegura que el ícono esté encima del input */
 }
 
 .input-group input {
   width: 100%;
-  padding: 10px 45px 10px 50px; /* ✅ Padding izquierdo: 50px, derecho: 45px */
+  padding: 10px 45px 10px 50px; /* ← AQUÍ ESTÁ LA CORRECCIÓN: 50px a la izquierda */
   border: none;
   border-radius: 25px;
   background-color: #a44bbe;
@@ -110,6 +114,8 @@
   transition: 0.3s;
   font-family: 'Outfit', sans-serif;
   box-sizing: border-box;
+  text-align: left; /* Asegura que el texto esté alineado a la izquierda */
+  z-index: 1; /* Para que el input no tape el ícono */
 }
 
 .input-group input::placeholder {
