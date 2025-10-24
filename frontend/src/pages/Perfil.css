@@ -1,0 +1,39 @@
+.perfil-background {
+    width: 100vw;
+    height: 100vh;
+    background: linear-gradient(135deg, #1d175a 0%, #a44bbe 80%);
+    color: var(--color-light);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Outfit', sans-serif;
+  }
+  
+  .perfil-background h1 {
+    font-size: 2.5rem;
+    margin-bottom: 20px;
+    color: var(--color-light);
+  }
+  
+  .perfil-background p {
+    font-size: 1.2rem;
+    margin: 10px 0;
+    color: #e0d8f0;
+  }
+  
+  .perfil-background button {
+    background-color: var(--color-primary);
+    border: none;
+    border-radius: 25px;
+    color: white;
+    padding: 0.6rem 1.2rem;
+    cursor: pointer;
+    font-family: 'Outfit', sans-serif;
+    transition: transform 0.2s ease, box-shadow 0.2s;
+  }
+  
+  .perfil-background button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0 10px rgba(164, 75, 190, 0.4);
+  }

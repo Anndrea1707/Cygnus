@@ -1,3 +1,4 @@
+// src/pages/Login.jsx
 import React, { useState } from "react";
 import "./Login.css";
 import fondo from "../imagenes/login.jpg";
@@ -25,7 +26,8 @@ function Login({ onBackToHome, onRegisterClick, onLoginSuccess }) {
     setLoading(true);
 
     try {
-      const response = await fetch("/api/login", {
+      const response = await fetch("http://localhost:4000/api/login", {
+        // 👈 Ajusta si tu backend usa otro puerto
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ correo, contrasena }),
@@ -34,11 +36,15 @@ function Login({ onBackToHome, onRegisterClick, onLoginSuccess }) {
       const data = await response.json();
 
       if (response.ok) {
-        alert(data.mensaje);
-        // 👇 Llamamos al Home o página principal
-        if (onLoginSuccess) onLoginSuccess(data.usuario);
+        // Usar setTimeout para permitir que el estado se actualice luego del alert
+        alert("✅ " + data.mensaje);
+        setTimeout(() => {
+          if (onLoginSuccess) {
+            onLoginSuccess(data.usuario);
+          }
+        }, 100); // espera 100ms después del alert
       } else {
-        alert(data.mensaje || "❌ Error al iniciar sesión");
+        alert("❌ " + (data.mensaje || "Error al iniciar sesión."));
       }
     } catch (error) {
       console.error("Error al iniciar sesión:", error);
@@ -93,9 +99,7 @@ function Login({ onBackToHome, onRegisterClick, onLoginSuccess }) {
               type="button"
               className="toggle-password"
               onClick={() => setShowPassword(!showPassword)}
-              aria-label={
-                showPassword ? "Ocultar contraseña" : "Mostrar contraseña"
-              }
+              aria-label={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
             >
               <img
                 src={showPassword ? ojoAbierto : ojoCerrado}

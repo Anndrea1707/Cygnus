@@ -1,59 +1,60 @@
 // src/App.jsx
-import React, { useState } from 'react';
-import Home from './pages/Home';
-import Login from './pages/Login';
-import Registro from './pages/Registro';
-import SobreNosotros from './pages/SobreNosotros';
-import Ayuda from './pages/Ayuda';
+import React, { useState } from "react";
+import Home from "./pages/Home";
+import Login from "./pages/Login";
+import Registro from "./pages/Registro";
+import SobreNosotros from "./pages/SobreNosotros";
+import Ayuda from "./pages/Ayuda";
+import Dashboard from "./pages/Dashboard";
 
 function App() {
-  const [currentPage, setCurrentPage] = useState('home'); // Control de navegación
+  const [currentPage, setCurrentPage] = useState("home"); // ✅ Siempre empieza en "home"
+  const [usuario, setUsuario] = useState(null);
 
-  const handleNavigate = (page) => {
-    setCurrentPage(page);
+  // 🔹 Funciones de navegación
+  const handleNavigate = (page) => setCurrentPage(page);
+  const handleLoginClick = () => setCurrentPage("login");
+
+  // 🔹 Al iniciar sesión exitosamente
+  const handleLoginSuccess = (userData) => {
+    setUsuario(userData);
+    localStorage.setItem("usuario", JSON.stringify(userData)); // opcional: guardar para persistencia futura
+    setCurrentPage("dashboard");
   };
 
-  const handleLoginClick = () => {
-    setCurrentPage('login');
+  // 🔹 Al cerrar sesión
+  const handleLogout = () => {
+    localStorage.removeItem("usuario");
+    setUsuario(null);
+    setCurrentPage("home");
   };
 
-  return (
-    <>
-      {currentPage === 'home' && (
-        <Home
-          currentPage={currentPage}
-          onLoginClick={handleLoginClick}
-          onNavigate={handleNavigate}
-        />
-      )}
+  // 🔹 Renderizado por página
+  switch (currentPage) {
+    case "dashboard":
+      return <Dashboard usuario={usuario} onLogout={handleLogout} onNavigate={handleNavigate} />;
 
-      {currentPage === 'login' && (
+    case "login":
+      return (
         <Login
-          onBackToHome={() => setCurrentPage('home')}
-          onRegisterClick={() => setCurrentPage('registro')}
+          onBackToHome={() => setCurrentPage("home")}
+          onRegisterClick={() => setCurrentPage("registro")}
+          onLoginSuccess={handleLoginSuccess}
         />
-      )}
+      );
 
-      {currentPage === 'registro' && (
-        <Registro onBackToLogin={() => setCurrentPage('login')} />
-      )}
+    case "registro":
+      return <Registro onBackToLogin={() => setCurrentPage("login")} />;
 
-      {currentPage === 'sobreNosotros' && (
-        <SobreNosotros
-          currentPage={currentPage}
-          onNavigate={handleNavigate}
-          onLoginClick={handleLoginClick}
-        />
-      )}
-      {currentPage === 'ayuda' && (
-        <Ayuda
-          currentPage={currentPage}
-          onLoginClick={handleLoginClick}
-          onNavigate={handleNavigate}
-        />
-      )}
-    </>
-  );
+    case "sobreNosotros":
+      return <SobreNosotros onNavigate={handleNavigate} onLoginClick={handleLoginClick} />;
+
+    case "ayuda":
+      return <Ayuda onNavigate={handleNavigate} onLoginClick={handleLoginClick} />;
+
+    default:
+      return <Home onNavigate={handleNavigate} onLoginClick={handleLoginClick} />;
+  }
 }
 
 export default App;
