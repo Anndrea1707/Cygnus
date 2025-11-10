@@ -6,33 +6,37 @@ import Registro from "./pages/Registro";
 import SobreNosotros from "./pages/SobreNosotros";
 import Ayuda from "./pages/Ayuda";
 import Dashboard from "./pages/Dashboard";
+import CursosPrincipal from "./pages/CursosPrincipal";
 
 function App() {
-  const [currentPage, setCurrentPage] = useState("home"); // ✅ Siempre empieza en "home"
+  const [currentPage, setCurrentPage] = useState("home");
   const [usuario, setUsuario] = useState(null);
 
-  // 🔹 Funciones de navegación
   const handleNavigate = (page) => setCurrentPage(page);
   const handleLoginClick = () => setCurrentPage("login");
 
-  // 🔹 Al iniciar sesión exitosamente
   const handleLoginSuccess = (userData) => {
     setUsuario(userData);
-    localStorage.setItem("usuario", JSON.stringify(userData)); // opcional: guardar para persistencia futura
+    localStorage.setItem("usuario", JSON.stringify(userData));
     setCurrentPage("dashboard");
   };
 
-  // 🔹 Al cerrar sesión
   const handleLogout = () => {
     localStorage.removeItem("usuario");
     setUsuario(null);
     setCurrentPage("home");
   };
 
-  // 🔹 Renderizado por página
   switch (currentPage) {
     case "dashboard":
-      return <Dashboard usuario={usuario} onLogout={handleLogout} onNavigate={handleNavigate} />;
+      return (
+        <Dashboard
+          usuario={usuario}
+          onLogout={handleLogout}
+          onNavigate={handleNavigate}
+          currentPage={currentPage} // ✅ añadido
+        />
+      );
 
     case "login":
       return (
@@ -40,20 +44,53 @@ function App() {
           onBackToHome={() => setCurrentPage("home")}
           onRegisterClick={() => setCurrentPage("registro")}
           onLoginSuccess={handleLoginSuccess}
+          currentPage={currentPage} // ✅ añadido
         />
       );
 
     case "registro":
-      return <Registro onBackToLogin={() => setCurrentPage("login")} />;
+      return (
+        <Registro
+          onBackToLogin={() => setCurrentPage("login")}
+          currentPage={currentPage} // ✅ añadido
+        />
+      );
 
     case "sobreNosotros":
-      return <SobreNosotros onNavigate={handleNavigate} onLoginClick={handleLoginClick} />;
+      return (
+        <SobreNosotros
+          currentPage={currentPage} // ✅ añadido
+          onNavigate={handleNavigate}
+          onLoginClick={handleLoginClick}
+        />
+      );
 
     case "ayuda":
-      return <Ayuda onNavigate={handleNavigate} onLoginClick={handleLoginClick} />;
+      return (
+        <Ayuda
+          currentPage={currentPage} // ✅ añadido
+          onNavigate={handleNavigate}
+          onLoginClick={handleLoginClick}
+        />
+      );
+
+    case "cursos":
+      return (
+        <CursosPrincipal
+          currentPage={currentPage} // ✅ añadido
+          onNavigate={handleNavigate}
+          onLoginClick={handleLoginClick}
+        />
+      )
 
     default:
-      return <Home onNavigate={handleNavigate} onLoginClick={handleLoginClick} />;
+      return (
+        <Home
+          currentPage={currentPage} // ✅ añadido
+          onNavigate={handleNavigate}
+          onLoginClick={handleLoginClick}
+        />
+      );
   }
 }
 

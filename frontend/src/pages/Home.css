@@ -14,6 +14,7 @@
   --color-border-glass: rgba(255, 255, 255, 0.1);
   --color-hover-shadow: rgba(164, 75, 190, 0.5);
   --color-subtext: #cfcfcf;
+  --color-dorad-ligh: #e9d89a;
 }
 
 /* 🔧 Evita desplazamiento horizontal global */
@@ -770,3 +771,16 @@ html, body {
     transform: translateY(0);
   }
 }
+
+/* 💜 Solución a la franja marrón entre testimonios y footer */
+.testimonials-section {
+  background: linear-gradient(180deg, var(--color-dark), #0a1324); /* transición más suave */
+  margin-bottom: 0;
+  padding-bottom: 20;
+}
+
+.footer {
+  margin-top: 0 !important;
+  background: linear-gradient(180deg, #0a1324, #000000); /* empata con el final del gradiente anterior */
+}
+
