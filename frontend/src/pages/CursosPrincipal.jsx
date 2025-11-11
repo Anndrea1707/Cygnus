@@ -5,102 +5,139 @@ import Footer from "../components/Footer";
 
 export default function CursosPrincipal({ currentPage, onLoginClick, onNavigate }) {
   const [cursoSeleccionado, setCursoSeleccionado] = useState(null);
+  const [categoriaFiltro, setCategoriaFiltro] = useState("Todos");
 
   const cursos = [
     {
+      id: 1,
       titulo: "Diseño de Interfaces Modernas",
-      descripcion:
-        "Crea interfaces atractivas, intuitivas y funcionales que conecten con tus usuarios. Aprende sobre tipografía, jerarquía visual y herramientas de diseño modernas.",
-      imagen:
-        "https://www.hostingplus.com.co/wp-content/uploads/2021/07/businessman-using-tech-devices-and-icons-thin-line-interface.jpg",
+      descripcion: "Crea interfaces atractivas, intuitivas y funcionales que conecten con tus usuarios.",
+      imagen: "https://www.hostingplus.com.co/wp-content/uploads/2021/07/businessman-using-tech-devices-and-icons-thin-line-interface.jpg",
       nivel: "Básico",
-      duracion: "4 semanas",
+      horas: 15,
+      modulos: ["Introducción a UX/UI", "Principios de diseño", "Prototipado", "Diseño responsivo"],
+      categoria: "Diseño",
+      fecha: "2025-02-18",
     },
     {
+      id: 2,
       titulo: "Desarrollo Web con React",
-      descripcion:
-        "Construye aplicaciones web interactivas con React, una de las librerías más potentes del mundo. Domina el uso de componentes, hooks, y el manejo del estado.",
-      imagen:
-        "https://jhasenstudio.com/wp-content/uploads/2024/10/desarrollo-web-scaled.jpg",
+      descripcion: "Construye aplicaciones web interactivas con React, una de las librerías más potentes del mundo.",
+      imagen: "https://jhasenstudio.com/wp-content/uploads/2024/10/desarrollo-web-scaled.jpg",
       nivel: "Intermedio",
-      duracion: "6 semanas",
+      horas: 25,
+      modulos: ["JSX y componentes", "Hooks", "Routing", "Firebase y despliegue"],
+      categoria: "Programación",
+      fecha: "2025-03-01",
     },
     {
+      id: 3,
       titulo: "Análisis de Datos",
-      descripcion:
-        "Domina las herramientas esenciales para procesar, visualizar y analizar datos de forma eficiente. Incluye Power BI, Excel y Python.",
-      imagen:
-        "https://www.dqsconsulting.com/wp-content/uploads/2021/09/como-hacer-un-analisis-de-datos.jpg",
+      descripcion: "Domina las herramientas esenciales para procesar y analizar datos de forma eficiente.",
+      imagen: "https://www.dqsconsulting.com/wp-content/uploads/2021/09/como-hacer-un-analisis-de-datos.jpg",
       nivel: "Intermedio",
-      duracion: "5 semanas",
+      horas: 20,
+      modulos: ["Excel avanzado", "Power BI", "Python para análisis", "Visualización de datos"],
+      categoria: "Datos",
+      fecha: "2025-03-25",
     },
     {
+      id: 4,
       titulo: "Inteligencia Artificial",
-      descripcion:
-        "Aprende cómo entrenar modelos de IA y aplicarlos a problemas del mundo real. Conoce los fundamentos del aprendizaje automático y redes neuronales.",
-      imagen:
-        "https://img.computing.es/wp-content/uploads/2024/03/22155324/IA-2.jpg",
+      descripcion: "Aprende cómo entrenar modelos de IA y aplicarlos a problemas del mundo real.",
+      imagen: "https://img.computing.es/wp-content/uploads/2024/03/22155324/IA-2.jpg",
       nivel: "Avanzado",
-      duracion: "8 semanas",
-    },
-    {
-      titulo: "Ciberseguridad Básica",
-      descripcion:
-        "Descubre los fundamentos para proteger sistemas y redes frente a ataques digitales. Aprende sobre contraseñas, encriptación y seguridad en la nube.",
-      imagen:
-        "https://latam.kaspersky.com/content/es-mx/images/repository/isc/2020/cyber-security-article.jpg",
-      nivel: "Básico",
-      duracion: "3 semanas",
-    },
-    {
-      titulo: "Bases de Datos con MongoDB",
-      descripcion:
-        "Aprende a estructurar, consultar y escalar bases de datos NoSQL modernas. Explora la integración de MongoDB con Node.js y React.",
-      imagen:
-        "https://img.datacentermarket.es/wp-content/uploads/2025/01/16110626/Bases-de-datos-como-Servicio-1.jpeg",
-      nivel: "Intermedio",
-      duracion: "5 semanas",
+      horas: 30,
+      modulos: ["Machine Learning básico", "Redes neuronales", "Modelos predictivos"],
+      categoria: "Tecnología",
+      fecha: "2025-04-10",
     },
   ];
 
+  // === Filtrar por categoría ===
+  const categorias = ["Todos", "Diseño", "Programación", "Datos", "Tecnología"];
+  const cursosFiltrados =
+    categoriaFiltro === "Todos"
+      ? cursos
+      : cursos.filter((c) => c.categoria === categoriaFiltro);
+
+  // === Últimos 3 cursos ===
+  const ultimosCursos = cursos.slice(-3);
+
+  // === VISTA DETALLE ===
+  if (cursoSeleccionado) {
+    return (
+      <div className="detalle-curso">
+        <button className="btn-volver" onClick={() => setCursoSeleccionado(null)}>
+          ← Volver a los cursos
+        </button>
+
+        <div className="detalle-contenido">
+          <img src={cursoSeleccionado.imagen} alt={cursoSeleccionado.titulo} className="detalle-imagen" />
+
+          <div className="detalle-info">
+            <h1>{cursoSeleccionado.titulo}</h1>
+            <p className="detalle-descripcion">{cursoSeleccionado.descripcion}</p>
+
+            <div className="detalle-datos">
+              <p><strong>⏱ Duración:</strong> {cursoSeleccionado.horas} horas</p>
+              <p><strong>📘 Nivel:</strong> {cursoSeleccionado.nivel}</p>
+              <p><strong>📦 Módulos:</strong> {cursoSeleccionado.modulos.length}</p>
+              <p><strong>🗓 Publicado:</strong> {cursoSeleccionado.fecha}</p>
+            </div>
+
+            <div className="detalle-linea-tiempo">
+              <h3>Contenido del curso</h3>
+              <ul>
+                {cursoSeleccionado.modulos.map((m, i) => (
+                  <li key={i}>
+                    <span className="punto"></span>
+                    {m}
+                  </li>
+                ))}
+              </ul>
+              <p className="detalle-nota">* Inicia sesión para acceder a los módulos.</p>
+              <button
+                className="btn-login-detalle"
+                onClick={onLoginClick}
+              >
+                Inicia sesión para acceder al curso
+              </button>
+
+            </div>
+          </div>
+        </div>
+
+        <Footer />
+      </div>
+    );
+  }
+
+  // === VISTA PRINCIPAL ===
   return (
     <div className="cursos-principal">
-      {/* === NAVBAR === */}
-      <NavbarPrincipal
-        currentPage={currentPage}
-        onLoginClick={onLoginClick}
-        onNavigate={onNavigate}
-      />
+      <NavbarPrincipal currentPage={currentPage} onLoginClick={onLoginClick} onNavigate={onNavigate} />
 
-      {/* === HERO === */}
+      {/* HERO */}
       <section className="hero-cursos">
         <div className="hero-contenido">
-          <h1>Descubre nuestros cursos</h1>
-          <p>
-            Explora nuestras áreas de aprendizaje y conoce cómo puedes potenciar tu conocimiento.
-            No necesitas iniciar sesión para explorar la oferta educativa.
-          </p>
-          <button className="btn-principal" onClick={onLoginClick}>
-            Inicia sesión para comenzar
-          </button>
+          <h1>Explora nuestros cursos más recientes</h1>
+          <p>Aprende a tu ritmo con contenido actualizado y guiado por expertos.</p>
         </div>
       </section>
 
-      {/* === GRID DE CURSOS === */}
+      {/* ÚLTIMOS CURSOS */}
       <section className="seccion-cursos">
-        <h2 className="titulo-seccion">Explora los cursos disponibles</h2>
+        <h2 className="titulo-seccion">Últimos cursos agregados</h2>
         <div className="grid-cursos">
-          {cursos.map((curso, index) => (
-            <div key={index} className="tarjeta-curso">
+          {ultimosCursos.map((curso) => (
+            <div key={curso.id} className="tarjeta-curso">
               <img src={curso.imagen} alt={curso.titulo} className="imagen-curso" />
               <div className="contenido-curso">
                 <h3>{curso.titulo}</h3>
                 <p>{curso.descripcion}</p>
                 <span className="etiqueta-nivel">Nivel {curso.nivel}</span>
-                <button
-                  className="btn-detalles"
-                  onClick={() => setCursoSeleccionado(curso)}
-                >
+                <button className="btn-detalles" onClick={() => setCursoSeleccionado(curso)}>
                   Ver más detalles
                 </button>
               </div>
@@ -109,63 +146,38 @@ export default function CursosPrincipal({ currentPage, onLoginClick, onNavigate 
         </div>
       </section>
 
-      {/* === MODAL DETALLES === */}
-      {cursoSeleccionado && (
-        <div className="modal-overlay" onClick={() => setCursoSeleccionado(null)}>
-          <div
-            className="modal-detalle"
-            onClick={(e) => e.stopPropagation()}
-          >
+      {/* FILTRO DE CATEGORÍAS */}
+      <section className="seccion-cursos">
+        <h2 className="titulo-seccion">Explora por categoría</h2>
+        <div className="filtro-categorias">
+          {categorias.map((cat) => (
             <button
-              className="modal-cerrar"
-              onClick={() => setCursoSeleccionado(null)}
+              key={cat}
+              className={`btn-categoria ${categoriaFiltro === cat ? "activo" : ""}`}
+              onClick={() => setCategoriaFiltro(cat)}
             >
-              ✖
+              {cat}
             </button>
-            <img
-              src={cursoSeleccionado.imagen}
-              alt={cursoSeleccionado.titulo}
-              className="modal-imagen"
-            />
-            <h2>{cursoSeleccionado.titulo}</h2>
-            <p>{cursoSeleccionado.descripcion}</p>
-            <p><strong>Nivel:</strong> {cursoSeleccionado.nivel}</p>
-            <p><strong>Duración:</strong> {cursoSeleccionado.duracion}</p>
-            <button className="btn-principal" onClick={onLoginClick}>
-              Inicia sesión para inscribirte
-            </button>
-          </div>
+          ))}
         </div>
-      )}
 
-      {/* === SECCIÓN POR QUÉ NOSOTROS === */}
-      <section className="por-que-nosotros">
-        <h2>¿Por qué aprender con Cygnus?</h2>
-        <div className="tarjetas-info">
-          <div className="tarjeta-info">
-            <h4>📊 Aprendizaje adaptativo</h4>
-            <p>Contenido que evoluciona según tu ritmo de aprendizaje.</p>
-          </div>
-          <div className="tarjeta-info">
-            <h4>💡 Contenidos actualizados</h4>
-            <p>Material diseñado por expertos en educación digital.</p>
-          </div>
-          <div className="tarjeta-info">
-            <h4>⚡ 100% en línea</h4>
-            <p>Aprende donde quieras, cuando quieras.</p>
-          </div>
+        <div className="grid-cursos">
+          {cursosFiltrados.map((curso) => (
+            <div key={curso.id} className="tarjeta-curso">
+              <img src={curso.imagen} alt={curso.titulo} className="imagen-curso" />
+              <div className="contenido-curso">
+                <h3>{curso.titulo}</h3>
+                <p>{curso.descripcion}</p>
+                <span className="etiqueta-nivel">Nivel {curso.nivel}</span>
+                <button className="btn-detalles" onClick={() => setCursoSeleccionado(curso)}>
+                  Ver más detalles
+                </button>
+              </div>
+            </div>
+          ))}
         </div>
       </section>
 
-      {/* === CTA FINAL === */}
-      <section className="cta-final">
-        <h2>¿Listo para comenzar tu aprendizaje?</h2>
-        <button className="btn-principal" onClick={onLoginClick}>
-          Crea tu cuenta gratuita
-        </button>
-      </section>
-
-      {/* === FOOTER === */}
       <Footer />
     </div>
   );
