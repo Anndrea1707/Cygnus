@@ -7,6 +7,7 @@ import SobreNosotros from "./pages/SobreNosotros";
 import Ayuda from "./pages/Ayuda";
 import Dashboard from "./pages/Dashboard";
 import CursosPrincipal from "./pages/CursosPrincipal";
+import Perfil from "./pages/Perfil";
 
 function App() {
   const [currentPage, setCurrentPage] = useState("home");
@@ -37,6 +38,16 @@ function App() {
           currentPage={currentPage} // ✅ añadido
         />
       );
+
+      case "perfil":
+  return (
+    <Perfil
+      usuario={usuario}
+      onNavigate={handleNavigate}
+      currentPage={currentPage}
+    />
+  );
+
 
     case "login":
       return (
