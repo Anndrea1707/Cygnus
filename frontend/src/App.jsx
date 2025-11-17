@@ -9,6 +9,9 @@ import Dashboard from "./pages/Dashboard";
 import CursosPrincipal from "./pages/CursosPrincipal";
 import Perfil from "./pages/Perfil";
 import Encuesta from "./components/Encuesta";
+import PanelAdmin from "./pages/PanelAdmin";
+import Biblioteca from "./pages/BibliotecaAdmin";
+
 
 function App() {
   const [currentPage, setCurrentPage] = useState("home");
@@ -21,13 +24,22 @@ function App() {
     setUsuario(userData);
     localStorage.setItem("usuario", JSON.stringify(userData));
 
-    // ⭐ Si NO ha completado la encuesta, enviarlo a la encuesta
+    // 👉 Si es administrador, va directo al panel admin
+    if (userData.rol === "admin") {
+      setCurrentPage("paneladmin");
+      return;
+    }
+
+    // 👉 Si NO ha hecho la encuesta
     if (!userData.encuesta_inicial?.completada) {
       setCurrentPage("encuesta");
-    } else {
-      setCurrentPage("dashboard");
+      return;
     }
+
+    // 👉 Si es usuario normal y ya hizo la encuesta
+    setCurrentPage("dashboard");
   };
+
 
 
   const handleLogout = () => {
@@ -111,6 +123,24 @@ function App() {
         />
       );
 
+    case "paneladmin":
+      return (
+        <PanelAdmin
+          usuario={usuario}
+          onLogout={handleLogout}
+          onNavigate={handleNavigate}
+        />
+      );
+
+    case "bibliotecaadmin":
+      return (
+        <Biblioteca
+          usuario={usuario}
+          onNavigate={handleNavigate}
+          onLogout={handleLogout}
+          currentPage={currentPage}
+        />
+      );
 
     default:
       return (

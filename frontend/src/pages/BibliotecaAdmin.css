@@ -1,0 +1,167 @@
+/* ===========================
+   FONDO Y CONTENEDORES
+=========================== */
+
+.biblioteca-background {
+    background: var(--color-dark);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    padding-top: 0;
+}
+
+.biblioteca-container {
+    max-width: 1200px;
+    margin: auto;
+    padding: 0 20px;
+}
+
+footer {
+    margin-top: auto !important;
+}
+
+/* ===========================
+   TÍTULO
+=========================== */
+
+.bib-title {
+    text-align: center;
+    color: var(--color-light);
+    font-size: 32px;
+    margin-bottom: 25px;
+}
+
+/* ===========================
+   FILTROS
+=========================== */
+
+.bib-filtros {
+    display: flex;
+    gap: 18px;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 35px;
+}
+
+/* --- SELECT con flecha personalizada --- */
+
+.bib-select {
+    padding: 12px 14px;
+    font-size: 15px;
+    border-radius: 10px;
+    background-color: #ffffff;
+    color: #a578bd;
+    border: none;
+    cursor: pointer;
+    appearance: none;
+    background-image: url("https://cdn-icons-png.flaticon.com/128/32/32195.png");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+    background-size: 14px;
+    width: 220px;
+}
+
+/* --- BUSCADOR --- */
+
+.bib-buscador {
+    position: relative;
+    display: inline-block;
+}
+
+.bib-input {
+    background-color: #ffffff;
+    color: #000;
+    padding: 12px 45px 12px 14px;
+    border-radius: 10px;
+    border: none;
+    width: 260px;
+    font-size: 15px;
+}
+
+.bib-icono {
+    width: 18px;
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    opacity: 0.75;
+}
+
+/* ===========================
+   GRID Y TARJETAS
+=========================== */
+
+.bib-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 22px;
+}
+
+.bib-card {
+    background: var(--color-glass);
+    border: 1px solid var(--color-border-glass);
+    padding: 20px;
+    border-radius: 16px;
+    backdrop-filter: blur(10px);
+    color: var(--color-light);
+    transition: transform 0.2s ease;
+}
+
+.bib-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 0 18px var(--color-hover-shadow);
+}
+
+.bib-tag {
+    padding: 5px 10px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: bold;
+    color: #fff;
+    text-transform: uppercase;
+}
+
+/* COLORES DE ETIQUETAS */
+.bib-tag.video {
+    background: #ff6b6b;
+}
+
+.bib-tag.audio {
+    background: #4dabf7;
+}
+
+.bib-tag.documento {
+    background: #f7b731;
+}
+
+.bib-tag.imagen {
+    background: #6ab04c;
+}
+
+/* BOTÓN */
+
+.bib-btn {
+    margin-top: 12px;
+    display: inline-block;
+    padding: 10px 12px;
+    background: var(--color-primary);
+    color: white;
+    text-decoration: none;
+    border-radius: 10px;
+    font-size: 14px;
+    transition: 0.2s;
+}
+
+.bib-btn:hover {
+    background: var(--color-primary-dark);
+}
+
+/* SIN RESULTADOS */
+
+.no-result {
+    color: var(--color-light);
+    text-align: center;
+    grid-column: 1 / -1;
+    font-size: 18px;
+    opacity: 0.7;
+}

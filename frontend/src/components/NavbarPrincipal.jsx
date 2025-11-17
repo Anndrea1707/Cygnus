@@ -17,7 +17,7 @@ export default function NavbarPrincipal({
   useEffect(() => {
     if (!usuario) {
       setRol("publico");
-    } else if (usuario.email === "admin@cygnus.com") {
+    } else if (usuario.rol === "admin") {
       setRol("admin");
     } else {
       setRol("usuario");
@@ -52,8 +52,8 @@ export default function NavbarPrincipal({
             rol === "usuario"
               ? onNavigate("dashboard")
               : rol === "admin"
-              ? onNavigate("panelAdmin")
-              : onNavigate("home")
+                ? onNavigate("panelAdmin")
+                : onNavigate("home")
           }
         >
           <img src={logo} alt="Logo Cygnus" className="logo-img" />
@@ -130,7 +130,7 @@ export default function NavbarPrincipal({
               </li>
               <li>
                 <button className="nav-btn" disabled>
-                  Ayuda
+                  Biblioteca
                 </button>
               </li>
             </>
@@ -142,11 +142,11 @@ export default function NavbarPrincipal({
               <li>
                 <button
                   className={
-                    currentPage === "panelAdmin" ? "nav-btn active" : "nav-btn"
+                    currentPage === "paneladmin" ? "nav-btn active" : "nav-btn"
                   }
-                  onClick={() => onNavigate("panelAdmin")}
+                  onClick={() => onNavigate("paneladmin")}
                 >
-                  Inicio
+                  Panel
                 </button>
               </li>
               <li>
@@ -162,6 +162,14 @@ export default function NavbarPrincipal({
                   onClick={() => onNavigate("usuarios")}
                 >
                   Usuarios
+                </button>
+              </li>
+              <li>
+                <button
+                  className={currentPage === "bibliotecaadmin" ? "nav-btn active" : "nav-btn"}
+                  onClick={() => onNavigate("bibliotecaadmin")}
+                >
+                  Biblioteca
                 </button>
               </li>
             </>
