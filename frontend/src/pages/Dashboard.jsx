@@ -1,14 +1,16 @@
-import React from "react";
+import React, { useState } from "react";
 import "./Dashboard.css";
 import NavbarPrincipal from "../components/NavbarPrincipal";
 import Footer from "../components/Footer";
+import SoportePanel from "../components/SoportePanel";
 
 function Dashboard({ usuario, onLogout, onNavigate }) {
+  const [mostrarSoporte, setMostrarSoporte] = useState(false);
+
   const nombreUsuario = usuario?.apodo || usuario?.nombre_completo || "Usuario";
 
   return (
     <div className="dashboard-background">
-      {/* === NAVBAR PRINCIPAL (Global) === */}
       <NavbarPrincipal
         usuario={usuario}
         onLogout={onLogout}
@@ -16,7 +18,6 @@ function Dashboard({ usuario, onLogout, onNavigate }) {
         currentPage="dashboard"
       />
 
-      {/* === CONTENIDO PRINCIPAL === */}
       <div className="dashboard-content">
         <h2>🌟 Bienvenido, {nombreUsuario} 🌟</h2>
         <p>
@@ -25,7 +26,24 @@ function Dashboard({ usuario, onLogout, onNavigate }) {
         </p>
       </div>
 
-      {/* === FOOTER GLOBAL === */}
+      {/* === BOTÓN FLOTANTE DE AYUDA === */}
+      <button className="btn-ayuda-flotante" onClick={() => setMostrarSoporte(true)}>
+        <img
+          src="https://cdn-icons-png.flaticon.com/128/5726/5726775.png"
+          alt="soporte"
+        />
+      </button>
+
+
+      {/* === PANEL LATERAL DE AYUDA === */}
+      {mostrarSoporte && (
+        <SoportePanel
+          onClose={() => setMostrarSoporte(false)}
+          usuario={usuario}   // 👈 AGREGA ESTO
+        />
+      )}
+
+
       <Footer />
     </div>
   );

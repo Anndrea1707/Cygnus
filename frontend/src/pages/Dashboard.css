@@ -32,3 +32,25 @@
   color: #e0d8f0;
   line-height: 1.6;
 }
+
+.btn-ayuda-flotante {
+  position: fixed;
+  bottom: 28px;
+  right: 28px;
+  width: 62px;
+  height: 62px;
+  border-radius: 50%;
+  background: var(--color-primary);
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.45);
+  z-index: 9999;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.btn-ayuda-flotante img {
+  width: 33px;
+  height: 33px;
+}
