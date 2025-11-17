@@ -413,3 +413,71 @@ html {
         opacity: 1;
     }
 }
+
+.contador-cursos {
+  display: flex;
+  justify-content: center;
+  gap: 5rem;
+  margin: 4rem 0;
+  text-align: center;
+}
+
+.contador-cursos h3 {
+    color: var(--color-lavandaClaro);
+    font-size: 1.2rem;
+}
+
+.contador-numero {
+    display: block;
+    font-size: 4rem;
+    font-weight: 700;
+    color: var(--color-dorad-ligh);
+    margin: 0.5rem 0;
+    text-shadow: 0 0 10px var(--color-hover-shadow);
+}
+
+.contador-texto {
+    color: var(--color-subtext);
+    font-size: 1rem;
+}
+
+/*Banner motivacional*/
+.banner-motivacional {
+    text-align: center;
+    padding: 4rem 1.5rem;
+    background: linear-gradient(90deg, var(--color-primary-dark), var(--color-dark));
+    margin-top: 5rem;
+    box-shadow: inset 0 0 30px var(--color-hover-shadow);
+}
+
+.banner-motivacional h2 {
+    color: var(--color-dorad-ligh);
+    font-size: 2rem;
+    margin-bottom: 1rem;
+}
+
+.banner-motivacional p {
+    color: var(--color-subtext);
+    margin-bottom: 2rem;
+}
+
+
+.contador-item h3 {
+  color: var(--color-lavandaClaro);
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.contador-numero {
+  font-size: 4rem;
+  font-weight: 900;
+  color: var(--color-dorad-ligh);
+  text-shadow: 0 0 20px rgba(255, 215, 100, 0.25);
+}
+
+@media (max-width: 768px) {
+  .contador-cursos {
+    flex-direction: column;
+    gap: 2rem;
+  }
+}

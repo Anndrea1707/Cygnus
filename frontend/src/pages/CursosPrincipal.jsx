@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import "./CursosPrincipal.css";
 import NavbarPrincipal from "../components/NavbarPrincipal";
 import Footer from "../components/Footer";
@@ -6,12 +6,15 @@ import Footer from "../components/Footer";
 export default function CursosPrincipal({ currentPage, onLoginClick, onNavigate }) {
   const [cursoSeleccionado, setCursoSeleccionado] = useState(null);
   const [categoriaFiltro, setCategoriaFiltro] = useState("Todos");
+  const [contadorEstudiantes, setContadorEstudiantes] = useState(0);
+  const animadoEstudiantes = useRef(false);
+
 
   const cursos = [
     {
       id: 1,
       titulo: "Diseño de Interfaces Modernas",
-      descripcion: "Crea interfaces atractivas, intuitivas y funcionales que conecten con tus usuarios.",
+      descripcion: "Crea interfaces atractivas, intuitivas y funcionales.",
       imagen: "https://www.hostingplus.com.co/wp-content/uploads/2021/07/businessman-using-tech-devices-and-icons-thin-line-interface.jpg",
       nivel: "Básico",
       horas: 15,
@@ -22,49 +25,100 @@ export default function CursosPrincipal({ currentPage, onLoginClick, onNavigate 
     {
       id: 2,
       titulo: "Desarrollo Web con React",
-      descripcion: "Construye aplicaciones web interactivas con React, una de las librerías más potentes del mundo.",
+      descripcion: "Construye aplicaciones web interactivas.",
       imagen: "https://jhasenstudio.com/wp-content/uploads/2024/10/desarrollo-web-scaled.jpg",
       nivel: "Intermedio",
       horas: 25,
-      modulos: ["JSX y componentes", "Hooks", "Routing", "Firebase y despliegue"],
+      modulos: ["JSX y componentes", "Hooks", "Routing", "Firebase"],
       categoria: "Programación",
       fecha: "2025-03-01",
     },
     {
       id: 3,
       titulo: "Análisis de Datos",
-      descripcion: "Domina las herramientas esenciales para procesar y analizar datos de forma eficiente.",
+      descripcion: "Procesa y analiza datos eficazmente.",
       imagen: "https://www.dqsconsulting.com/wp-content/uploads/2021/09/como-hacer-un-analisis-de-datos.jpg",
       nivel: "Intermedio",
       horas: 20,
-      modulos: ["Excel avanzado", "Power BI", "Python para análisis", "Visualización de datos"],
+      modulos: ["Excel avanzado", "Power BI", "Python", "Visualización"],
       categoria: "Datos",
       fecha: "2025-03-25",
     },
     {
       id: 4,
       titulo: "Inteligencia Artificial",
-      descripcion: "Aprende cómo entrenar modelos de IA y aplicarlos a problemas del mundo real.",
+      descripcion: "Entrena modelos de IA del mundo real.",
       imagen: "https://img.computing.es/wp-content/uploads/2024/03/22155324/IA-2.jpg",
       nivel: "Avanzado",
       horas: 30,
-      modulos: ["Machine Learning básico", "Redes neuronales", "Modelos predictivos"],
+      modulos: ["Machine Learning", "Redes neuronales", "Modelos predictivos"],
       categoria: "Tecnología",
       fecha: "2025-04-10",
     },
   ];
 
-  // === Filtrar por categoría ===
-  const categorias = ["Todos", "Diseño", "Programación", "Datos", "Tecnología"];
-  const cursosFiltrados =
-    categoriaFiltro === "Todos"
-      ? cursos
-      : cursos.filter((c) => c.categoria === categoriaFiltro);
+  const [contador, setContador] = useState(0);
+  const animado = useRef(false);
 
-  // === Últimos 3 cursos ===
+  useEffect(() => {
+    if (animado.current) return;
+    animado.current = true;
+
+    let inicio = 0;
+    const fin = cursos.length;
+    const duracion = 5000; // 8 segundos total
+    const intervalo = 20; // actualiza cada 50ms (visible)
+    const pasos = duracion / intervalo; // total de pasos de animación
+    const incremento = fin / pasos; // cuánto aumenta cada paso real
+
+    const animar = setInterval(() => {
+      inicio += incremento;
+      if (inicio >= fin) {
+        inicio = fin;
+        clearInterval(animar);
+      }
+      setContador(Math.floor(inicio)); // redondeamos para que no salgan decimales
+    }, intervalo);
+
+  }, []);
+
+  useEffect(() => {
+    if (animadoEstudiantes.current) return;
+
+    fetch("/api/usuarios/count")
+      .then(res => res.json())
+      .then(data => {
+        const total = data.total || 0;
+        animadoEstudiantes.current = true;
+
+        let inicio = 0;
+        const duracion = 4000; // más lento
+        const pasos = 100; // más suave
+        const incremento = total / pasos;
+
+        let pasoActual = 0;
+
+        const animacion = setInterval(() => {
+          pasoActual++;
+          inicio += incremento;
+
+          if (pasoActual >= pasos) {
+            clearInterval(animacion);
+            inicio = total;
+          }
+
+          setContadorEstudiantes(Math.floor(inicio));
+        }, duracion / pasos);
+      })
+      .catch(err => console.error("❌ Error cargando estudiantes:", err));
+  }, []);
+
+
+  const categorias = ["Todos", "Diseño", "Programación", "Datos", "Tecnología"];
+  const cursosFiltrados = categoriaFiltro === "Todos" ? cursos : cursos.filter((c) => c.categoria === categoriaFiltro);
   const ultimosCursos = cursos.slice(-3);
 
-  // === VISTA DETALLE ===
+  // === DETALLE DE CURSO ===
   if (cursoSeleccionado) {
     return (
       <div className="detalle-curso">
@@ -96,14 +150,12 @@ export default function CursosPrincipal({ currentPage, onLoginClick, onNavigate 
                   </li>
                 ))}
               </ul>
-              <p className="detalle-nota">* Inicia sesión para acceder a los módulos.</p>
-              <button
-                className="btn-login-detalle"
-                onClick={onLoginClick}
-              >
-                Inicia sesión para acceder al curso
-              </button>
 
+              <p className="detalle-nota">* Inicia sesión para acceder a los módulos.</p>
+
+              <button className="btn-login-detalle" onClick={onLoginClick}>
+                Iniciar sesión para acceder
+              </button>
             </div>
           </div>
         </div>
@@ -113,7 +165,7 @@ export default function CursosPrincipal({ currentPage, onLoginClick, onNavigate 
     );
   }
 
-  // === VISTA PRINCIPAL ===
+  // === PÁGINA PRINCIPAL ===
   return (
     <div className="cursos-principal">
       <NavbarPrincipal currentPage={currentPage} onLoginClick={onLoginClick} onNavigate={onNavigate} />
@@ -122,9 +174,28 @@ export default function CursosPrincipal({ currentPage, onLoginClick, onNavigate 
       <section className="hero-cursos">
         <div className="hero-contenido">
           <h1>Explora nuestros cursos más recientes</h1>
-          <p>Aprende a tu ritmo con contenido actualizado y guiado por expertos.</p>
+          <p>Aprende a tu ritmo con contenido guiado por expertos.</p>
+
+          {/* BOTÓN AGREGADO */}
+          <button className="btn-principal" onClick={onLoginClick}>
+            Comienza a aprender ahora
+          </button>
         </div>
       </section>
+
+      {/* CONTADOR CREATIVO */}
+      <div className="contador-cursos">
+        <div className="contador-item">
+          <h3>📚 Cursos disponibles</h3>
+          <span className="contador-numero">{contador}</span>
+        </div>
+
+        <div className="contador-item">
+          <h3>👨‍🎓 Estudiantes aprendiendo</h3>
+          <span className="contador-numero">{contadorEstudiantes}</span>
+        </div>
+      </div>
+
 
       {/* ÚLTIMOS CURSOS */}
       <section className="seccion-cursos">
@@ -146,9 +217,10 @@ export default function CursosPrincipal({ currentPage, onLoginClick, onNavigate 
         </div>
       </section>
 
-      {/* FILTRO DE CATEGORÍAS */}
+      {/* FILTRO */}
       <section className="seccion-cursos">
         <h2 className="titulo-seccion">Explora por categoría</h2>
+
         <div className="filtro-categorias">
           {categorias.map((cat) => (
             <button
@@ -176,6 +248,15 @@ export default function CursosPrincipal({ currentPage, onLoginClick, onNavigate 
             </div>
           ))}
         </div>
+      </section>
+
+      {/* BANNER MOTIVACIONAL */}
+      <section className="banner-motivacional">
+        <h2>✨ El conocimiento es tu mejor herramienta.</h2>
+        <p>Únete a miles de estudiantes que ya están construyendo su futuro.</p>
+        <button className="btn-principal" onClick={onLoginClick}>
+          Crear cuenta gratis
+        </button>
       </section>
 
       <Footer />

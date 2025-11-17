@@ -8,6 +8,7 @@ import Ayuda from "./pages/Ayuda";
 import Dashboard from "./pages/Dashboard";
 import CursosPrincipal from "./pages/CursosPrincipal";
 import Perfil from "./pages/Perfil";
+import Encuesta from "./components/Encuesta";
 
 function App() {
   const [currentPage, setCurrentPage] = useState("home");
@@ -19,8 +20,15 @@ function App() {
   const handleLoginSuccess = (userData) => {
     setUsuario(userData);
     localStorage.setItem("usuario", JSON.stringify(userData));
-    setCurrentPage("dashboard");
+
+    // ⭐ Si NO ha completado la encuesta, enviarlo a la encuesta
+    if (!userData.encuesta_inicial?.completada) {
+      setCurrentPage("encuesta");
+    } else {
+      setCurrentPage("dashboard");
+    }
   };
+
 
   const handleLogout = () => {
     localStorage.removeItem("usuario");
@@ -39,14 +47,14 @@ function App() {
         />
       );
 
-      case "perfil":
-  return (
-    <Perfil
-      usuario={usuario}
-      onNavigate={handleNavigate}
-      currentPage={currentPage}
-    />
-  );
+    case "perfil":
+      return (
+        <Perfil
+          usuario={usuario}
+          onNavigate={handleNavigate}
+          currentPage={currentPage}
+        />
+      );
 
 
     case "login":
@@ -93,6 +101,15 @@ function App() {
           onLoginClick={handleLoginClick}
         />
       )
+
+    case "encuesta":
+      return (
+        <Encuesta
+          usuario={usuario}
+          onEncuestaCompletada={() => setCurrentPage("dashboard")}
+        />
+      );
+
 
     default:
       return (

@@ -13,6 +13,9 @@ app.use(cors());
 // Rutas
 app.use("/api/registro", require("./pages/Registro"));
 app.use("/api/login", require("./pages/Login")); // ✅ ahora usa require, no import
+app.use("/api/usuarios/count", require("./pages/UsuariosCount"));
+app.use("/api/encuesta", require("./pages/Encuesta"));
+
 
 // Conexión a MongoDB
 mongoose
