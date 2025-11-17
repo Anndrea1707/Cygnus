@@ -14,12 +14,28 @@ function Login({ onBackToHome, onRegisterClick, onLoginSuccess }) {
   const [contrasena, setContrasena] = useState("");
   const [loading, setLoading] = useState(false);
 
-  // ✅ Manejo del envío del formulario
+  const [mostrarModal, setMostrarModal] = useState(false);
+  const [modalMensaje, setModalMensaje] = useState("");
+  const [modalTitulo, setModalTitulo] = useState("");
+  const [modalIcono, setModalIcono] = useState("🚀");
+
+  const cerrarModal = () => {
+    setMostrarModal(false);
+
+    if (onLoginSuccess && window.__loginUsuario) {
+      onLoginSuccess(window.__loginUsuario);
+      window.__loginUsuario = null;
+    }
+  };
+
   const handleLogin = async (e) => {
     e.preventDefault();
 
     if (!correo || !contrasena) {
-      alert("⚠️ Por favor, completa todos los campos.");
+      setModalIcono("❌");
+      setModalTitulo("Campos incompletos");
+      setModalMensaje("Por favor, completa todos los campos.");
+      setMostrarModal(true);
       return;
     }
 
@@ -27,7 +43,6 @@ function Login({ onBackToHome, onRegisterClick, onLoginSuccess }) {
 
     try {
       const response = await fetch("http://localhost:4000/api/login", {
-        // 👈 Ajusta si tu backend usa otro puerto
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ correo, contrasena }),
@@ -36,93 +51,121 @@ function Login({ onBackToHome, onRegisterClick, onLoginSuccess }) {
       const data = await response.json();
 
       if (response.ok) {
-        // Usar setTimeout para permitir que el estado se actualice luego del alert
-        alert("✅ " + data.mensaje);
-        setTimeout(() => {
-          if (onLoginSuccess) {
-            onLoginSuccess(data.usuario);
-          }
-        }, 100); // espera 100ms después del alert
+        const usuario = data.usuario || {};
+
+        // 🟣 Mostrar apodo → si no, nombre_completo
+        const nombreVisible =
+          usuario.apodo?.trim() ||
+          usuario.nombre_completo?.trim() ||
+          "Usuario";
+
+        setModalIcono("🚀");
+        setModalTitulo(`¡Bienvenido ${nombreVisible}!`);
+        setModalMensaje("Inicio de sesión exitoso.");
+        setMostrarModal(true);
+
+        window.__loginUsuario = data.usuario;
+
       } else {
-        alert("❌ " + (data.mensaje || "Error al iniciar sesión."));
+        setModalIcono("❌");
+        setModalTitulo("No hemos podido iniciar tu sesión");
+        setModalMensaje("Por favor, vuelve a intentarlo.");
+        setMostrarModal(true);
       }
     } catch (error) {
       console.error("Error al iniciar sesión:", error);
-      alert("❌ Error de conexión con el servidor.");
+
+      setModalIcono("❌");
+      setModalTitulo("Error de conexión");
+      setModalMensaje("No se pudo conectar al servidor.");
+      setMostrarModal(true);
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div
-      className="login-background"
-      style={{ backgroundImage: `url(${fondo})` }}
-    >
-      <button className="back-btn" onClick={onBackToHome}>
-        ← Volver al inicio
-      </button>
+    <>
+      <div
+        className="login-background"
+        style={{ backgroundImage: `url(${fondo})` }}
+      >
+        <button className="back-btn" onClick={onBackToHome}>
+          ← Volver al inicio
+        </button>
 
-      <div className="login-container">
-        <div className="login-header">
-          <h2>Bienvenido al</h2>
-          <h1>Inicio de Sesión</h1>
-          <img src={cohete} alt="Cohete" className="cohete-img" />
-        </div>
-
-        <form className="login-form" onSubmit={handleLogin}>
-          <h3>LOGIN</h3>
-
-          {/* Campo Correo */}
-          <div className="input-group">
-            <img src={usuarioIcon} alt="Usuario" className="input-icon" />
-            <input
-              type="email"
-              placeholder="Correo"
-              value={correo}
-              onChange={(e) => setCorreo(e.target.value)}
-              required
-            />
+        <div className="login-container">
+          <div className="login-header">
+            <h2>Bienvenido al</h2>
+            <h1>Inicio de Sesión</h1>
+            <img src={cohete} alt="Cohete" className="cohete-img" />
           </div>
 
-          {/* Campo Contraseña */}
-          <div className="input-group password-wrapper">
-            <img src={estrella} alt="Contraseña" className="input-icon" />
-            <input
-              type={showPassword ? "text" : "password"}
-              placeholder="Contraseña"
-              value={contrasena}
-              onChange={(e) => setContrasena(e.target.value)}
-              required
-            />
-            <button
-              type="button"
-              className="toggle-password"
-              onClick={() => setShowPassword(!showPassword)}
-              aria-label={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
-            >
-              <img
-                src={showPassword ? ojoAbierto : ojoCerrado}
-                alt={showPassword ? "Ocultar" : "Mostrar"}
-                className="eye-icon"
+          <form className="login-form" onSubmit={handleLogin}>
+            <h3>LOGIN</h3>
+
+            <div className="input-group">
+              <img src={usuarioIcon} alt="Usuario" className="input-icon" />
+              <input
+                type="email"
+                placeholder="Correo"
+                value={correo}
+                onChange={(e) => setCorreo(e.target.value)}
+                required
               />
+            </div>
+
+            <div className="input-group password-wrapper">
+              <img src={estrella} alt="Contraseña" className="input-icon" />
+
+              <input
+                type={showPassword ? "text" : "password"}
+                placeholder="Contraseña"
+                value={contrasena}
+                onChange={(e) => setContrasena(e.target.value)}
+                required
+              />
+
+              <button
+                type="button"
+                className="toggle-password"
+                onClick={() => setShowPassword(!showPassword)}
+              >
+                <img
+                  src={showPassword ? ojoAbierto : ojoCerrado}
+                  alt="Mostrar"
+                  className="eye-icon"
+                />
+              </button>
+            </div>
+
+            <button type="submit" className="login-btn" disabled={loading}>
+              {loading ? "Ingresando..." : "Entrar"}
+            </button>
+
+            <span className="register-link" onClick={onRegisterClick}>
+              Registrate
+            </span>
+          </form>
+        </div>
+      </div>
+
+      {/* 🟣 MODAL */}
+      {mostrarModal && (
+        <div className="modal-overlay-login">
+          <div className="modal-login">
+            <div className="modal-icon-login">{modalIcono}</div>
+
+            <h3>{modalTitulo}</h3>
+            <p>{modalMensaje}</p>
+
+            <button className="modal-btn-aceptar" onClick={cerrarModal}>
+              Aceptar
             </button>
           </div>
-
-          <button type="submit" className="login-btn" disabled={loading}>
-            {loading ? "Ingresando..." : "Entrar"}
-          </button>
-
-          <span
-            className="register-link"
-            onClick={onRegisterClick}
-            style={{ cursor: "pointer" }}
-          >
-            Registrate
-          </span>
-        </form>
-      </div>
-    </div>
+        </div>
+      )}
+    </>
   );
 }
 

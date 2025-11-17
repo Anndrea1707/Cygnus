@@ -51,6 +51,7 @@ function App() {
       return (
         <Perfil
           usuario={usuario}
+          onLogout={handleLogout}
           onNavigate={handleNavigate}
           currentPage={currentPage}
         />

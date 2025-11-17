@@ -2,8 +2,8 @@ import React from "react";
 import NavbarPrincipal from "../components/NavbarPrincipal";
 import "./Perfil.css";
 
-export default function Perfil({ usuario, onNavigate }) {
-  // 🔹 Datos quemados para ejemplo
+ function Perfil({ usuario, onLogout, onNavigate }) {
+  const nombreUsuario = usuario?.apodo || usuario?.nombre_completo || "Usuario";
   const cursosEnDesarrollo = [
     {
       nombre: "Curso React Avanzado",
@@ -33,6 +33,7 @@ export default function Perfil({ usuario, onNavigate }) {
       {/* === NAVBAR PRINCIPAL === */}
       <NavbarPrincipal
         usuario={usuario}
+        onLogout={onLogout}
         onNavigate={onNavigate}
         currentPage="perfil"
       />
@@ -127,3 +128,4 @@ export default function Perfil({ usuario, onNavigate }) {
     </>
   );
 }
+export default Perfil;

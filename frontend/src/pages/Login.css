@@ -248,3 +248,66 @@
     transform: translateY(-8px);
   }
 }
+/* === MODAL BONITO LOGIN === */
+
+.modal-overlay-login {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(8px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 5000;
+  animation: fadeIn 0.3s ease-out;
+}
+
+.modal-login {
+  background: linear-gradient(135deg, #1a0033, #52007a);
+  border: 2px solid #d163f2;
+  border-radius: 20px;
+  padding: 35px 30px;
+  text-align: center;
+  width: 90%;
+  max-width: 380px;
+  color: white;
+  box-shadow: 0 0 35px rgba(209, 99, 242, 0.6);
+  animation: modalPop 0.4s ease-out;
+}
+
+.modal-icon-login {
+  font-size: 65px;
+  margin-bottom: 15px;
+}
+
+.modal-login h3 {
+  font-size: 20px;
+  margin-bottom: 20px;
+  color: #f8d8ff;
+}
+
+.modal-btn-aceptar {
+  background: #d163f2;
+  color: white;
+  border: none;
+  padding: 12px 35px;
+  border-radius: 12px;
+  font-size: 17px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.3s;
+  box-shadow: 0 5px 15px rgba(209, 99, 242, 0.3);
+}
+
+.modal-btn-aceptar:hover {
+  background: #e040fb;
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px rgba(209, 99, 242, 0.6);
+}
+
+@keyframes modalPop {
+  from { transform: scale(0.7); opacity: 0; }
+  to   { transform: scale(1); opacity: 1; }
+}
