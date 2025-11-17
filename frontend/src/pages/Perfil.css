@@ -290,3 +290,48 @@ html {
     max-width: 220px;
   }
 }
+/* === TARJETA DE GRÁFICA === */
+.grafica-card {
+  background: linear-gradient(145deg, rgba(120, 0, 200, 0.4), rgba(60, 0, 130, 0.3));
+  padding: 30px;
+  border-radius: 20px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(4px);
+}
+
+/* === GRÁFICA MEJORADA === */
+.grafica-semanal {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  height: 220px;
+  padding: 10px 20px;
+  margin-top: 15px;
+}
+
+.barra-dia {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Barras más gruesas, con brillo y animación */
+.barra {
+  width: 30px;
+  background: linear-gradient(180deg, #c77dff, #7b2cbf);
+  border-radius: 12px 12px 4px 4px;
+  transition: height 0.8s ease, transform 0.2s ease;
+  box-shadow: 0 0 15px rgba(199, 125, 255, 0.5);
+}
+
+.barra:hover {
+  transform: scale(1.07);
+  box-shadow: 0 0 20px rgba(220, 150, 255, 0.7);
+}
+
+.dia-texto {
+  font-size: 0.9rem;
+  color: #f3cdff;
+  font-weight: 600;
+}

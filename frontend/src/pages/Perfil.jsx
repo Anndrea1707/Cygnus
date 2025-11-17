@@ -1,9 +1,22 @@
 import React from "react";
 import NavbarPrincipal from "../components/NavbarPrincipal";
+import Footer from "../components/Footer"; // ⬅️ IMPORTANTE
 import "./Perfil.css";
 
- function Perfil({ usuario, onLogout, onNavigate }) {
-  const nombreUsuario = usuario?.apodo || usuario?.nombre_completo || "Usuario";
+function Perfil({ usuario, onLogout, onNavigate }) {
+  const nombreUsuario =
+    usuario?.apodo || usuario?.nombre_completo || "Usuario";
+
+  const progresoSemanal = [
+    { dia: "Lun", valor: 40 },
+    { dia: "Mar", valor: 60 },
+    { dia: "Mié", valor: 20 },
+    { dia: "Jue", valor: 80 },
+    { dia: "Vie", valor: 50 },
+    { dia: "Sáb", valor: 30 },
+    { dia: "Dom", valor: 70 },
+  ];
+
   const cursosEnDesarrollo = [
     {
       nombre: "Curso React Avanzado",
@@ -17,20 +30,8 @@ import "./Perfil.css";
     },
   ];
 
-  const comentarios = [
-    {
-      autor: "María Gómez",
-      texto: "¡Tu progreso es impresionante! Sigue así 😊",
-    },
-    {
-      autor: "Carlos Ruiz",
-      texto: "Muy buen trabajo en el curso de React. ¡Felicidades!",
-    },
-  ];
-
   return (
     <>
-      {/* === NAVBAR PRINCIPAL === */}
       <NavbarPrincipal
         usuario={usuario}
         onLogout={onLogout}
@@ -38,10 +39,9 @@ import "./Perfil.css";
         currentPage="perfil"
       />
 
-      {/* === CONTENEDOR PERFIL (TARJETA CENTRADA) === */}
       <div className="perfil-container">
         <div className="perfil-card">
-          {/* === ENCABEZADO PERFIL === */}
+          {/* === HEADER PERFIL === */}
           <div className="perfil-header">
             <div className="perfil-avatar">
               <img
@@ -51,7 +51,7 @@ import "./Perfil.css";
             </div>
 
             <div className="perfil-info">
-              <h1>{usuario?.nombre_completo || "Usuario Desconocido"}</h1>
+              <h1>{usuario?.nombre_completo}</h1>
               <p className="perfil-email">{usuario?.email}</p>
               <p className="perfil-progreso">Progreso general: 80%</p>
             </div>
@@ -61,71 +61,93 @@ import "./Perfil.css";
                 <span className="nivel-texto">Nivel</span>
                 <span className="nivel-numero">4</span>
               </div>
+
               <button
                 className="btn-modificar"
-                onClick={() => onNavigate("/editar-perfil")}
+                onClick={() => onNavigate("/modificarPerfil")}
               >
                 ✏️ Modificar perfil
               </button>
             </div>
           </div>
 
-          {/* === CURSOS EN DESARROLLO === */}
+          {/* === 1️⃣ CURSOS EN DESARROLLO === */}
           <section className="perfil-section">
             <h2>📚 Cursos en desarrollo</h2>
+
             <div className="cursos-grid">
               {cursosEnDesarrollo.map((curso, i) => (
                 <div key={i} className="curso-card">
                   <h3>{curso.nombre}</h3>
                   <p>{curso.descripcion}</p>
+
                   <div className="progreso-barra">
                     <div
                       className="progreso-fill"
                       style={{ width: `${curso.progreso}%` }}
                     ></div>
                   </div>
-                  <span className="progreso-texto">Progreso: {curso.progreso}%</span>
+
+                  <span className="progreso-texto">
+                    Progreso: {curso.progreso}%
+                  </span>
                 </div>
               ))}
             </div>
           </section>
 
-          {/* === MEDALLAS === */}
+          {/* === 2️⃣ GRÁFICA DE PROGRESO === */}
+          <section className="perfil-section grafica-card">
+            <h2>📈 Progreso Semanal</h2>
+
+            <div className="grafica-semanal">
+              {progresoSemanal.map((item, i) => (
+                <div key={i} className="barra-dia">
+                  <div
+                    className="barra"
+                    style={{ height: `${item.valor}%` }}
+                  ></div>
+                  <span className="dia-texto">{item.dia}</span>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          {/* === MEDALLAS Y TROFEOS === */}
           <section className="perfil-section">
-            <h2>🏅 Logros y Medallas</h2>
+            <h2>🏅 Medallas y Trofeos</h2>
+            <p className="texto-explicacion">
+              Las <strong>medallas</strong> se obtienen por puntos ⭐ y los{" "}
+              <strong>trofeos</strong> se ganan al completar cursos 🏆
+            </p>
+
             <div className="medallas-grid">
               <div className="medalla-card">
                 🥇
-                <h3>Primer Curso</h3>
-                <p>Completaste tu primer curso</p>
+                <h3>Medalla Dorada</h3>
+                <p>Obtén 1,000 puntos</p>
               </div>
+
               <div className="medalla-card">
-                🔥
-                <h3>Aprendiz Constante</h3>
-                <p>5 días seguidos de estudio</p>
+                🥈
+                <h3>Medalla Plateada</h3>
+                <p>Obtén 500 puntos</p>
               </div>
+
               <div className="medalla-card">
-                🎓
-                <h3>Maestro del Tema</h3>
-                <p>Aprobaste todos los módulos</p>
+                🏆
+                <h3>Trofeo Maestro</h3>
+                <p>Completa un curso completo</p>
               </div>
             </div>
           </section>
-
-          {/* === COMENTARIOS (solo si hay) === */}
-          {comentarios.length > 0 && (
-            <section className="perfil-section">
-              <h2>💬 Comentarios</h2>
-              {comentarios.map((c, i) => (
-                <div key={i} className="comentario">
-                  <strong>{c.autor}:</strong> <p>{c.texto}</p>
-                </div>
-              ))}
-            </section>
-          )}
         </div>
       </div>
+
+      {/* === FOOTER === */}
+      <Footer />
     </>
   );
 }
+
 export default Perfil;
