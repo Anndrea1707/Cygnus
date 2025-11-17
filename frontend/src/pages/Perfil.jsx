@@ -1,6 +1,6 @@
 import React from "react";
 import NavbarPrincipal from "../components/NavbarPrincipal";
-import Footer from "../components/Footer"; // ⬅️ IMPORTANTE
+import Footer from "../components/Footer";
 import "./Perfil.css";
 
 function Perfil({ usuario, onLogout, onNavigate }) {
@@ -32,6 +32,7 @@ function Perfil({ usuario, onLogout, onNavigate }) {
 
   return (
     <>
+      {/* === NAVBAR === */}
       <NavbarPrincipal
         usuario={usuario}
         onLogout={onLogout}
@@ -45,7 +46,7 @@ function Perfil({ usuario, onLogout, onNavigate }) {
           <div className="perfil-header">
             <div className="perfil-avatar">
               <img
-                src="https://cdn-icons-png.flaticon.com/128/4712/4712108.png"
+                src={usuario?.avatar || "https://cdn-icons-png.flaticon.com/128/4712/4712108.png"}
                 alt="Avatar"
               />
             </div>
@@ -64,7 +65,7 @@ function Perfil({ usuario, onLogout, onNavigate }) {
 
               <button
                 className="btn-modificar"
-                onClick={() => onNavigate("/modificarPerfil")}
+                onClick={() => onNavigate("modificarPerfil")}
               >
                 ✏️ Modificar perfil
               </button>

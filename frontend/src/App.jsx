@@ -11,6 +11,7 @@ import Perfil from "./pages/Perfil";
 import Encuesta from "./components/Encuesta";
 import PanelAdmin from "./pages/PanelAdmin";
 import Biblioteca from "./pages/BibliotecaAdmin";
+import ModificarPerfil from "./pages/ModificarPerfil";
 
 
 function App() {
@@ -126,6 +127,15 @@ function App() {
     case "paneladmin":
       return (
         <PanelAdmin
+          usuario={usuario}
+          onLogout={handleLogout}
+          onNavigate={handleNavigate}
+        />
+      );
+      //modificar el perfil
+    case "modificarPerfil":
+      return (
+        <ModificarPerfil
           usuario={usuario}
           onLogout={handleLogout}
           onNavigate={handleNavigate}
