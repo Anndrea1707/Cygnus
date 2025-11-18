@@ -1,218 +1,175 @@
 /* ===== CONTENEDOR GENERAL ===== */
 .editar-container {
-    min-height: 100vh;
-    background: linear-gradient(180deg, #10002b, #240046);
-    display: flex;
-    justify-content: center;
-    padding: 40px 20px;
-  }
-  
-  /* ===== TARJETA ===== */
-  .editar-card {
-    width: 95%;
-    max-width: 600px;
-    background: linear-gradient(145deg, #3a0ca3, #240046);
-    padding: 40px;
-    border-radius: 20px;
-    color: white;
-    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5);
-  }
-  
-  .titulo-editar {
-    text-align: center;
-    margin-bottom: 30px;
-    font-size: 1.9rem;
-    font-weight: bold;
-  }
-  
-  /* ===== AVATAR ===== */
-  .avatar-container {
-    position: relative;
-    width: 140px;
-    height: 140px;
-    margin: 0 auto 35px;
-  }
-  
-  .avatar-preview {
-    width: 100%;
-    height: 100%;
-    border-radius: 50%;
-    object-fit: cover;
-    border: 5px solid #c77dff;
-    box-shadow: 0 0 25px rgba(199, 125, 255, 0.6);
-  }
-  
-  /* Overlay para subir avatar */
-  .avatar-overlay {
-    position: absolute;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.45);
-    border-radius: 50%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    cursor: pointer;
-    opacity: 0;
-    transition: opacity 0.3s ease;
-  }
-  
-  .avatar-overlay:hover {
-    opacity: 1;
-  }
-  
-  .avatar-overlay span {
-    color: white;
-    font-weight: bold;
-    font-size: 14px;
-  }
-  
-  .avatar-overlay input {
-    display: none;
-  }
-  
-  /* ===== CAMPOS ===== */
-  .campo {
-    margin-bottom: 20px;
-  }
-  
-  .campo label {
-    display: block;
-    margin-bottom: 8px;
-    font-size: 0.95rem;
-    color: #e0d4ff;
-  }
-  
-  .input-editar,
-  .select-editar {
-    width: 100%;
-    height: 48px;
-    padding: 0 14px;
-    background: rgba(255, 255, 255, 0.15);
-    border: none;
-    border-radius: 12px;
-    color: white;
-    font-size: 1rem;
-    box-sizing: border-box;
-  }
-  
-  .input-editar::placeholder {
-    color: #e4d4ff;
-  }
-  
-  /* Select flecha */
-  .select-editar {
-    appearance: none;
-    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'%3e%3cpath d='M7 10l5 5 5-5z'/%3e%3c/svg%3e");
-    background-repeat: no-repeat;
-    background-position: right 12px center;
-    background-size: 16px;
-  }
-  
-  /* ===== BOTONES EN TARJETA ===== */
-  .botones-editar {
-    display: flex;
-    gap: 15px;
-    margin-top: 25px;
-  }
-  
-  .btn-cancelar,
-  .btn-guardar {
-    flex: 1;
-    height: 50px;
-    border: none;
-    border-radius: 12px;
-    font-weight: bold;
-    font-size: 1rem;
-    cursor: pointer;
-    transition: 0.3s;
-  }
-  
-  /* Botón regresar */
-  .btn-cancelar {
-    background: #9d4edd;
-    color: white;
-  }
-  
-  .btn-cancelar:hover {
-    background: #b86bff;
-  }
-  
-  /* Botón guardar */
-  .btn-guardar {
-    background: #7b2cbf;
-    color: white;
-  }
-  
-  .btn-guardar:hover {
-    background: #9d4edd;
-  }
-  
-  /* ===== MODAL ===== */
-  .modal-overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.7);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 2000;
-  }
-  
-  .modal-card {
-    background: linear-gradient(145deg, #4a148c, #240046);
-    padding: 35px;
-    width: 90%;
-    max-width: 420px;
-    border-radius: 20px;
-    text-align: center;
-    color: white;
-    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6);
-  }
-  
-  .modal-card h2 {
-    margin-bottom: 10px;
-    font-size: 1.6rem;
-  }
-  
-  .modal-card p {
-    color: #ddd;
-    margin-bottom: 25px;
-  }
-  
-  /* ===== BOTONES EN VERTICAL ===== */
-  .modal-buttons-vertical {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-  }
-  
-  .btn-modal-cancelar,
-  .btn-modal-confirmar {
-    width: 100%;
-    height: 50px;
-    border: none;
-    border-radius: 12px;
-    font-weight: bold;
-    font-size: 1rem;
-    cursor: pointer;
-    transition: 0.3s;
-  }
-  
-  .btn-modal-cancelar {
-    background: #9d4edd;
-    color: white;
-  }
-  
-  .btn-modal-cancelar:hover {
-    background: #b86bff;
-  }
-  
-  .btn-modal-confirmar {
-    background: #7b2cbf;
-    color: white;
-  }
-  
-  .btn-modal-confirmar:hover {
-    background: #9d4edd;
-  }
-  
+  min-height: 100vh;
+  background: linear-gradient(180deg, #10002b, #240046);
+  display: flex;
+  justify-content: center;
+  padding: 40px;
+  gap: 30px;
+  position: relative;
+}
+
+/* ===== BOTÓN VOLVER ARRIBA ===== */
+.btn-volver-top {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background: transparent;
+  color: #d8c4ff;
+  font-size: 1rem;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+  transition: .3s;
+}
+
+.btn-volver-top:hover {
+  color: white;
+}
+
+/* ===== PANEL LATERAL ===== */
+.panel-lateral {
+  width: 220px;
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  padding: 20px;
+  border-radius: 16px;
+  height: fit-content;
+}
+
+.opcion-lateral {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 8px;
+  background: transparent;
+  border: none;
+  text-align: left;
+  cursor: pointer;
+  color: #d8c4ff;
+  border-radius: 8px;
+  transition: .25s;
+}
+
+.opcion-lateral:hover {
+  background: rgba(199,125,255,0.16);
+}
+
+.opcion-lateral.activa {
+  background: rgba(140,82,255,0.3);
+  color: white;
+}
+
+/* ===== CUADRO DE CONTENIDO ===== */
+.editar-contenido {
+  width: 520px;
+  background: rgba(12, 0, 35, 0.55);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 18px;
+  padding: 28px;
+  backdrop-filter: blur(5px);
+  color: white;
+}
+
+/* TITULO Y DESCRIPCIÓN */
+.titulo-seccion {
+  font-size: 1.6rem;
+  margin-bottom: 6px;
+  color: #e7d2ff;
+}
+
+.descripcion-seccion {
+  font-size: .95rem;
+  color: #ccb4ff;
+  margin-bottom: 25px;
+  line-height: 1.5;
+}
+
+/* CAMPOS */
+.campo {
+  margin-bottom: 18px;
+}
+
+.input-editar,
+.select-editar {
+  width: 100%;
+  height: 44px;
+  padding: 0 14px;
+  border-radius: 10px;
+  border: none;
+  background: rgba(255,255,255,0.15);
+  color: white;
+}
+
+/* AVATAR MAS PEQUEÑO */
+.avatar-container {
+  width: 120px;
+  height: 120px;
+  margin-bottom: 20px;
+  position: relative;
+}
+
+.avatar-preview {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  border: 4px solid #b980ff;
+  object-fit: cover;
+}
+
+/* BOTÓN SUBIR */
+.avatar-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.45);
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  opacity: 0;
+  transition: .3s;
+}
+
+.avatar-overlay:hover {
+  opacity: 1;
+}
+
+/* BOTÓN GUARDAR CENTRADO */
+.guardar-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 25px;
+}
+
+.btn-guardar {
+  width: 70%;
+  height: 46px;
+  background: #9d4edd;
+  border: none;
+  color: white;
+  border-radius: 10px;
+  font-weight: bold;
+  transition: .3s;
+}
+
+.btn-guardar:hover {
+  background: #b86bff;
+}
+
+/* MODAL */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-card {
+  background: linear-gradient(145deg, #4a148c, #240046);
+  padding: 35px;
+  border-radius: 16px;
+  text-align: center;
+  width: 90%;
+  max-width: 400px;
+}

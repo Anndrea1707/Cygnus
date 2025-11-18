@@ -12,6 +12,8 @@ import Encuesta from "./components/Encuesta";
 import PanelAdmin from "./pages/PanelAdmin";
 import Biblioteca from "./pages/BibliotecaAdmin";
 import ModificarPerfil from "./pages/ModificarPerfil";
+import AdminUsuarios from "./pages/AdminUsuarios";
+
 
 
 function App() {
@@ -132,7 +134,7 @@ function App() {
           onNavigate={handleNavigate}
         />
       );
-      //modificar el perfil
+    //modificar el perfil
     case "modificarPerfil":
       return (
         <ModificarPerfil
@@ -151,6 +153,17 @@ function App() {
           currentPage={currentPage}
         />
       );
+
+    case "usuarios":
+      return (
+        <AdminUsuarios
+          usuario={usuario}
+          onNavigate={handleNavigate}
+          onLogout={handleLogout}
+          currentPage={currentPage}
+        />
+      );
+
 
     default:
       return (

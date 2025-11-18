@@ -4,67 +4,72 @@ import Footer from "../components/Footer";
 import "./ModificarPerfil.css";
 
 function ModificarPerfil({ usuario, onNavigate, onLogout }) {
-  const [nombre, setNombre] = useState(usuario?.nombre_completo || "");
+  const [nombre] = useState(usuario?.nombre_completo || "");
   const [apodo, setApodo] = useState(usuario?.apodo || "");
   const [correo, setCorreo] = useState(usuario?.correo || usuario?.email || "");
 
   const [avatarVista, setAvatarVista] = useState(
-    usuario?.avatar || "https://cdn-icons-png.flaticon.com/128/4712/4712108.png"
+    usuario?.avatar || "/assets/avatars/avatar1.png"
   );
-  const [avatarFile, setAvatarFile] = useState(null);
 
-  const [fondo, setFondo] = useState(usuario?.fondo || "default");
+  const [fondo, setFondo] = useState(usuario?.fondo || "/assets/fondos/fondo1.jpg");
 
   const [mostrarModal, setMostrarModal] = useState(false);
   const [guardando, setGuardando] = useState(false);
 
-  const seleccionarImagen = (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
+  const [seccion, setSeccion] = useState("general");
 
-    setAvatarFile(file);
+  // ============================
+  // LISTA DE AVATARES DEL ADMIN
+  // ============================
+  const avataresDisponibles = [
+    "/assets/avatars/avatar1.png",
+    "/assets/avatars/avatar2.png",
+    "/assets/avatars/avatar3.png",
+    "/assets/avatars/avatar4.png",
+  ];
 
-    const previewURL = URL.createObjectURL(file);
-    setAvatarVista(previewURL);
+  // ============================
+  // LISTA DE FONDOS DEL ADMIN
+  // ============================
+  const fondosDisponibles = [
+    "/assets/fondos/fondo1.jpg",
+    "/assets/fondos/fondo2.jpg",
+    "/assets/fondos/fondo3.jpg",
+    "/assets/fondos/fondo4.jpg",
+  ];
+
+  // DESCRIPCIONES SEGÚN SECCIÓN
+  const descripciones = {
+    general:
+      "Modifica tus datos principales dentro de Cygnus. Solo el apodo y el correo pueden cambiarse.",
+    avatar:
+      "Selecciona un avatar de la galería prediseñada por Cygnus. No se permiten imágenes externas.",
+    fondo:
+      "Personaliza el fondo de tu perfil eligiendo entre estilos oficiales de Cygnus.",
+    info:
+      "Aprende cómo mantener tu cuenta segura dentro de Cygnus.",
   };
 
+  // ============================
+  // GUARDAR CAMBIOS
+  // ============================
   const abrirConfirmacion = () => setMostrarModal(true);
   const cancelarModal = () => setMostrarModal(false);
 
   const guardarCambios = async () => {
     setGuardando(true);
 
-    let avatarFinal = usuario.avatar;
-
-    // Subida de avatar si hay archivo nuevo
-    if (avatarFile) {
-      const formData = new FormData();
-      formData.append("avatar", avatarFile);
-
-      try {
-        const uploadRes = await fetch("http://localhost:5000/api/subirAvatar", {
-          method: "POST",
-          body: formData,
-        });
-
-        const uploadData = await uploadRes.json();
-        avatarFinal = uploadData.url;
-      } catch (err) {
-        console.error("Error subiendo avatar:", err);
-      }
-    }
-
-    // Petición para actualizar datos
     try {
-      const res = await fetch("http://localhost:5000/api/modificarPerfil", {
+      const res = await fetch("http://localhost:4000/api/perfil/modificarPerfil", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           id: usuario._id,
-          nombre_completo: nombre,
+          nombre_completo: nombre, // Ya no cambia
           apodo,
           correo,
-          avatar: avatarFinal,
+          avatar: avatarVista,
           fondo,
         }),
       });
@@ -88,77 +93,161 @@ function ModificarPerfil({ usuario, onNavigate, onLogout }) {
       <NavbarPrincipal usuario={usuario} onLogout={onLogout} onNavigate={onNavigate} />
 
       <div className="editar-container">
-        <div className="editar-card">
-          <h1 className="titulo-editar">Modificar Perfil</h1>
 
-          {/* ===== AVATAR ===== */}
-          <div className="avatar-container">
-            <img src={avatarVista} alt="Avatar" className="avatar-preview" />
+        {/* BOTÓN VOLVER ARRIBA */}
+        <button className="btn-volver-top" onClick={() => onNavigate("perfil")}>
+          ← Volver al perfil
+        </button>
 
-            <label className="avatar-overlay">
-              <span>Subir imagen</span>
-              <input type="file" accept="image/*" onChange={seleccionarImagen} />
-            </label>
-          </div>
+        {/* PANEL LATERAL */}
+        <div className="panel-lateral">
+          <button
+            className={seccion === "general" ? "opcion-lateral activa" : "opcion-lateral"}
+            onClick={() => setSeccion("general")}
+          >
+            General
+          </button>
 
-          {/* ===== CAMPOS ===== */}
-          <div className="campo">
-            <label>Nombre completo</label>
-            <input
-              type="text"
-              value={nombre}
-              onChange={(e) => setNombre(e.target.value)}
-              className="input-editar"
-            />
-          </div>
+          <button
+            className={seccion === "avatar" ? "opcion-lateral activa" : "opcion-lateral"}
+            onClick={() => setSeccion("avatar")}
+          >
+            Avatar
+          </button>
 
-          <div className="campo">
-            <label>Apodo</label>
-            <input
-              type="text"
-              value={apodo}
-              onChange={(e) => setApodo(e.target.value)}
-              className="input-editar"
-            />
-          </div>
+          <button
+            className={seccion === "fondo" ? "opcion-lateral activa" : "opcion-lateral"}
+            onClick={() => setSeccion("fondo")}
+          >
+            Fondo del perfil
+          </button>
 
-          <div className="campo">
-            <label>Correo</label>
-            <input
-              type="email"
-              value={correo}
-              onChange={(e) => setCorreo(e.target.value)}
-              className="input-editar"
-            />
-          </div>
+          <button
+            className={seccion === "info" ? "opcion-lateral activa" : "opcion-lateral"}
+            onClick={() => setSeccion("info")}
+          >
+            Seguridad
+          </button>
+        </div>
 
-          <div className="campo">
-            <label>Fondo del perfil</label>
-            <select
-              value={fondo}
-              onChange={(e) => setFondo(e.target.value)}
-              className="input-editar select-editar"
-            >
-              <option value="default">Morado clásico Cygnus</option>
-              <option value="galaxia">Galaxia</option>
-              <option value="espacio">Espacio profundo</option>
-              <option value="neon">Neón azul</option>
-            </select>
-          </div>
+        {/* CONTENIDO DERECHO */}
+        <div className="editar-contenido">
+          <h1 className="titulo-seccion">{seccion.toUpperCase()}</h1>
+          <p className="descripcion-seccion">{descripciones[seccion]}</p>
 
-          {/* ===== BOTONES ===== */}
-          <div className="botones-editar">
-            <button className="btn-cancelar" onClick={() => onNavigate("perfil")}>
-              Volver al perfil
-            </button>
-            <button className="btn-guardar" onClick={abrirConfirmacion}>
-              Guardar cambios
-            </button>
-          </div>
+          {/* ----------------- GENERAL ----------------- */}
+          {seccion === "general" && (
+            <>
+              <div className="campo">
+                <label>Nombre completo</label>
+                <input
+                  type="text"
+                  value={nombre}
+                  className="input-editar"
+                  readOnly
+                  style={{ opacity: 0.6, cursor: "not-allowed" }}
+                />
+              </div>
+
+              <div className="campo">
+                <label>Apodo</label>
+                <input
+                  type="text"
+                  value={apodo}
+                  onChange={(e) => setApodo(e.target.value)}
+                  className="input-editar"
+                />
+              </div>
+
+              <div className="campo">
+                <label>Correo</label>
+                <input
+                  type="email"
+                  value={correo}
+                  onChange={(e) => setCorreo(e.target.value)}
+                  className="input-editar"
+                />
+              </div>
+            </>
+          )}
+
+          {/* ----------------- AVATAR ----------------- */}
+          {seccion === "avatar" && (
+            <div className="galeria">
+              {avataresDisponibles.map((img, index) => (
+                <div
+                  key={index}
+                  className={
+                    avatarVista === img ? "item-galeria seleccionado" : "item-galeria"
+                  }
+                  onClick={() => setAvatarVista(img)}
+                >
+                  <img src={img} alt="avatar" className="img-galeria" />
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* ----------------- FONDO ----------------- */}
+          {seccion === "fondo" && (
+            <div className="galeria">
+              {fondosDisponibles.map((img, index) => (
+                <div
+                  key={index}
+                  className={fondo === img ? "item-galeria seleccionado" : "item-galeria"}
+                  onClick={() => setFondo(img)}
+                >
+                  <img src={img} alt="fondo" className="img-galeria" />
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* ----------------- SEGURIDAD ----------------- */}
+          {seccion === "info" && (
+            <div className="info-seguridad">
+              <h2>Seguridad de tu cuenta</h2>
+              <p>
+                En Cygnus nos tomamos muy en serio la seguridad de nuestros usuarios.
+                Aquí encontrarás recomendaciones para proteger tu información.
+              </p>
+
+              <h3>1. Tu correo electrónico</h3>
+              <p>
+                Es tu principal medio de recuperación de cuenta. Asegúrate de mantenerlo actualizado.
+              </p>
+
+              <h3>2. Contraseña segura</h3>
+              <p>
+                Usa una contraseña larga y segura. No compartas tus credenciales con nadie.
+              </p>
+
+              <h3>3. Actividad sospechosa</h3>
+              <p>
+                Si detectas algo inusual, cambia tu contraseña y comunícate con el soporte.
+              </p>
+
+              <h3>4. Próximas funciones</h3>
+              <p>
+                Implementaremos verificación en dos pasos (2FA) y control de sesiones activas.
+              </p>
+            </div>
+          )}
+
+          {/* BOTÓN GUARDAR */}
+          {(seccion === "general" ||
+            seccion === "avatar" ||
+            seccion === "fondo") && (
+            <div className="guardar-container">
+              <button className="btn-guardar" onClick={abrirConfirmacion}>
+                Guardar cambios
+              </button>
+            </div>
+          )}
         </div>
       </div>
 
-      {/* ===== MODAL ===== */}
+      {/* MODAL */}
       {mostrarModal && (
         <div className="modal-overlay">
           <div className="modal-card">
@@ -167,7 +256,7 @@ function ModificarPerfil({ usuario, onNavigate, onLogout }) {
 
             <div className="modal-buttons-vertical">
               <button className="btn-modal-cancelar" onClick={cancelarModal}>
-                Volver al perfil
+                Cancelar
               </button>
 
               <button

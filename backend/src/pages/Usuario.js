@@ -14,6 +14,10 @@ const usuarioSchema = new mongoose.Schema(
       enum: ["estudiante", "profesor", "admin"],
     },
 
+    apodo: { type: String, default: "" },
+    avatar: { type: String, default: "" },
+    fondo: { type: String, default: "" },
+
     // ⭐ NUEVO
     encuesta_inicial: {
       completada: { type: Boolean, default: false },
