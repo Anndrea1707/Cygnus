@@ -5,7 +5,7 @@ const mongoose = require("mongoose");
 const cors = require("cors");
 
 const app = express();
-const biblioteca = require("./pages/Biblioteca");
+const biblioteca = require("./pages/Biblioteca"); // ← Ya definido correctamente
 
 // Middlewares
 app.use(express.json());
@@ -13,11 +13,10 @@ app.use(cors());
 
 // Rutas
 app.use("/api/registro", require("./pages/Registro"));
-app.use("/api/login", require("./pages/Login")); // ✅ ahora usa require, no import
+app.use("/api/login", require("./pages/Login"));
 app.use("/api/usuarios/count", require("./pages/UsuariosCount"));
 app.use("/api/encuesta", require("./pages/Encuesta"));
-app.use("/api/biblioteca", biblioteca);
-
+app.use("/api/biblioteca", biblioteca); // ← Corregido: usa "biblioteca" (no "bibliotecaRoutes")
 
 // Conexión a MongoDB
 mongoose
