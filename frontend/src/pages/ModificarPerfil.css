@@ -1,4 +1,4 @@
-/* ===== CONTENEDOR GENERAL ===== */
+/* =============== CONTENEDOR PRINCIPAL =============== */
 .editar-container {
   min-height: 100vh;
   background: linear-gradient(180deg, #10002b, #240046);
@@ -9,7 +9,7 @@
   position: relative;
 }
 
-/* ===== BOTÓN VOLVER ARRIBA ===== */
+/* =============== BOTÓN VOLVER =============== */
 .btn-volver-top {
   position: absolute;
   top: 10px;
@@ -20,23 +20,21 @@
   border: none;
   cursor: pointer;
   padding: 8px;
-  transition: .3s;
+  transition: 0.3s;
 }
-
 .btn-volver-top:hover {
   color: white;
 }
 
-/* ===== PANEL LATERAL ===== */
+/* =============== PANEL LATERAL =============== */
 .panel-lateral {
   width: 220px;
-  background: rgba(0, 0, 0, 0.35);
-  border: 1px solid rgba(255, 255, 255, 0.07);
+  background: rgba(0,0,0,0.35);
+  border: 1px solid rgba(255,255,255,0.07);
   padding: 20px;
   border-radius: 16px;
   height: fit-content;
 }
-
 .opcion-lateral {
   width: 100%;
   padding: 12px;
@@ -47,22 +45,20 @@
   cursor: pointer;
   color: #d8c4ff;
   border-radius: 8px;
-  transition: .25s;
+  transition: 0.25s;
 }
-
 .opcion-lateral:hover {
   background: rgba(199,125,255,0.16);
 }
-
 .opcion-lateral.activa {
   background: rgba(140,82,255,0.3);
   color: white;
 }
 
-/* ===== CUADRO DE CONTENIDO ===== */
+/* =============== CONTENIDO DERECHO =============== */
 .editar-contenido {
   width: 520px;
-  background: rgba(12, 0, 35, 0.55);
+  background: rgba(12,0,35,0.55);
   border: 1px solid rgba(255,255,255,0.08);
   border-radius: 18px;
   padding: 28px;
@@ -70,27 +66,22 @@
   color: white;
 }
 
-/* TITULO Y DESCRIPCIÓN */
+/* =============== TÍTULOS Y CAMPOS =============== */
 .titulo-seccion {
   font-size: 1.6rem;
   margin-bottom: 6px;
   color: #e7d2ff;
 }
-
 .descripcion-seccion {
-  font-size: .95rem;
+  font-size: 0.95rem;
   color: #ccb4ff;
   margin-bottom: 25px;
   line-height: 1.5;
 }
-
-/* CAMPOS */
 .campo {
   margin-bottom: 18px;
 }
-
-.input-editar,
-.select-editar {
+.input-editar, .select-editar {
   width: 100%;
   height: 44px;
   padding: 0 14px;
@@ -100,46 +91,61 @@
   color: white;
 }
 
-/* AVATAR MAS PEQUEÑO */
-.avatar-container {
-  width: 120px;
-  height: 120px;
-  margin-bottom: 20px;
-  position: relative;
+/* =============== GALERÍA GENERAL =============== */
+.galeria {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  margin-top: 12px;
 }
 
-.avatar-preview {
+/* Título de cada categoría */
+.categoria-titulo {
+  font-weight: bold;
+  color: #d8c4ff;
+  margin-bottom: 8px;
+  font-size: 1rem;
+}
+
+/* Galería dentro de cada categoría */
+.galeria-categoria {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+/* Item individual */
+.item-galeria {
+  width: 80px;
+  height: 80px;
+  border-radius: 12px;
+  overflow: hidden;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: 0.3s;
+}
+.item-galeria:hover {
+  border-color: #b980ff;
+}
+
+/* ✅ Seleccionado: borde morado */
+.item-galeria.seleccionado {
+  border: 3px solid #9d4edd; /* borde morado alrededor */
+}
+
+/* Imagen dentro del item */
+.img-galeria {
   width: 100%;
   height: 100%;
-  border-radius: 50%;
-  border: 4px solid #b980ff;
   object-fit: cover;
 }
 
-/* BOTÓN SUBIR */
-.avatar-overlay {
-  position: absolute;
-  inset: 0;
-  background: rgba(0,0,0,0.45);
-  border-radius: 50%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  opacity: 0;
-  transition: .3s;
-}
-
-.avatar-overlay:hover {
-  opacity: 1;
-}
-
-/* BOTÓN GUARDAR CENTRADO */
+/* =============== BOTÓN GUARDAR =============== */
 .guardar-container {
   display: flex;
   justify-content: center;
   margin-top: 25px;
 }
-
 .btn-guardar {
   width: 70%;
   height: 46px;
@@ -148,14 +154,13 @@
   color: white;
   border-radius: 10px;
   font-weight: bold;
-  transition: .3s;
+  transition: 0.3s;
 }
-
 .btn-guardar:hover {
   background: #b86bff;
 }
 
-/* MODAL */
+/* =============== MODAL =============== */
 .modal-overlay {
   position: fixed;
   inset: 0;
@@ -164,7 +169,6 @@
   justify-content: center;
   align-items: center;
 }
-
 .modal-card {
   background: linear-gradient(145deg, #4a148c, #240046);
   padding: 35px;
@@ -172,4 +176,34 @@
   text-align: center;
   width: 90%;
   max-width: 400px;
+}
+.modal-buttons-vertical {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 20px;
+}
+.btn-modal-cancelar {
+  padding: 12px;
+  border: none;
+  border-radius: 10px;
+  background: #555;
+  color: white;
+  cursor: pointer;
+  transition: 0.3s;
+}
+.btn-modal-cancelar:hover {
+  background: #777;
+}
+.btn-modal-confirmar {
+  padding: 12px;
+  border: none;
+  border-radius: 10px;
+  background: #9d4edd;
+  color: white;
+  cursor: pointer;
+  transition: 0.3s;
+}
+.btn-modal-confirmar:hover {
+  background: #b86bff;
 }

@@ -3,70 +3,70 @@
     min-height: 100vh;
     display: flex;
     flex-direction: column;
-    background: linear-gradient(135deg, #0f002b, #1a0033);
+    background: var(--color-dark); /* fondo actualizado */
     color: white;
-  }
-  
-  .admin-main-content {
+}
+
+.admin-main-content {
     flex: 1;
     padding: 30px 20px;
     overflow-y: auto;
-  }
-  
-  .admin-container {
+}
+
+.admin-container {
     max-width: 1200px;
     margin: 0 auto;
     width: 100%;
-  }
-  
-  /* ===== TÍTULO ===== */
-  .admin-title {
+}
+
+/* ===== TÍTULO ===== */
+.admin-title {
     text-align: center;
     font-size: 2.4rem;
     margin-bottom: 40px;
-    background: linear-gradient(90deg, #c77dff, #e040fb);
+    background: var(--color-light); /* gradiente actualizado */
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     font-weight: 700;
-  }
-  
-  /* ===== INPUT NOMBRE ===== */
-  .input-nombre {
+}
+
+/* ===== INPUT NOMBRE ===== */
+.input-nombre {
     width: 100%;
     max-width: 500px;
     padding: 12px;
     border-radius: 10px;
-    border: 1px solid #b57bff;
+    border: 1px solid #d163f2; /* borde actualizado */
     background: rgba(255, 255, 255, 0.1);
     color: white;
-  }
-  
-  .input-nombre::placeholder {
-    color: #cfaaff;
-  }
-  
-  /* ===== SELECT CATEGORIA ===== */
-  .select-categoria {
+}
+
+.input-nombre::placeholder {
+    color: #e0d4ff; /* placeholder actualizado */
+}
+
+/* ===== SELECT CATEGORIA ===== */
+.select-categoria {
     width: 100%;
     max-width: 500px;
     padding: 12px;
     border-radius: 10px;
-    border: 1px solid #b57bff;
+    border: 1px solid #d163f2; /* borde actualizado */
     background: rgba(255, 255, 255, 0.1);
     color: white;
-  }
-  
-  /* ===== SECCIÓN DE SUBIDA ===== */
-  .upload-section {
+}
+
+/* ===== SECCIÓN DE SUBIDA ===== */
+.upload-section {
     margin-bottom: 50px;
-  }
-  
-  .upload-section h2 {
-    color: #d8b4fe;
+}
+
+.upload-section h2 {
+    color: var(--color-light); /* título actualizado */
     margin-bottom: 20px;
-  }
-  
-  .upload-box {
+}
+
+.upload-box {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -74,28 +74,28 @@
     background: rgba(255, 255, 255, 0.05);
     padding: 25px;
     border-radius: 16px;
-    border: 1px solid rgba(199, 125, 255, 0.3);
-  }
-  
-  .upload-box input[type="file"] {
+    border: 1px solid rgba(209, 99, 242, 0.3); /* borde actualizado */
+}
+
+.upload-box input[type="file"] {
     display: none;
-  }
-  
-  .upload-label {
+}
+
+.upload-label {
     width: 100%;
     max-width: 500px;
     padding: 12px;
     border-radius: 12px;
-    border: 2px dashed #9d4edd;
+    border: 2px dashed #d163f2; /* borde actualizado */
     text-align: center;
     cursor: pointer;
-    background: rgba(157, 78, 221, 0.2);
+    background: rgba(209, 99, 242, 0.2); /* fondo actualizado */
     color: white;
-  }
-  
-  /* ===== BOTÓN SUBIR ===== */
-  .btn-subir {
-    background: linear-gradient(145deg, #9d4edd, #7b2cbf);
+}
+
+/* ===== BOTÓN SUBIR ===== */
+.btn-subir {
+    background: linear-gradient(145deg, #d163f2, #9f68ff); /* gradiente actualizado */
     padding: 12px 26px;
     border-radius: 12px;
     font-weight: bold;
@@ -103,111 +103,111 @@
     border: none;
     cursor: pointer;
     transition: 0.3s;
-  }
-  
-  /* ===== GRID LISTAS ===== */
-  .grid-container {
+}
+
+/* ===== GRID LISTAS ===== */
+.grid-container {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
     gap: 20px;
     background: rgba(0, 0, 0, 0.15);
     padding: 20px;
     border-radius: 16px;
-  }
-  
-  .item-card {
+}
+
+/* ===== TARJETAS ===== */
+.item-card {
     background: rgba(255, 255, 255, 0.08);
     border-radius: 14px;
     padding: 18px;
     text-align: center;
-    border: 1px solid rgba(199, 125, 255, 0.2);
-  }
-  
-  .avatar-img {
+    border: 1px solid rgba(209, 99, 242, 0.2); /* borde actualizado */
+}
+
+.avatar-img {
     width: 110px;
     height: 110px;
     border-radius: 50%;
-    border: 3px solid #c77dff;
+    border: 3px solid #d163f2; /* borde actualizado */
     object-fit: cover;
     margin-bottom: 10px;
-  }
-  
-  .fondo-img {
+}
+
+.fondo-img {
     width: 100%;
     height: 140px;
     border-radius: 12px;
     object-fit: cover;
-    border: 2px solid #9d4edd;
-  }
-  
-  .item-nombre {
-    color: #e9d5ff;
+    border: 2px solid #d163f2; /* borde actualizado */
+}
+
+.item-nombre {
+    color: white;
     font-weight: bold;
-  }
-  
-  .item-categoria {
-    color: #a886ff;
+}
+
+.item-categoria {
+    color: #d163f2; /* color actualizado */
     font-size: 0.9rem;
-  }
-  
-  /* ===== BOTÓN ELIMINAR ===== */
-  .btn-eliminar {
-    background: #ff4d6d;
+}
+
+/* ===== BOTÓN ELIMINAR ===== */
+.btn-eliminar {
+    background: #ff3e78; /* color actualizado */
     border: none;
     padding: 10px;
     border-radius: 10px;
     color: white;
     cursor: pointer;
-  }
-  
-  /* ===== MODAL ===== */
-  .modal-overlay {
+}
+
+/* ===== MODAL ===== */
+.modal-overlay {
     position: fixed;
     top: 0;
     left: 0;
     width: 100vw;
     height: 100vh;
-    background: rgba(0,0,0,0.75);
+    background: rgba(0,0,0,0.85); /* fondo modal actualizado */
     display: flex;
     justify-content: center;
     align-items: center;
-  }
-  
-  .modal-confirmacion {
-    background: linear-gradient(135deg, #1a0033, #2d0066);
-    border: 2px solid #c77dff;
+}
+
+.modal-confirmacion {
+    background: linear-gradient(135deg, #1a0033, #2d0066); /* fondo modal */
+    border: 2px solid #d163f2; /* borde actualizado */
     border-radius: 20px;
     padding: 32px;
     width: 90%;
     max-width: 400px;
     text-align: center;
-  }
-  
-  .modal-icon {
+}
+
+.modal-icon {
     font-size: 60px;
-  }
-  
-  .modal-btns {
+}
+
+.modal-btns {
     display: flex;
     gap: 12px;
     margin-top: 22px;
-  }
-  
-  .modal-btn-aceptar,
-  .modal-btn-cancelar {
+}
+
+.modal-btn-aceptar,
+.modal-btn-cancelar {
     flex: 1;
     padding: 12px;
     border-radius: 10px;
     border: none;
     cursor: pointer;
     font-weight: bold;
-  }
-  
-  .modal-btn-cancelar {
+}
+
+.modal-btn-cancelar {
     background: #666;
-  }
-  
-  .modal-btn-aceptar {
-    background: #b877ff;
-  }
-  
+}
+
+.modal-btn-aceptar {
+    background: #b877ff; /* color actualizado */
+}

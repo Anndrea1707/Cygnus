@@ -11,32 +11,28 @@ export default function NavbarPrincipal({
 }) {
   const [menuAbierto, setMenuAbierto] = useState(false);
   const [mostrarModal, setMostrarModal] = useState(false);
-  const [rol, setRol] = useState("publico"); // publico | usuario | admin
+  const [rol, setRol] = useState("publico");
+  const [usuarioActual, setUsuarioActual] = useState(usuario);
 
-  // Detectar tipo de usuario según correo
   useEffect(() => {
-    if (!usuario) {
-      setRol("publico");
-    } else if (usuario.rol === "admin") {
-      setRol("admin");
-    } else {
-      setRol("usuario");
-    }
+    // Actualiza el usuario desde localStorage
+    const usuarioLS = JSON.parse(localStorage.getItem("usuario"));
+    if (usuarioLS) setUsuarioActual(usuarioLS);
+    else setUsuarioActual(usuario);
+
+    if (!usuarioLS) setRol("publico");
+    else if (usuarioLS.rol === "admin") setRol("admin");
+    else setRol("usuario");
   }, [usuario]);
 
-  const nombreUsuario = usuario?.apodo || usuario?.nombre_completo || "Usuario";
+  const nombreUsuario =
+    usuarioActual?.apodo || usuarioActual?.nombre_completo || "Usuario";
+  const avatarUsuario =
+    usuarioActual?.avatar ||
+    "https://cdn-icons-png.flaticon.com/128/1068/1068549.png";
 
-  // 🔹 Abrir modal de confirmación
-  const confirmarLogout = () => {
-    setMostrarModal(true);
-  };
-
-  // 🔹 Cancelar cierre de sesión
-  const cancelarLogout = () => {
-    setMostrarModal(false);
-  };
-
-  // 🔹 Confirmar cierre de sesión
+  const confirmarLogout = () => setMostrarModal(true);
+  const cancelarLogout = () => setMostrarModal(false);
   const aceptarLogout = () => {
     setMostrarModal(false);
     if (onLogout) onLogout();
@@ -45,31 +41,26 @@ export default function NavbarPrincipal({
   return (
     <>
       <nav className="navbar">
-        {/* === LOGO === */}
         <div
           className="logo-section"
           onClick={() =>
             rol === "usuario"
               ? onNavigate("dashboard")
               : rol === "admin"
-                ? onNavigate("panelAdmin")
-                : onNavigate("home")
+              ? onNavigate("panelAdmin")
+              : onNavigate("home")
           }
         >
           <img src={logo} alt="Logo Cygnus" className="logo-img" />
           <span className="logo-text">CYGNUS</span>
         </div>
 
-        {/* === ENLACES NAV === */}
         <ul className="nav-links">
-          {/* --- Público --- */}
           {rol === "publico" && (
             <>
               <li>
                 <button
-                  className={
-                    currentPage === "home" ? "nav-btn active" : "nav-btn"
-                  }
+                  className={currentPage === "home" ? "nav-btn active" : "nav-btn"}
                   onClick={() => onNavigate("home")}
                 >
                   Inicio
@@ -77,9 +68,7 @@ export default function NavbarPrincipal({
               </li>
               <li>
                 <button
-                  className={
-                    currentPage === "cursos" ? "nav-btn active" : "nav-btn"
-                  }
+                  className={currentPage === "cursos" ? "nav-btn active" : "nav-btn"}
                   onClick={() => onNavigate("cursos")}
                 >
                   Cursos
@@ -87,11 +76,7 @@ export default function NavbarPrincipal({
               </li>
               <li>
                 <button
-                  className={
-                    currentPage === "sobreNosotros"
-                      ? "nav-btn active"
-                      : "nav-btn"
-                  }
+                  className={currentPage === "sobreNosotros" ? "nav-btn active" : "nav-btn"}
                   onClick={() => onNavigate("sobreNosotros")}
                 >
                   Sobre nosotros
@@ -99,9 +84,7 @@ export default function NavbarPrincipal({
               </li>
               <li>
                 <button
-                  className={
-                    currentPage === "ayuda" ? "nav-btn active" : "nav-btn"
-                  }
+                  className={currentPage === "ayuda" ? "nav-btn active" : "nav-btn"}
                   onClick={() => onNavigate("ayuda")}
                 >
                   Ayuda
@@ -110,14 +93,11 @@ export default function NavbarPrincipal({
             </>
           )}
 
-          {/* --- Usuario autenticado --- */}
           {rol === "usuario" && (
             <>
               <li>
                 <button
-                  className={
-                    currentPage === "dashboard" ? "nav-btn active" : "nav-btn"
-                  }
+                  className={currentPage === "dashboard" ? "nav-btn active" : "nav-btn"}
                   onClick={() => onNavigate("dashboard")}
                 >
                   Inicio
@@ -138,14 +118,11 @@ export default function NavbarPrincipal({
             </>
           )}
 
-          {/* --- Administrador --- */}
           {rol === "admin" && (
             <>
               <li>
                 <button
-                  className={
-                    currentPage === "paneladmin" ? "nav-btn active" : "nav-btn"
-                  }
+                  className={currentPage === "paneladmin" ? "nav-btn active" : "nav-btn"}
                   onClick={() => onNavigate("paneladmin")}
                 >
                   Panel
@@ -158,9 +135,7 @@ export default function NavbarPrincipal({
               </li>
               <li>
                 <button
-                  className={
-                    currentPage === "usuarios" ? "nav-btn active" : "nav-btn"
-                  }
+                  className={currentPage === "usuarios" ? "nav-btn active" : "nav-btn"}
                   onClick={() => onNavigate("usuarios")}
                 >
                   Usuarios
@@ -178,7 +153,6 @@ export default function NavbarPrincipal({
           )}
         </ul>
 
-        {/* === LOGIN o MENÚ DE USUARIO === */}
         {rol === "publico" ? (
           <button className="btn-login" onClick={onLoginClick}>
             Iniciar Sesión
@@ -189,11 +163,7 @@ export default function NavbarPrincipal({
               className="user-info"
               onClick={() => setMenuAbierto(!menuAbierto)}
             >
-              <img
-                src="https://cdn-icons-png.flaticon.com/128/1068/1068549.png"
-                alt="Usuario"
-                className="dashboard-avatar"
-              />
+              <img src={avatarUsuario} alt="Usuario" className="dashboard-avatar" />
               <span className="dashboard-nombre">{nombreUsuario}</span>
               <span className="arrow">&#9662;</span>
             </div>
@@ -208,7 +178,6 @@ export default function NavbarPrincipal({
         )}
       </nav>
 
-      {/* === MODAL DE CONFIRMACIÓN === */}
       {mostrarModal && (
         <div className="modal-overlay">
           <div className="modal-content">
