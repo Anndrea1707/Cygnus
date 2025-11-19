@@ -146,7 +146,9 @@ export default function NavbarPrincipal({
                 </button>
               </li>
               <li>
-                <button className="nav-btn" disabled>
+                <button className={currentPage === "cursosadmin" ? "nav-btn active" : "nav-btn"}
+                  onClick={() => onNavigate("cursosadmin")}
+                >
                   Cursos
                 </button>
               </li>
