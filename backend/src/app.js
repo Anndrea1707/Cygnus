@@ -16,7 +16,7 @@ app.use("/api/registro", require("./pages/Registro"));
 app.use("/api/login", require("./pages/Login"));
 app.use("/api/usuarios/count", require("./pages/UsuariosCount"));
 app.use("/api/encuesta", require("./pages/Encuesta"));
-app.use("/api/biblioteca", biblioteca); // ← Corregido: usa "biblioteca" (no "bibliotecaRoutes")
+app.use("/api/biblioteca", require("./pages/Biblioteca"));
 app.use("/api/perfil", require("./pages/ModificarPerfil"));
 app.use("/api/adminusuarios", require("./pages/AdminUsuarios"));
 
