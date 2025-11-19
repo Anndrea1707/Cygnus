@@ -5,16 +5,33 @@ import Footer from "../components/Footer";
 import "./AdminUsuarios.css";
 
 export default function AdminUsuarios({ usuario, onNavigate, onLogout }) {
-  const [imagen, setImagen] = useState(null);
-  const [nombre, setNombre] = useState("");
-  const [categoria, setCategoria] = useState(""); // ← categoría avatar
+  /* ============================
+        ESTADOS AVATAR
+  ============================ */
+  const [imagenAvatar, setImagenAvatar] = useState(null);
+  const [nombreAvatar, setNombreAvatar] = useState("");
+  const [categoria, setCategoria] = useState("");
 
+  /* ============================
+        ESTADOS FONDO
+  ============================ */
+  const [imagenFondo, setImagenFondo] = useState(null);
+  const [nombreFondo, setNombreFondo] = useState("");
+
+  /* ============================
+        LISTAS
+  ============================ */
   const [avatares, setAvatares] = useState([]);
   const [fondos, setFondos] = useState([]);
   const [loading, setLoading] = useState(false);
 
+  /* ============================
+        MODALES
+  ============================ */
   const [mostrarModal, setMostrarModal] = useState(false);
-  const [modalTipo, setModalTipo] = useState("");
+  const [modalTipo, setModalTipo] = useState(""); // avatar | fondo
+  const [eliminarModal, setEliminarModal] = useState(false);
+  const [recursoAEliminar, setRecursoAEliminar] = useState({ tipo: "", id: "" });
 
   const cargarRecursos = async () => {
     try {
@@ -33,77 +50,113 @@ export default function AdminUsuarios({ usuario, onNavigate, onLogout }) {
     cargarRecursos();
   }, []);
 
+  /* ============================
+        ABRIR MODAL SUBIDA
+  ============================ */
   const abrirModal = (tipo) => {
-    if (!imagen) return alert("Selecciona una imagen");
-    if (!nombre) return alert("Escribe un nombre");
+    if (tipo === "avatar") {
+      if (!imagenAvatar) return alert("Selecciona una imagen");
+      if (!nombreAvatar.trim()) return alert("Escribe un nombre");
+      if (!categoria) return alert("Selecciona una categoría");
+    }
 
-    if (tipo === "avatar" && !categoria)
-      return alert("Selecciona una categoría");
+    if (tipo === "fondo") {
+      if (!imagenFondo) return alert("Selecciona una imagen");
+      if (!nombreFondo.trim()) return alert("Escribe un nombre");
+    }
 
     setModalTipo(tipo);
     setMostrarModal(true);
   };
 
+  /* ============================
+        CONFIRMAR SUBIDA
+  ============================ */
   const confirmarSubida = async () => {
     setMostrarModal(false);
     setLoading(true);
 
-    const formData = new FormData();
-    formData.append("imagen", imagen);
-    formData.append("nombre", nombre);
-
-    if (modalTipo === "avatar") formData.append("categoria", categoria);
-
     try {
-      await axios.post(`/api/adminusuarios/${modalTipo}`, formData, {
+      const form = new FormData();
+
+      if (modalTipo === "avatar") {
+        form.append("imagen", imagenAvatar);
+        form.append("nombre", nombreAvatar);
+        form.append("categoria", categoria);
+      } else {
+        form.append("imagen", imagenFondo);
+        form.append("nombre", nombreFondo);
+      }
+
+      await axios.post(`/api/adminusuarios/${modalTipo}`, form, {
         headers: { "Content-Type": "multipart/form-data" },
       });
 
-      setImagen(null);
-      setNombre("");
-      setCategoria("");
-      document.querySelectorAll('input[type="file"]').forEach((i) => (i.value = ""));
+      // limpiar inputs
+      if (modalTipo === "avatar") {
+        setImagenAvatar(null);
+        setNombreAvatar("");
+        setCategoria("");
+        document.getElementById("file-avatar").value = "";
+      } else {
+        setImagenFondo(null);
+        setNombreFondo("");
+        document.getElementById("file-fondo").value = "";
+      }
 
       cargarRecursos();
     } catch (err) {
+      console.error(err);
       alert("Error al subir");
-    } finally {
-      setLoading(false);
     }
+
+    setLoading(false);
   };
 
   const cerrarModal = () => setMostrarModal(false);
 
-  const eliminarRecurso = async (tipo, id) => {
-    await axios.delete(`/api/adminusuarios/${tipo}/${id}`);
-    cargarRecursos();
+  /* ============================
+        ABRIR MODAL ELIMINAR
+  ============================ */
+  const abrirModalEliminar = (tipo, id) => {
+    setRecursoAEliminar({ tipo, id });
+    setEliminarModal(true);
   };
+
+  const confirmarEliminar = async () => {
+    setEliminarModal(false);
+    try {
+      await axios.delete(`/api/adminusuarios/${recursoAEliminar.tipo}/${recursoAEliminar.id}`);
+      cargarRecursos();
+    } catch (err) {
+      alert("Error al eliminar");
+    }
+  };
+
+  const cerrarEliminarModal = () => setEliminarModal(false);
 
   return (
     <div className="admin-page-wrapper">
-      <NavbarPrincipal usuario={usuario} onLogout={onLogout} onNavigate={onNavigate} />
+      <NavbarPrincipal usuario={usuario} onNavigate={onNavigate} onLogout={onLogout} />
 
       <main className="admin-main-content">
         <div className="admin-container">
           <h1 className="admin-title">Administración de Avatares y Fondos</h1>
 
-          {/* ===========================
-              SUBIR AVATAR
-          =========================== */}
+          {/* ============================
+                SUBIR AVATAR
+          ============================ */}
           <div className="upload-section">
             <h2>Subir Avatar</h2>
-
             <div className="upload-box">
-
               <input
                 type="text"
-                placeholder="Nombre del avatar"
                 className="input-nombre"
-                value={nombre}
-                onChange={(e) => setNombre(e.target.value)}
+                placeholder="Nombre del avatar"
+                value={nombreAvatar}
+                onChange={(e) => setNombreAvatar(e.target.value)}
               />
 
-              {/* SELECT CATEGORÍA */}
               <select
                 className="select-categoria"
                 value={categoria}
@@ -119,17 +172,17 @@ export default function AdminUsuarios({ usuario, onNavigate, onLogout }) {
 
               <input
                 type="file"
-                accept="image/*"
                 id="file-avatar"
-                onChange={(e) => setImagen(e.target.files[0])}
+                accept="image/*"
+                onChange={(e) => setImagenAvatar(e.target.files[0])}
               />
               <label className="upload-label" htmlFor="file-avatar">
-                {imagen ? imagen.name : "Seleccionar imagen"}
+                {imagenAvatar ? imagenAvatar.name : "Seleccionar imagen"}
               </label>
 
               <button
                 className="btn-subir"
-                disabled={!imagen || !nombre || !categoria}
+                disabled={!imagenAvatar || !nombreAvatar || !categoria}
                 onClick={() => abrirModal("avatar")}
               >
                 {loading ? "Subiendo..." : "Subir Avatar"}
@@ -137,9 +190,9 @@ export default function AdminUsuarios({ usuario, onNavigate, onLogout }) {
             </div>
           </div>
 
-          {/* ===========================
-              LISTA AVATARES
-          =========================== */}
+          {/* ============================
+                LISTA AVATARES
+          ============================ */}
           <h3 className="lista-title">Lista de Avatares</h3>
           <div className="grid-container">
             {avatares.length === 0 ? (
@@ -153,7 +206,7 @@ export default function AdminUsuarios({ usuario, onNavigate, onLogout }) {
 
                   <button
                     className="btn-eliminar"
-                    onClick={() => eliminarRecurso("avatar", a._id)}
+                    onClick={() => abrirModalEliminar("avatar", a._id)}
                   >
                     Eliminar
                   </button>
@@ -164,34 +217,33 @@ export default function AdminUsuarios({ usuario, onNavigate, onLogout }) {
 
           <div className="divider" />
 
-          {/* ===========================
-              SUBIR FONDO
-          =========================== */}
+          {/* ============================
+                SUBIR FONDO
+          ============================ */}
           <div className="upload-section">
             <h2>Subir Fondo</h2>
-
             <div className="upload-box">
               <input
                 type="text"
-                placeholder="Nombre del fondo"
                 className="input-nombre"
-                value={nombre}
-                onChange={(e) => setNombre(e.target.value)}
+                placeholder="Nombre del fondo"
+                value={nombreFondo}
+                onChange={(e) => setNombreFondo(e.target.value)}
               />
 
               <input
                 type="file"
-                accept="image/*"
                 id="file-fondo"
-                onChange={(e) => setImagen(e.target.files[0])}
+                accept="image/*"
+                onChange={(e) => setImagenFondo(e.target.files[0])}
               />
               <label className="upload-label" htmlFor="file-fondo">
-                {imagen ? imagen.name : "Seleccionar imagen"}
+                {imagenFondo ? imagenFondo.name : "Seleccionar imagen"}
               </label>
 
               <button
                 className="btn-subir"
-                disabled={!imagen || !nombre}
+                disabled={!imagenFondo || !nombreFondo}
                 onClick={() => abrirModal("fondo")}
               >
                 {loading ? "Subiendo..." : "Subir Fondo"}
@@ -199,9 +251,9 @@ export default function AdminUsuarios({ usuario, onNavigate, onLogout }) {
             </div>
           </div>
 
-          {/* ===========================
-              LISTA FONDOS
-          =========================== */}
+          {/* ============================
+                LISTA FONDOS
+          ============================ */}
           <h3 className="lista-title">Lista de Fondos</h3>
           <div className="grid-container">
             {fondos.length === 0 ? (
@@ -214,7 +266,7 @@ export default function AdminUsuarios({ usuario, onNavigate, onLogout }) {
 
                   <button
                     className="btn-eliminar"
-                    onClick={() => eliminarRecurso("fondo", f._id)}
+                    onClick={() => abrirModalEliminar("fondo", f._id)}
                   >
                     Eliminar
                   </button>
@@ -227,26 +279,40 @@ export default function AdminUsuarios({ usuario, onNavigate, onLogout }) {
 
       <Footer />
 
-      {/* ===========================
-          MODAL CONFIRMACIÓN
-      =========================== */}
+      {/* ============================
+            MODAL DE SUBIDA
+      ============================ */}
       {mostrarModal && (
         <div className="modal-overlay">
-          <div className="modal-confirmacion">
+          <div className="modal-exito">
             <div className="modal-icon">⚠️</div>
-
             <h3>¿Deseas subir este {modalTipo}?</h3>
-            <p>Será guardado en Cloudinary y la base de datos.</p>
+            <p>Se guardará en Cloudinary y MongoDB.</p>
+            <button className="modal-btn-aceptar" onClick={confirmarSubida}>
+              Aceptar
+            </button>
+            <button className="modal-btn-aceptar" style={{ background: "#666", marginTop: "10px" }} onClick={cerrarModal}>
+              Cancelar
+            </button>
+          </div>
+        </div>
+      )}
 
-            <div className="modal-btns">
-              <button className="modal-btn-cancelar" onClick={cerrarModal}>
-                Cancelar
-              </button>
-
-              <button className="modal-btn-aceptar" onClick={confirmarSubida}>
-                Aceptar
-              </button>
-            </div>
+      {/* ============================
+            MODAL ELIMINAR RECURSO
+      ============================ */}
+      {eliminarModal && (
+        <div className="modal-overlay">
+          <div className="modal-exito">
+            <div className="modal-icon">🗑️</div>
+            <h3>¿Deseas eliminar este {recursoAEliminar.tipo}?</h3>
+            <p>Esta acción no se puede deshacer.</p>
+            <button className="modal-btn-aceptar" onClick={confirmarEliminar}>
+              Eliminar
+            </button>
+            <button className="modal-btn-aceptar" style={{ background: "#666", marginTop: "10px" }} onClick={cerrarEliminarModal}>
+              Cancelar
+            </button>
           </div>
         </div>
       )}
