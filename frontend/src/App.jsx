@@ -13,7 +13,7 @@ import PanelAdmin from "./pages/PanelAdmin";
 import Biblioteca from "./pages/BibliotecaAdmin";
 import ModificarPerfil from "./pages/ModificarPerfil";
 import AdminUsuarios from "./pages/AdminUsuarios";
-
+import BibliotecaUsuario from "./pages/Biblioteca";
 
 
 function App() {
@@ -164,6 +164,15 @@ function App() {
         />
       );
 
+    case "biblioteca":
+      return (
+        <BibliotecaUsuario
+          usuario={usuario}
+          onNavigate={handleNavigate}
+          onLogout={handleLogout}
+          currentPage={currentPage}
+        />
+      );
 
     default:
       return (

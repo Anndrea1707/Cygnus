@@ -3,11 +3,10 @@ const multer = require("multer");
 const cloudinary = require("../config/cloudinary.js");
 const Recurso = require("./Recurso");
 
-
 const router = express.Router();
 const upload = multer({
   storage: multer.memoryStorage(),
-  limits: { fileSize: 50 * 1024 * 1024 } // 50MB máx
+  limits: { fileSize: 50 * 1024 * 1024 }
 });
 
 // GET
@@ -21,11 +20,11 @@ router.get("/", async (req, res) => {
   }
 });
 
-// POST - ESTE SÍ GUARDA EN CLOUDINARY Y MONGO
+
+// POST
 router.post("/nuevo", upload.single("archivo"), async (req, res) => {
   console.log("PETICIÓN RECIBIDA /nuevo");
-  console.log("Archivo:", req.file?.originalname, req.file?.size ? `${(req.file.size / 1024 / 1024).toFixed(2)} MB` : "NO");
-  console.log("Datos:", req.body);
+  console.log("Archivo:", req.file?.originalname);
 
   try {
     if (!req.file) {
@@ -33,24 +32,29 @@ router.post("/nuevo", upload.single("archivo"), async (req, res) => {
     }
 
     const { titulo, descripcion, tipo } = req.body;
+
     if (!titulo || !descripcion || !tipo) {
-      return res.status(400).json({ ok: false, mensaje: "Faltan título, descripción o tipo" });
+      return res.status(400).json({ ok: false, mensaje: "Faltan campos" });
     }
 
-    // Subida a Cloudinary con PROMESA segura
+    // SUBIDA A CLOUDINARY (versión correcta)
     const uploadResult = await new Promise((resolve, reject) => {
       const stream = cloudinary.uploader.upload_stream(
         {
           folder: "cygnus-recursos",
-          resource_type: "auto",
-          timeout: 60000
+          resource_type: "raw",
+          type: "upload",
+          access_mode: "public",
+          use_filename: true,
+          unique_filename: false,
+          filename_override: req.file.originalname,
+          flags: "attachment"
         },
         (error, result) => {
           if (error) {
             console.error("ERROR CLOUDINARY:", error);
             reject(error);
           } else {
-            console.log("Subido a Cloudinary:", result.secure_url);
             resolve(result);
           }
         }
@@ -58,7 +62,7 @@ router.post("/nuevo", upload.single("archivo"), async (req, res) => {
       stream.end(req.file.buffer);
     });
 
-    // Guardar en MongoDB
+    // GUARDAR EN BD
     const nuevoRecurso = new Recurso({
       titulo,
       descripcion,
@@ -68,29 +72,27 @@ router.post("/nuevo", upload.single("archivo"), async (req, res) => {
     });
 
     await nuevoRecurso.save();
-    console.log("Guardado en MongoDB con ID:", nuevoRecurso._id);
 
     res.json({ ok: true, recurso: nuevoRecurso });
 
   } catch (error) {
     console.error("ERROR COMPLETO AL GUARDAR:", error);
-    res.status(500).json({
-      ok: false,
-      mensaje: "Error interno del servidor",
-      detalles: error.message
-    });
+    res.status(500).json({ ok: false, mensaje: "Error interno", detalles: error.message });
   }
 });
 
-// PUT: Editar recurso (elimina anterior en Cloudinary si hay nuevo archivo)
+
+// PUT
 router.put("/:id", upload.single("archivo"), async (req, res) => {
   try {
     const recurso = await Recurso.findById(req.params.id);
     if (!recurso) return res.status(404).json({ mensaje: "Recurso no encontrado" });
 
-    // Si sube nuevo archivo → eliminar el anterior
+    // Si sube nuevo archivo, borrar el anterior
     if (req.file && recurso.public_id) {
-      await cloudinary.uploader.destroy(recurso.public_id);
+      await cloudinary.uploader.destroy(recurso.public_id, {
+        resource_type: "raw"
+      });
     }
 
     const updates = {
@@ -100,42 +102,48 @@ router.put("/:id", upload.single("archivo"), async (req, res) => {
     };
 
     if (req.file) {
-      const result = await new Promise((resolve, reject) => {
+      const uploadResult = await new Promise((resolve, reject) => {
         cloudinary.uploader.upload_stream(
-          { resource_type: "auto", folder: "cygnus-recursos" },
-          (error, uploadResult) => {
-            if (error) reject(error);
-            else resolve(uploadResult);
-          }
+          {
+            folder: "cygnus-recursos",
+            resource_type: "raw",
+            type: "upload",
+            use_filename: true,
+            unique_filename: false,
+            filename_override: req.file.originalname,
+            flags: "attachment"
+          },
+          (error, result) => (error ? reject(error) : resolve(result))
         ).end(req.file.buffer);
       });
-      updates.url = result.secure_url;
-      updates.public_id = result.public_id;
+
+      updates.url = `${uploadResult.secure_url}?attachment=${encodeURIComponent(req.file.originalname)}`;
+      updates.public_id = uploadResult.public_id;
     }
 
     const actualizado = await Recurso.findByIdAndUpdate(req.params.id, updates, { new: true });
     res.json({ ok: true, recurso: actualizado });
+
   } catch (err) {
     res.status(500).json({ mensaje: err.message });
   }
 });
 
-// DELETE: Eliminar recurso y archivo de Cloudinary
+
+// DELETE
 router.delete("/:id", async (req, res) => {
   try {
     const recurso = await Recurso.findById(req.params.id);
     if (!recurso) return res.status(404).json({ mensaje: "Recurso no encontrado" });
 
-    // ← AQUÍ ESTÁ LO NUEVO: ELIMINAR DE CLOUDINARY
     if (recurso.public_id) {
-      await cloudinary.uploader.destroy(recurso.public_id);
-      console.log(`Archivo eliminado de Cloudinary: ${recurso.public_id}`);
+      await cloudinary.uploader.destroy(recurso.public_id, { resource_type: "raw" });
     }
 
-    // Eliminar de MongoDB
     await Recurso.findByIdAndDelete(req.params.id);
 
     res.json({ ok: true, mensaje: "Recurso eliminado correctamente" });
+
   } catch (err) {
     console.error("Error eliminando recurso:", err);
     res.status(500).json({ mensaje: "Error al eliminar recurso" });

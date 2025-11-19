@@ -16,7 +16,9 @@ export default function BibliotecaAdmin({ usuario, onNavigate, onLogout, current
   const [busqueda, setBusqueda] = useState("");
   const [mostrarForm, setMostrarForm] = useState(false);
   const [editando, setEditando] = useState(null);
-  const [recursoAEliminar, setRecursoAEliminar] = useState(null); // ← ESTO FALTABA
+  const [recursoAEliminar, setRecursoAEliminar] = useState(null);
+  const [guardando, setGuardando] = useState(false);
+
 
   const [form, setForm] = useState({
     titulo: "",
@@ -37,6 +39,8 @@ export default function BibliotecaAdmin({ usuario, onNavigate, onLogout, current
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setGuardando(true); // ← comienza el loading
+
     const data = new FormData();
     data.append("titulo", form.titulo);
     data.append("descripcion", form.descripcion);
@@ -47,11 +51,14 @@ export default function BibliotecaAdmin({ usuario, onNavigate, onLogout, current
     const method = editando ? "PUT" : "POST";
 
     await fetch(url, { method, body: data });
+
+    setGuardando(false); // ← termina el loading
     cargarRecursos();
     setMostrarForm(false);
     setEditando(null);
     setForm({ titulo: "", descripcion: "", tipo: "documento", archivo: null });
   };
+
 
   // ← FUNCIÓN PARA ELIMINAR CON MODAL
   const eliminarRecurso = async () => {
@@ -141,7 +148,13 @@ export default function BibliotecaAdmin({ usuario, onNavigate, onLogout, current
               </select>
               <input type="file" onChange={(e) => setForm({ ...form, archivo: e.target.files?.[0] || null })} />
               <div className="modal-buttons">
-                <button type="submit" className="btn-guardar">{editando ? "Actualizar" : "Guardar"}</button>
+                <button type="submit" className="btn-guardar" disabled={guardando}>
+                  {guardando
+                    ? "Guardando..."
+                    : editando
+                      ? "Actualizar"
+                      : "Guardar"}
+                </button>
                 <button type="button" className="btn-cancelar" onClick={() => setMostrarForm(false)}>Cancelar</button>
               </div>
             </form>
