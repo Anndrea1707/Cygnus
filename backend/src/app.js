@@ -5,7 +5,6 @@ const mongoose = require("mongoose");
 const cors = require("cors");
 
 const app = express();
-const biblioteca = require("./pages/Biblioteca"); // ← Ya definido correctamente
 
 // Middlewares
 app.use(express.json());
@@ -19,6 +18,8 @@ app.use("/api/encuesta", require("./pages/Encuesta"));
 app.use("/api/biblioteca", require("./pages/Biblioteca"));
 app.use("/api/perfil", require("./pages/ModificarPerfil"));
 app.use("/api/adminusuarios", require("./pages/AdminUsuarios"));
+app.use("/api/usuarios", require("./pages/UsuariosRoutes"));
+
 
 
 // Conexión a MongoDB

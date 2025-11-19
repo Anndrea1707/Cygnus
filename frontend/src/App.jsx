@@ -14,6 +14,7 @@ import Biblioteca from "./pages/BibliotecaAdmin";
 import ModificarPerfil from "./pages/ModificarPerfil";
 import AdminUsuarios from "./pages/AdminUsuarios";
 import BibliotecaUsuario from "./pages/Biblioteca";
+import UsuariosAdmin from "./pages/UsuariosAdmin";
 
 
 function App() {
@@ -167,6 +168,16 @@ function App() {
     case "biblioteca":
       return (
         <BibliotecaUsuario
+          usuario={usuario}
+          onNavigate={handleNavigate}
+          onLogout={handleLogout}
+          currentPage={currentPage}
+        />
+      );
+
+    case "adminusuarios":
+      return (
+        <UsuariosAdmin
           usuario={usuario}
           onNavigate={handleNavigate}
           onLogout={handleLogout}

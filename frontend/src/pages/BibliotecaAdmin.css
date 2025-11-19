@@ -20,7 +20,7 @@
 /* =============== TÍTULO Y BOTÓN AGREGAR =============== */
 .bib-title {
   text-align: center;
-  color: var(--color-light);
+  color: var(--color-dorad-ligh);
   font-size: 32px;
   margin: 20px 0 30px;
   font-weight: bold;

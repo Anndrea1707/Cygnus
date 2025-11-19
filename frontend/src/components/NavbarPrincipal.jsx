@@ -15,14 +15,31 @@ export default function NavbarPrincipal({
   const [usuarioActual, setUsuarioActual] = useState(usuario);
 
   useEffect(() => {
-    // Actualiza el usuario desde localStorage
-    const usuarioLS = JSON.parse(localStorage.getItem("usuario"));
-    if (usuarioLS) setUsuarioActual(usuarioLS);
-    else setUsuarioActual(usuario);
+    const usuarioGuardado = localStorage.getItem("usuario");
+    if (usuarioGuardado) {
+      try {
+        const parsed = JSON.parse(usuarioGuardado);
+        setUsuarioActual(parsed);
+        setRol(parsed.rol === "admin" ? "admin" : "usuario");
+      } catch (error) {
+        localStorage.removeItem("usuario");
+        setUsuarioActual(null);
+        setRol("publico");
+      }
+    } else {
+      setUsuarioActual(usuario);
+      setRol("publico");
+    }
+  }, []);
 
-    if (!usuarioLS) setRol("publico");
-    else if (usuarioLS.rol === "admin") setRol("admin");
-    else setRol("usuario");
+  useEffect(() => {
+    if (usuario) {
+      setUsuarioActual(usuario);
+      setRol(usuario.rol === "admin" ? "admin" : "usuario");
+    } else {
+      setUsuarioActual(null);
+      setRol("publico");
+    }
   }, [usuario]);
 
   const nombreUsuario =
@@ -47,8 +64,8 @@ export default function NavbarPrincipal({
             rol === "usuario"
               ? onNavigate("dashboard")
               : rol === "admin"
-              ? onNavigate("panelAdmin")
-              : onNavigate("home")
+                ? onNavigate("panelAdmin")
+                : onNavigate("home")
           }
         >
           <img src={logo} alt="Logo Cygnus" className="logo-img" />
@@ -111,7 +128,7 @@ export default function NavbarPrincipal({
               <li>
                 <button className={currentPage === "biblioteca" ? "nav-btn active" : "nav-btn"}
                   onClick={() => onNavigate("biblioteca")}
-                  >
+                >
                   Biblioteca
                 </button>
               </li>
@@ -135,10 +152,18 @@ export default function NavbarPrincipal({
               </li>
               <li>
                 <button
+                  className={currentPage === "adminusuarios" ? "nav-btn active" : "nav-btn"}
+                  onClick={() => onNavigate("adminusuarios")}
+                >
+                  Usuarios
+                </button>
+              </li>
+              <li>
+                <button
                   className={currentPage === "usuarios" ? "nav-btn active" : "nav-btn"}
                   onClick={() => onNavigate("usuarios")}
                 >
-                  Usuarios
+                  Avatares
                 </button>
               </li>
               <li>

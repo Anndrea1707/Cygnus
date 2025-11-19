@@ -24,7 +24,7 @@
     text-align: center;
     font-size: 2.4rem;
     margin-bottom: 40px;
-    background: var(--color-light); /* gradiente actualizado */
+    background: var(--color-dorad-ligh); /* gradiente actualizado */
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     font-weight: 700;

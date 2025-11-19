@@ -90,7 +90,7 @@ export default function BibliotecaAdmin({ usuario, onNavigate, onLogout, current
 
       <main className="biblioteca-main">
         <div className="biblioteca-container">
-          <h2 className="bib-title">Biblioteca Cygnus - Administrador</h2>
+          <h2 className="bib-title">Gestión de Biblioteca - Recursos</h2>
 
           <button className="btn-agregar" onClick={() => { setEditando(null); setForm({ titulo: "", descripcion: "", tipo: "documento", archivo: null }); setMostrarForm(true); }}>
             + Agregar Recurso
