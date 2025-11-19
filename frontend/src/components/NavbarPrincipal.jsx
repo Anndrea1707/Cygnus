@@ -64,7 +64,7 @@ export default function NavbarPrincipal({
             rol === "usuario"
               ? onNavigate("dashboard")
               : rol === "admin"
-                ? onNavigate("panelAdmin")
+                ? onNavigate("paneladmin")
                 : onNavigate("home")
           }
         >
@@ -197,7 +197,9 @@ export default function NavbarPrincipal({
 
             {menuAbierto && (
               <div className="user-menu">
-                <button onClick={() => onNavigate("perfil")}>Ver perfil</button>
+                <button onClick={() => onNavigate(rol === "admin" ? "adminperfil" : "perfil")}>
+                  Ver perfil
+                </button>
                 <button onClick={confirmarLogout}>Cerrar sesión</button>
               </div>
             )}

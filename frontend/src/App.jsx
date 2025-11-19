@@ -15,7 +15,9 @@ import ModificarPerfil from "./pages/ModificarPerfil";
 import AdminUsuarios from "./pages/AdminUsuarios";
 import BibliotecaUsuario from "./pages/Biblioteca";
 import UsuariosAdmin from "./pages/UsuariosAdmin";
-
+import AdminPerfil from "./pages/AdminPerfil";
+import GestionarAdmins from "./pages/GestionarAdmins";
+import CursosAdmin from "./pages/CursosAdmin";
 
 function App() {
   const [currentPage, setCurrentPage] = useState("home");
@@ -178,6 +180,34 @@ function App() {
     case "adminusuarios":
       return (
         <UsuariosAdmin
+          usuario={usuario}
+          onNavigate={handleNavigate}
+          onLogout={handleLogout}
+          currentPage={currentPage}
+        />
+      );
+    case "adminperfil":
+      return (
+        <AdminPerfil
+          usuario={usuario}
+          onLogout={handleLogout}
+          onNavigate={handleNavigate}
+        />
+      );
+
+    case "gestionarAdmins":
+      return (
+        <GestionarAdmins
+          usuario={usuario}
+          onLogout={handleLogout}
+          onNavigate={handleNavigate}
+          currentPage={currentPage}
+        />
+      );
+
+    case "cursosadmin":
+      return (
+        <CursosAdmin
           usuario={usuario}
           onNavigate={handleNavigate}
           onLogout={handleLogout}
