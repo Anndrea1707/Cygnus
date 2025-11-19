@@ -287,7 +287,7 @@ export default function AdminUsuarios({ usuario, onNavigate, onLogout }) {
           <div className="modal-exito">
             <div className="modal-icon">⚠️</div>
             <h3>¿Deseas subir este {modalTipo}?</h3>
-            <p>Se guardará en Cloudinary y MongoDB.</p>
+            <p>Se guardará en la base de datos.</p>
             <button className="modal-btn-aceptar" onClick={confirmarSubida}>
               Aceptar
             </button>

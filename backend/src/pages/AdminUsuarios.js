@@ -5,7 +5,7 @@ const mongoose = require("mongoose");
 
 const router = express.Router();
 
-// Multer memoria
+// Multer en memoria
 const upload = multer({ storage: multer.memoryStorage() });
 
 /* ============================
@@ -33,7 +33,10 @@ const FondoSchema = new mongoose.Schema({
   fecha: { type: Date, default: Date.now },
 });
 
-// Colecciones
+// ============================
+// CREAR MODELOS SOLO UNA VEZ
+// ============================
+
 const Avatar =
   mongoose.models.Avatar || mongoose.model("Avatar", AvatarSchema, "avatares");
 
@@ -41,7 +44,7 @@ const Fondo =
   mongoose.models.Fondo || mongoose.model("Fondo", FondoSchema, "fondos");
 
 /* ============================
-   SUBIR A CLOUDINARY
+   FUNCION SUBIR A CLOUDINARY
 ============================ */
 function subirACloudinary(buffer, carpeta) {
   return new Promise((resolve, reject) => {
@@ -57,24 +60,19 @@ function subirACloudinary(buffer, carpeta) {
 }
 
 /* ============================
-   SUBIR AVATAR
+   RUTAS AVATARES
 ============================ */
+
+// SUBIR AVATAR
 router.post("/avatar", upload.single("imagen"), async (req, res) => {
   try {
     const { nombre, categoria } = req.body;
 
-    if (!req.file)
-      return res.status(400).json({ error: "Debe subir una imagen" });
-
+    if (!req.file) return res.status(400).json({ error: "Debe subir una imagen" });
     if (!nombre) return res.status(400).json({ error: "Debe escribir un nombre" });
+    if (!categoria) return res.status(400).json({ error: "Debe elegir una categoría" });
 
-    if (!categoria)
-      return res.status(400).json({ error: "Debe elegir una categoría" });
-
-    const uploadResult = await subirACloudinary(
-      req.file.buffer,
-      "cygnus/avatares"
-    );
+    const uploadResult = await subirACloudinary(req.file.buffer, "cygnus/avatares");
 
     const nuevo = await Avatar.create({
       nombre,
@@ -90,9 +88,7 @@ router.post("/avatar", upload.single("imagen"), async (req, res) => {
   }
 });
 
-/* ============================
-   LISTAR AVATARES
-============================ */
+// LISTAR AVATARES
 router.get("/avatar", async (req, res) => {
   try {
     const lista = await Avatar.find().sort({ fecha: -1 });
@@ -102,14 +98,11 @@ router.get("/avatar", async (req, res) => {
   }
 });
 
-/* ============================
-   ELIMINAR AVATAR
-============================ */
+// ELIMINAR AVATAR
 router.delete("/avatar/:id", async (req, res) => {
   try {
     const avatar = await Avatar.findById(req.params.id);
-    if (!avatar)
-      return res.status(404).json({ error: "Avatar no encontrado" });
+    if (!avatar) return res.status(404).json({ error: "Avatar no encontrado" });
 
     await cloudinary.uploader.destroy(avatar.public_id);
     await Avatar.findByIdAndDelete(req.params.id);
@@ -121,22 +114,18 @@ router.delete("/avatar/:id", async (req, res) => {
 });
 
 /* ============================
-   SUBIR FONDO
+   RUTAS FONDOS
 ============================ */
+
+// SUBIR FONDO
 router.post("/fondo", upload.single("imagen"), async (req, res) => {
   try {
     const { nombre } = req.body;
 
-    if (!req.file)
-      return res.status(400).json({ error: "Debe subir una imagen" });
+    if (!req.file) return res.status(400).json({ error: "Debe subir una imagen" });
+    if (!nombre) return res.status(400).json({ error: "Debe escribir un nombre" });
 
-    if (!nombre)
-      return res.status(400).json({ error: "Debe escribir un nombre" });
-
-    const uploadResult = await subirACloudinary(
-      req.file.buffer,
-      "cygnus/fondos"
-    );
+    const uploadResult = await subirACloudinary(req.file.buffer, "cygnus/fondos");
 
     const nuevo = await Fondo.create({
       nombre,
@@ -150,9 +139,7 @@ router.post("/fondo", upload.single("imagen"), async (req, res) => {
   }
 });
 
-/* ============================
-   LISTAR FONDOS
-============================ */
+// LISTAR FONDOS
 router.get("/fondo", async (req, res) => {
   try {
     const lista = await Fondo.find().sort({ fecha: -1 });
@@ -162,14 +149,11 @@ router.get("/fondo", async (req, res) => {
   }
 });
 
-/* ============================
-   ELIMINAR FONDO
-============================ */
+// ELIMINAR FONDO
 router.delete("/fondo/:id", async (req, res) => {
   try {
     const fondo = await Fondo.findById(req.params.id);
-    if (!fondo)
-      return res.status(404).json({ error: "Fondo no encontrado" });
+    if (!fondo) return res.status(404).json({ error: "Fondo no encontrado" });
 
     await cloudinary.uploader.destroy(fondo.public_id);
     await Fondo.findByIdAndDelete(req.params.id);
