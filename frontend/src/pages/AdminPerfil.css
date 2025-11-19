@@ -1,0 +1,72 @@
+.adminperfil-container {
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    flex: 1;
+  }
+  
+  /* CUADRO MORADO */
+  .admin-info-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: rgba(107, 33, 168, 0.92); /* 💜 morado */
+    padding: 2rem;
+    border-radius: 16px;
+    box-shadow: 0 0 20px rgba(0,0,0,0.25);
+    text-align: center;
+    color: white;
+  }
+  
+  .admin-avatar {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    border: 3px solid #e9d8fd;
+    object-fit: cover;
+    margin-bottom: 1rem;
+  }
+  
+  .admin-info-card h2 {
+    margin: 0.5rem 0;
+    font-size: 1.8rem;
+    font-weight: bold;
+  }
+  
+  .admin-info-card p {
+    margin: 5px 0;
+    font-size: 1rem;
+  }
+  
+  .admin-rol {
+    font-weight: bold;
+    margin-top: 7px;
+    color: #ffd993;
+  }
+  
+  /* TARJETAS DE OPCIONES */
+  .opciones-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 20px;
+  }
+  
+  .opcion-tarjeta {
+    padding: 2rem;
+    border-radius: 14px;
+    color: white;
+    font-weight: bold;
+    font-size: 1.15rem;
+    text-align: center;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  
+  .opcion-tarjeta:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+  }
+  

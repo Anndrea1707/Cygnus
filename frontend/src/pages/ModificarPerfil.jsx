@@ -49,14 +49,13 @@ function ModificarPerfil({ usuario, onNavigate, onLogout }) {
     fetchFondos();
   }, []);
 
-  // === Aplicar fondo al body según DB o selección ===
+  // === Aplicar fondo al body ===
   useEffect(() => {
     if (fondo) {
       document.body.style.backgroundImage = `url(${fondo})`;
       document.body.style.backgroundSize = "cover";
       document.body.style.backgroundPosition = "center";
       document.body.style.backgroundRepeat = "no-repeat";
-      document.body.style.transition = "background 0.5s ease";
     } else {
       document.body.style.backgroundImage = "";
     }
@@ -94,7 +93,13 @@ function ModificarPerfil({ usuario, onNavigate, onLogout }) {
       const data = await res.json();
       if (data.ok) {
         localStorage.setItem("usuario", JSON.stringify(data.usuarioActualizado));
-        onNavigate("perfil");
+
+        // 🔥 Redirección CORREGIDA → si es admin vuelve a AdminPerfil
+        if (usuario?.rol === "admin") {
+          onNavigate("adminperfil");
+        } else {
+          onNavigate("perfil");
+        }
       }
     } catch (err) {
       console.error("Error guardando perfil:", err);
@@ -109,43 +114,71 @@ function ModificarPerfil({ usuario, onNavigate, onLogout }) {
       <NavbarPrincipal usuario={usuario} onLogout={onLogout} onNavigate={onNavigate} />
 
       <div className="editar-container">
-        <button className="btn-volver-top" onClick={()=>onNavigate("perfil")}>← Volver al perfil</button>
 
+        {/* 🔥 Botón corregido */}
+        <button
+          className="btn-volver-top"
+          onClick={() => {
+            if (usuario?.rol === "admin") {
+              onNavigate("adminperfil");
+            } else {
+              onNavigate("perfil");
+            }
+          }}
+        >
+          ← Volver al perfil
+        </button>
+
+        {/* PANEL LATERAL */}
         <div className="panel-lateral">
-          {["general","avatar","fondo","info"].map(sec=>(
-            <button key={sec} className={seccion===sec?"opcion-lateral activa":"opcion-lateral"} onClick={()=>setSeccion(sec)}>
-              {sec==="fondo"?"Fondo del perfil":sec.charAt(0).toUpperCase()+sec.slice(1)}
+          {["general", "avatar", "fondo", "info"].map(sec => (
+            <button
+              key={sec}
+              className={seccion === sec ? "opcion-lateral activa" : "opcion-lateral"}
+              onClick={() => setSeccion(sec)}
+            >
+              {sec === "fondo" ? "Fondo del perfil" : sec.charAt(0).toUpperCase() + sec.slice(1)}
             </button>
           ))}
         </div>
 
+        {/* CONTENIDO */}
         <div className="editar-contenido">
           <h1 className="titulo-seccion">{seccion.toUpperCase()}</h1>
           <p className="descripcion-seccion">{descripciones[seccion]}</p>
 
-          {seccion==="general" && (
+          {seccion === "general" && (
             <>
-              <div className="campo"><label>Nombre completo</label>
-                <input type="text" value={nombre} className="input-editar" readOnly style={{opacity:0.6,cursor:"not-allowed"}}/>
+              <div className="campo">
+                <label>Nombre completo</label>
+                <input type="text" value={nombre} className="input-editar" readOnly style={{ opacity: 0.6, cursor: "not-allowed" }} />
               </div>
-              <div className="campo"><label>Apodo</label>
-                <input type="text" value={apodo} onChange={e=>setApodo(e.target.value)} className="input-editar"/>
+
+              <div className="campo">
+                <label>Apodo</label>
+                <input type="text" value={apodo} onChange={e => setApodo(e.target.value)} className="input-editar" />
               </div>
-              <div className="campo"><label>Correo</label>
-                <input type="email" value={correo} onChange={e=>setCorreo(e.target.value)} className="input-editar"/>
+
+              <div className="campo">
+                <label>Correo</label>
+                <input type="email" value={correo} onChange={e => setCorreo(e.target.value)} className="input-editar" />
               </div>
             </>
           )}
 
-          {seccion==="avatar" && (
+          {seccion === "avatar" && (
             <div className="galeria">
               {Object.keys(avataresDisponibles).map(categoria => (
                 <div key={categoria}>
                   <h4 className="categoria-titulo">{categoria}</h4>
                   <div className="galeria-categoria">
-                    {avataresDisponibles[categoria].map((url, idx)=>(
-                      <div key={idx} className={avatarVista===url?"item-galeria seleccionado":"item-galeria"} onClick={()=>setAvatarVista(url)}>
-                        <img src={url} alt="avatar" className="img-galeria"/>
+                    {avataresDisponibles[categoria].map((url, idx) => (
+                      <div
+                        key={idx}
+                        className={avatarVista === url ? "item-galeria seleccionado" : "item-galeria"}
+                        onClick={() => setAvatarVista(url)}
+                      >
+                        <img src={url} alt="avatar" className="img-galeria" />
                       </div>
                     ))}
                   </div>
@@ -154,47 +187,60 @@ function ModificarPerfil({ usuario, onNavigate, onLogout }) {
             </div>
           )}
 
-          {seccion==="fondo" && (
+          {seccion === "fondo" && (
             <div className="galeria">
-              {fondosDisponibles.map((url, idx)=>(
-                <div key={idx} className={fondo===url?"item-galeria seleccionado":"item-galeria"} onClick={()=>setFondo(url)}>
-                  <img src={url} alt="fondo" className="img-galeria"/>
+              {fondosDisponibles.map((url, idx) => (
+                <div
+                  key={idx}
+                  className={fondo === url ? "item-galeria seleccionado" : "item-galeria"}
+                  onClick={() => setFondo(url)}
+                >
+                  <img src={url} alt="fondo" className="img-galeria" />
                 </div>
               ))}
             </div>
           )}
 
-          {seccion==="info" && (
+          {seccion === "info" && (
             <div className="info-seguridad">
               <h2>Seguridad de tu cuenta</h2>
-              <p>En Cygnus nos tomamos muy en serio la seguridad de nuestros usuarios...</p>
+              <p>En Cygnus nos tomamos muy en serio la seguridad de los usuarios...</p>
             </div>
           )}
 
-          {(seccion==="general"||seccion==="avatar"||seccion==="fondo") && (
+          {(seccion === "general" || seccion === "avatar" || seccion === "fondo") && (
             <div className="guardar-container">
-              <button className="btn-guardar" onClick={abrirConfirmacion}>Guardar cambios</button>
+              <button className="btn-guardar" onClick={abrirConfirmacion}>
+                Guardar cambios
+              </button>
             </div>
           )}
         </div>
       </div>
 
+      {/* MODAL */}
       {mostrarModal && (
         <div className="modal-overlay">
           <div className="modal-card">
             <h2>¿Guardar cambios?</h2>
             <p>Se actualizarán tus datos en Cygnus.</p>
+
             <div className="modal-buttons-vertical">
               <button className="btn-modal-cancelar" onClick={cancelarModal}>Cancelar</button>
-              <button className="btn-modal-confirmar" onClick={guardarCambios} disabled={guardando}>
-                {guardando?"Guardando...":"Confirmar cambios"}
+
+              <button
+                className="btn-modal-confirmar"
+                onClick={guardarCambios}
+                disabled={guardando}
+              >
+                {guardando ? "Guardando..." : "Confirmar cambios"}
               </button>
             </div>
           </div>
         </div>
       )}
 
-      <Footer/>
+      <Footer />
     </>
   );
 }
