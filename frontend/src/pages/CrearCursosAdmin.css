@@ -1,0 +1,260 @@
+.crear-curso-page {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--color-dark);
+    color: #e0e0ff;
+    padding: 0;
+    margin: 0;
+}
+
+.form-card {
+    width: 100%;
+    max-width: 1200px;
+    padding: 40px;
+    background: rgba(255, 255, 255, 0.06);
+    backdrop-filter: blur(12px);
+    border-radius: 20px;
+    border: 1px solid rgba(157, 78, 221, 0.3);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+}
+
+.titulo-principal {
+    font-size: 2.8rem;
+    font-weight: 700;
+    color: var(--color-dorad-ligh);
+    -webkit-background-clip: text;
+    background-clip: text;
+    margin-bottom: 12px;
+}
+
+.subtitulo {
+    font-size: 1.2rem;
+    opacity: 0.9;
+    margin-bottom: 40px;
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 24px;
+    margin-bottom: 32px;
+}
+
+.input-group.full {
+    grid-column: 1 / -1;
+}
+
+.input-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #c77dff;
+}
+
+.input-group input,
+.input-group select,
+.input-group textarea {
+    width: 100%;
+    padding: 14px 18px;
+    border-radius: 12px;
+    border: 1px solid #5e3a8a;
+    background: rgba(30, 20, 50, 0.6);
+    color: #fff;
+    font-size: 1rem;
+    transition: all 0.3s;
+}
+
+.input-group input:focus,
+.input-group select:focus,
+.input-group textarea:focus {
+    outline: none;
+    border-color: #9d4edd;
+    box-shadow: 0 0 0 3px rgba(157, 78, 221, 0.3);
+}
+
+.imagen-preview {
+    margin-top: 16px;
+    width: 100%;
+    max-height: 250px;
+    border-radius: 12px;
+    object-fit: cover;
+    border: 2px solid #7b2cbf;
+}
+
+.modulos-section {
+    margin: 40px 0;
+    text-align: left;
+}
+
+.btn-agregar-modulo {
+    background: linear-gradient(45deg, #7b2cbf, #9d4edd);
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 12px;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.btn-agregar-modulo:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 20px rgba(157, 78, 221, 0.4);
+}
+
+.modulos-lista {
+    margin-top: 20px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.modulo-tag {
+    background: #5e3a8a;
+    color: #e0d4ff;
+    padding: 10px 18px;
+    border-radius: 30px;
+    font-size: 0.95rem;
+}
+
+.sin-modulos {
+    color: #888;
+    font-style: italic;
+}
+
+.btn-crear-curso,
+.btn-volver {
+    width: 30%;
+    padding: 18px;
+    border-radius: 16px;
+    font-size: 1.2rem;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 20px;
+    transition: all 0.3s;
+    border: none;
+}
+
+.btn-crear-curso {
+    background: linear-gradient(45deg, #9d4edd, #c77dff);
+    color: white;
+}
+
+.btn-crear-curso:hover {
+    transform: scale(1.02);
+    box-shadow: 0 15px 30px rgba(157, 78, 221, 0.5);
+}
+
+.btn-volver {
+    background: #444;
+    color: white;
+}
+
+.btn-volver:hover {
+    background: #5e3a8a;
+}
+
+.backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.modal-card {
+    background: rgba(30, 20, 50, 0.95);
+    backdrop-filter: blur(16px);
+    padding: 32px;
+    border-radius: 20px;
+    border: 1px solid #7b2cbf;
+    width: 90%;
+    max-width: 500px;
+    text-align: center;
+}
+
+.modal-card h2 {
+    color: var(--color-dorad-ligh);
+    margin-bottom: 20px;
+}
+
+.modal-card input {
+    width: 100%;
+    padding: 14px;
+    border-radius: 12px;
+    border: 1px solid #5e3a8a;
+    background: rgba(50, 30, 80, 0.6);
+    color: white;
+    margin-bottom: 24px;
+}
+
+.modal-actions {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+}
+
+.btn-cancelar {
+    background: #444;
+    color: white;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+}
+
+.btn-guardar-modulo {
+    background: linear-gradient(45deg, #7b2cbf, #9d4edd);
+    color: white;
+    padding: 12px 32px;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+}
+
+/* 🚫 Evitar desplazamiento horizontal */
+html,
+body {
+    overflow-x: hidden;
+    width: 100%;
+}
+
+/* 🔧 Ajuste para que el contenedor ocupe toda la pantalla */
+.crear-curso-page {
+    width: 100vw;
+    box-sizing: border-box;
+    padding: 40px;
+    padding-top: 80px;
+}
+
+.btn-volver-arriba {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    background: #444;
+    color: white;
+    padding: 12px 22px;
+    border-radius: 12px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    transition: 0.3s ease;
+    z-index: 999;
+}
+
+.btn-volver-arriba:hover {
+    background: #5e3a8a;
+}
+
+.btn-crear-curso {
+    display: block;
+    margin: 30px auto 0 auto;
+    /* centrado */
+    width: 50%;
+}

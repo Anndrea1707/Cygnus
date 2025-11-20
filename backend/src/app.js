@@ -19,6 +19,7 @@ app.use("/api/biblioteca", require("./pages/Biblioteca"));
 app.use("/api/perfil", require("./pages/ModificarPerfil"));
 app.use("/api/adminusuarios", require("./pages/AdminUsuarios"));
 app.use("/api/usuarios", require("./pages/UsuariosRoutes"));
+app.use("/api/cursos", require("./pages/Cursos"));
 
 
 

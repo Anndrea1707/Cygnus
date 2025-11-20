@@ -81,7 +81,7 @@
 }
 
 /* === Input Groups === */
-.input-group {
+.input-groupC {
   position: relative;
   margin-bottom: 15px;
   width: 100%;
@@ -102,7 +102,7 @@
   z-index: 2; /* Asegura que el ícono esté encima del input */
 }
 
-.input-group input {
+.input-groupC input {
   width: 100%;
   padding: 10px 45px 10px 50px; /* ← AQUÍ ESTÁ LA CORRECCIÓN: 50px a la izquierda */
   border: none;
@@ -118,12 +118,12 @@
   z-index: 1; /* Para que el input no tape el ícono */
 }
 
-.input-group input::placeholder {
+.input-groupC input::placeholder {
   color: #f0e6ff;
   font-family: 'Outfit', sans-serif;
 }
 
-.input-group input:focus {
+.input-groupC input:focus {
   background-color: #b05cc9;
   box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
 }

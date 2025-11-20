@@ -104,7 +104,7 @@ function Login({ onBackToHome, onRegisterClick, onLoginSuccess }) {
           <form className="login-form" onSubmit={handleLogin}>
             <h3>LOGIN</h3>
 
-            <div className="input-group">
+            <div className="input-groupC">
               <img src={usuarioIcon} alt="Usuario" className="input-icon" />
               <input
                 type="email"
@@ -115,7 +115,7 @@ function Login({ onBackToHome, onRegisterClick, onLoginSuccess }) {
               />
             </div>
 
-            <div className="input-group password-wrapper">
+            <div className="input-groupC password-wrapper">
               <img src={estrella} alt="Contraseña" className="input-icon" />
 
               <input

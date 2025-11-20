@@ -18,6 +18,7 @@ import UsuariosAdmin from "./pages/UsuariosAdmin";
 import AdminPerfil from "./pages/AdminPerfil";
 import GestionarAdmins from "./pages/GestionarAdmins";
 import CursosAdmin from "./pages/CursosAdmin";
+import CrearCursoAdmin from "./pages/CrearCursosAdmin";
 
 function App() {
   const [currentPage, setCurrentPage] = useState("home");
@@ -215,6 +216,17 @@ function App() {
         />
       );
 
+    case "crearcursosadmin":
+      return (
+        <CrearCursoAdmin
+          usuario={usuario}
+          onNavigate={setCurrentPage}
+          onLogout={handleLogout}
+          currentPage={currentPage}
+        />
+      );
+
+      
     default:
       return (
         <Home
