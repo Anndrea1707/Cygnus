@@ -94,7 +94,7 @@ export default function PanelAdmin({ usuario, onLogout, onNavigate }) {
 
       {/* CONTENIDO PRINCIPAL */}
       <div className="paneladmin-content">
-        
+
         {/* ENCABEZADO BIENVENIDA */}
         <div className="paneladmin-header">
           <h2>🔐 Bienvenido al Panel de Administración</h2>
@@ -110,8 +110,8 @@ export default function PanelAdmin({ usuario, onLogout, onNavigate }) {
             <h3 className="frase-texto">{frasesMotivadoras[fraseActual]}</h3>
             <div className="frase-indicadores">
               {frasesMotivadoras.map((_, index) => (
-                <span 
-                  key={index} 
+                <span
+                  key={index}
                   className={`indicador ${index === fraseActual ? 'activo' : ''}`}
                 />
               ))}
@@ -122,24 +122,24 @@ export default function PanelAdmin({ usuario, onLogout, onNavigate }) {
         {/* TARJETAS DINÁMICAS */}
         <div className="tarjetas-seccion">
           <h3 className="tarjetas-titulo">¿Qué puedes hacer hoy?</h3>
-          
+
           <div className="tarjetas-contenedor">
             <button className="tarjeta-nav-btn anterior" onClick={anteriorTarjeta}>
               ‹
             </button>
-            
+
             <div className="tarjeta-activa">
               <div className="tarjeta-icono">{tarjetasFuncionalidades[tarjetaActual].titulo.split(' ')[0]}</div>
               <h4>{tarjetasFuncionalidades[tarjetaActual].titulo}</h4>
               <p>{tarjetasFuncionalidades[tarjetaActual].descripcion}</p>
-              <button 
+              <button
                 className="tarjeta-boton"
                 onClick={() => navegarA(tarjetasFuncionalidades[tarjetaActual].destino)}
               >
                 {tarjetasFuncionalidades[tarjetaActual].accion}
               </button>
             </div>
-            
+
             <button className="tarjeta-nav-btn siguiente" onClick={siguienteTarjeta}>
               ›
             </button>
@@ -147,8 +147,8 @@ export default function PanelAdmin({ usuario, onLogout, onNavigate }) {
 
           <div className="tarjetas-indicadores">
             {tarjetasFuncionalidades.map((_, index) => (
-              <span 
-                key={index} 
+              <span
+                key={index}
                 className={`tarjeta-indicador ${index === tarjetaActual ? 'activo' : ''}`}
                 onClick={() => setTarjetaActual(index)}
               />
@@ -156,36 +156,33 @@ export default function PanelAdmin({ usuario, onLogout, onNavigate }) {
           </div>
         </div>
 
-        {/* GESTIÓN DE PRUEBAS DE CONOCIMIENTO */}
         <div className="pruebas-seccion">
           <div className="pruebas-header">
             <h3>📊 Gestión de Pruebas de Conocimiento</h3>
-            <p>Administra y supervisa las evaluaciones del sistema</p>
+            <p>Crea y administra evaluaciones para los estudiantes</p>
           </div>
-          
+
           <div className="pruebas-grid">
             <div className="prueba-card">
               <h4>Crear Nueva Prueba</h4>
-              <p>Diseña una nueva evaluación para los estudiantes</p>
-              <button className="prueba-boton">Crear Prueba</button>
+              <p>Diseña una nueva evaluación con 5 preguntas</p>
+              <button
+                className="prueba-boton"
+                onClick={() => onNavigate("crearprueba")}
+              >
+                Crear Prueba
+              </button>
             </div>
-            
+
             <div className="prueba-card">
-              <h4>Ver Pruebas Existentes</h4>
-              <p>Revisa y modifica pruebas creadas anteriormente</p>
-              <button className="prueba-boton">Gestionar Pruebas</button>
-            </div>
-            
-            <div className="prueba-card">
-              <h4>Resultados y Estadísticas</h4>
-              <p>Analiza el rendimiento y resultados de los estudiantes</p>
-              <button className="prueba-boton">Ver Reportes</button>
-            </div>
-            
-            <div className="prueba-card">
-              <h4>Configuración Avanzada</h4>
-              <p>Ajusta parámetros y configuraciones del sistema de evaluación</p>
-              <button className="prueba-boton">Configurar</button>
+              <h4>Gestionar Pruebas</h4>
+              <p>Revisa, edita o elimina pruebas existentes</p>
+              <button
+                className="prueba-boton"
+                onClick={() => onNavigate("gestionarpruebas")}
+              >
+                Gestionar Pruebas
+              </button>
             </div>
           </div>
         </div>

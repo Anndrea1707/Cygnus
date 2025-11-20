@@ -1,4 +1,4 @@
-// src/App.jsx
+// src/App.jsx - VERSIÓN CORREGIDA
 import React, { useState } from "react";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
@@ -19,12 +19,20 @@ import AdminPerfil from "./pages/AdminPerfil";
 import GestionarAdmins from "./pages/GestionarAdmins";
 import CursosAdmin from "./pages/CursosAdmin";
 import CrearCursoAdmin from "./pages/CrearCursosAdmin";
+import PruebaConocimiento from "./pages/PruebaConocimiento";
+import GestionarPruebas from "./pages/GestionarPruebas";
+import EditarPrueba from "./pages/EditarPrueba";
 
 function App() {
   const [currentPage, setCurrentPage] = useState("home");
   const [usuario, setUsuario] = useState(null);
+  const [pageParams, setPageParams] = useState({});
 
-  const handleNavigate = (page) => setCurrentPage(page);
+  const handleNavigate = (page, params = {}) => {
+    setCurrentPage(page);
+    setPageParams(params);
+  };
+
   const handleLoginClick = () => setCurrentPage("login");
 
   const handleLoginSuccess = (userData) => {
@@ -47,8 +55,6 @@ function App() {
     setCurrentPage("dashboard");
   };
 
-
-
   const handleLogout = () => {
     localStorage.removeItem("usuario");
     setUsuario(null);
@@ -62,7 +68,7 @@ function App() {
           usuario={usuario}
           onLogout={handleLogout}
           onNavigate={handleNavigate}
-          currentPage={currentPage} // ✅ añadido
+          currentPage={currentPage}
         />
       );
 
@@ -76,14 +82,13 @@ function App() {
         />
       );
 
-
     case "login":
       return (
         <Login
           onBackToHome={() => setCurrentPage("home")}
           onRegisterClick={() => setCurrentPage("registro")}
           onLoginSuccess={handleLoginSuccess}
-          currentPage={currentPage} // ✅ añadido
+          currentPage={currentPage}
         />
       );
 
@@ -91,14 +96,14 @@ function App() {
       return (
         <Registro
           onBackToLogin={() => setCurrentPage("login")}
-          currentPage={currentPage} // ✅ añadido
+          currentPage={currentPage}
         />
       );
 
     case "sobreNosotros":
       return (
         <SobreNosotros
-          currentPage={currentPage} // ✅ añadido
+          currentPage={currentPage}
           onNavigate={handleNavigate}
           onLoginClick={handleLoginClick}
         />
@@ -107,7 +112,7 @@ function App() {
     case "ayuda":
       return (
         <Ayuda
-          currentPage={currentPage} // ✅ añadido
+          currentPage={currentPage}
           onNavigate={handleNavigate}
           onLoginClick={handleLoginClick}
         />
@@ -116,11 +121,11 @@ function App() {
     case "cursos":
       return (
         <CursosPrincipal
-          currentPage={currentPage} // ✅ añadido
+          currentPage={currentPage}
           onNavigate={handleNavigate}
           onLoginClick={handleLoginClick}
         />
-      )
+      );
 
     case "encuesta":
       return (
@@ -138,7 +143,7 @@ function App() {
           onNavigate={handleNavigate}
         />
       );
-    //modificar el perfil
+
     case "modificarPerfil":
       return (
         <ModificarPerfil
@@ -187,6 +192,7 @@ function App() {
           currentPage={currentPage}
         />
       );
+
     case "adminperfil":
       return (
         <AdminPerfil
@@ -226,11 +232,33 @@ function App() {
         />
       );
 
-      
+    case "crearprueba":
+      return (
+        <PruebaConocimiento
+          onNavigate={handleNavigate}
+          categoriaPreSeleccionada={pageParams.categoriaPreSeleccionada}
+        />
+      );
+
+    case "gestionarpruebas":
+      return (
+        <GestionarPruebas
+          onNavigate={handleNavigate}
+        />
+      );
+
+    case "editarprueba":
+      return (
+        <EditarPrueba
+          onNavigate={handleNavigate}
+          pruebaId={pageParams.pruebaId}
+        />
+      );
+
     default:
       return (
         <Home
-          currentPage={currentPage} // ✅ añadido
+          currentPage={currentPage}
           onNavigate={handleNavigate}
           onLoginClick={handleLoginClick}
         />

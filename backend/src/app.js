@@ -20,6 +20,8 @@ app.use("/api/perfil", require("./pages/ModificarPerfil"));
 app.use("/api/adminusuarios", require("./pages/AdminUsuarios"));
 app.use("/api/usuarios", require("./pages/UsuariosRoutes"));
 app.use("/api/cursos", require("./pages/Cursos"));
+app.use("/api/pruebas", require("./pages/PruebaConocimiento"));
+
 
 
 
