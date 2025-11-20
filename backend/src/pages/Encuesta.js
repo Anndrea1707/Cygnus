@@ -4,7 +4,6 @@ const Usuario = require("./Usuario");
 
 const router = express.Router();
 
-// 👉 Guardar encuesta inicial
 router.put("/:id", async (req, res) => {
   try {
     const { id } = req.params;
@@ -12,7 +11,7 @@ router.put("/:id", async (req, res) => {
     const updateData = {
       encuesta_inicial: {
         completada: true,
-        area_interes: req.body.area_interes,
+        area_interes: req.body.area_interes.toLowerCase(),
         comodidad_area: req.body.comodidad_area,
         estilo_aprendizaje: req.body.estilo_aprendizaje,
         tiempo_estudio: req.body.tiempo_estudio,
@@ -20,13 +19,18 @@ router.put("/:id", async (req, res) => {
       }
     };
 
-    await Usuario.findByIdAndUpdate(id, updateData);
+    const usuarioActualizado = await Usuario.findByIdAndUpdate(id, updateData, { new: true });
 
-    res.json({ mensaje: "Encuesta guardada correctamente 🎉" });
+    res.json({
+      mensaje: "Encuesta guardada correctamente 🎉",
+      usuario: usuarioActualizado
+    });
+
   } catch (error) {
     console.error("❌ Error guardando encuesta:", error);
     res.status(500).json({ mensaje: "Error al guardar encuesta" });
   }
 });
+
 
 module.exports = router;

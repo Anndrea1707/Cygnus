@@ -299,7 +299,7 @@
 }
 
 /* Botones de eliminar */
-.btn-eliminar {
+.btn-eliminarB {
     background: #ff4757;
     color: white;
     border: none;
@@ -314,12 +314,12 @@
     transition: all 0.3s;
 }
 
-.btn-eliminar:hover {
+.btn-eliminarB:hover {
     background: #ff3742;
     transform: scale(1.1);
 }
 
-.btn-eliminar-pequeno {
+.btn-eliminarB-pequeno {
     background: #ff4757;
     color: white;
     border: none;
@@ -334,7 +334,7 @@
     transition: all 0.3s;
 }
 
-.btn-eliminar-pequeno:hover {
+.btn-eliminarB-pequeno:hover {
     background: #ff3742;
 }
 
@@ -608,7 +608,7 @@
     transform: scale(1.1);
 }
 
-.btn-eliminar-pequeno {
+.btn-eliminarB-pequeno {
     background: #ff4757;
     color: white;
     border: none;
@@ -623,7 +623,7 @@
     transition: all 0.3s;
 }
 
-.btn-eliminar-pequeno:hover {
+.btn-eliminarB-pequeno:hover {
     background: #ff3742;
     transform: scale(1.1);
 }

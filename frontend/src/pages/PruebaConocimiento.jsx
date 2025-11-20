@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import "./PruebaConocimiento.css";
 
-export default function PruebaConocimiento({ onNavigate, categoriaPreSeleccionada  }) {
+export default function PruebaConocimiento({ onNavigate, categoriaPreSeleccionada }) {
     const [pruebaData, setPruebaData] = useState({
-        categoria: categoriaPreSeleccionada || "", // Usar la categoría pre-seleccionada si existe
+        categoria: categoriaPreSeleccionada || "",
         preguntas: Array(5).fill().map(() => ({
             pregunta: "",
             opciones: ["", "", "", ""],
@@ -11,12 +11,28 @@ export default function PruebaConocimiento({ onNavigate, categoriaPreSeleccionad
         }))
     });
 
-    // En PruebaConocimiento.jsx, cambia las categorías a:
+    // Estados para el modal
+    const [mostrarModal, setMostrarModal] = useState(false);
+    const [modalMensaje, setModalMensaje] = useState("");
+    const [modalTitulo, setModalTitulo] = useState("");
+    const [modalIcono, setModalIcono] = useState("");
+
     const categorias = [
         "matematicas",
         "tecnologia",
         "idiomas"
     ];
+
+    const mostrarAlerta = (icono, titulo, mensaje) => {
+        setModalIcono(icono);
+        setModalTitulo(titulo);
+        setModalMensaje(mensaje);
+        setMostrarModal(true);
+    };
+
+    const cerrarModal = () => {
+        setMostrarModal(false);
+    };
 
     const handleCategoriaChange = (e) => {
         setPruebaData({
@@ -43,33 +59,32 @@ export default function PruebaConocimiento({ onNavigate, categoriaPreSeleccionad
         });
     };
 
-    // En PruebaConocimiento.jsx - actualiza el handleSubmit:
     const handleSubmit = async (e) => {
         e.preventDefault();
 
         // Validaciones básicas
         if (!pruebaData.categoria) {
-            alert("Por favor selecciona una categoría");
+            mostrarAlerta("❌", "Categoría requerida", "Por favor selecciona una categoría");
             return;
         }
 
         for (let i = 0; i < pruebaData.preguntas.length; i++) {
             const pregunta = pruebaData.preguntas[i];
             if (!pregunta.pregunta.trim()) {
-                alert(`La pregunta ${i + 1} no puede estar vacía`);
+                mostrarAlerta("❌", "Pregunta vacía", `La pregunta ${i + 1} no puede estar vacía`);
                 return;
             }
 
             for (let j = 0; j < pregunta.opciones.length; j++) {
                 if (!pregunta.opciones[j].trim()) {
-                    alert(`La opción ${j + 1} de la pregunta ${i + 1} no puede estar vacía`);
+                    mostrarAlerta("❌", "Opción vacía", `La opción ${j + 1} de la pregunta ${i + 1} no puede estar vacía`);
                     return;
                 }
             }
 
             const opcionesUnicas = new Set(pregunta.opciones.map(op => op.toLowerCase().trim()));
             if (opcionesUnicas.size !== pregunta.opciones.length) {
-                alert(`La pregunta ${i + 1} tiene opciones repetidas`);
+                mostrarAlerta("❌", "Opciones repetidas", `La pregunta ${i + 1} tiene opciones repetidas`);
                 return;
             }
         }
@@ -90,7 +105,7 @@ export default function PruebaConocimiento({ onNavigate, categoriaPreSeleccionad
             console.log('🔍 Resultado verificación:', verificacionResult);
 
             if (verificacionResult.existe) {
-                alert(`❌ Ya existe una prueba activa en la categoría ${pruebaData.categoria}. Solo se permite una prueba por categoría.`);
+                mostrarAlerta("❌", "Categoría existente", `Ya existe una prueba activa en la categoría ${pruebaData.categoria}. Solo se permite una prueba por categoría.`);
                 return;
             }
 
@@ -112,14 +127,17 @@ export default function PruebaConocimiento({ onNavigate, categoriaPreSeleccionad
             console.log('📥 Respuesta del servidor:', result);
 
             if (result.success) {
-                alert("✅ ¡Prueba creada exitosamente!");
-                onNavigate("paneladmin");
+                mostrarAlerta("✅", "¡Éxito!", "Prueba creada exitosamente");
+                // Navegar al panel admin después de cerrar el modal
+                setTimeout(() => {
+                    onNavigate("paneladmin");
+                }, 2000);
             } else {
-                alert(`❌ Error al crear la prueba: ${result.message}`);
+                mostrarAlerta("❌", "Error", `Error al crear la prueba: ${result.message}`);
             }
         } catch (error) {
             console.error('❌ Error completo:', error);
-            alert('❌ Error de conexión al crear la prueba: ' + error.message);
+            mostrarAlerta("❌", "Error de conexión", 'Error de conexión al crear la prueba: ' + error.message);
         }
     };
 
@@ -241,6 +259,20 @@ export default function PruebaConocimiento({ onNavigate, categoriaPreSeleccionad
                     </button>
                 </div>
             </form>
+
+            {/* MODAL PARA ALERTAS */}
+            {mostrarModal && (
+                <div className="modal-overlay-prueba">
+                    <div className="modal-prueba">
+                        <div className="modal-icon-prueba">{modalIcono}</div>
+                        <h3>{modalTitulo}</h3>
+                        <p>{modalMensaje}</p>
+                        <button className="modal-btn-aceptar" onClick={cerrarModal}>
+                            Aceptar
+                        </button>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

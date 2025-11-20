@@ -1,5 +1,5 @@
-// src/App.jsx - VERSIÓN CORREGIDA
-import React, { useState } from "react";
+// src/App.jsx - VERSIÓN CORREGIDA CON PRUEBA DE CONOCIMIENTOS
+import React, { useState, useEffect } from "react";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Registro from "./pages/Registro";
@@ -22,23 +22,34 @@ import CrearCursoAdmin from "./pages/CrearCursosAdmin";
 import PruebaConocimiento from "./pages/PruebaConocimiento";
 import GestionarPruebas from "./pages/GestionarPruebas";
 import EditarPrueba from "./pages/EditarPrueba";
+import TomarPrueba from "./components/TomarPrueba"; // 👈 NUEVO COMPONENTE
 
 function App() {
   const [currentPage, setCurrentPage] = useState("home");
   const [usuario, setUsuario] = useState(null);
   const [pageParams, setPageParams] = useState({});
+  const [cargando, setCargando] = useState(true);
 
-  const handleNavigate = (page, params = {}) => {
-    setCurrentPage(page);
-    setPageParams(params);
-  };
+  // Verificar usuario al cargar la aplicación
+  useEffect(() => {
+    const usuarioGuardado = localStorage.getItem("usuario");
+    if (usuarioGuardado) {
+      try {
+        const usuarioData = JSON.parse(usuarioGuardado);
+        setUsuario(usuarioData);
+        
+        // Si ya está logueado, determinar a dónde debe ir
+        determinarPaginaInicial(usuarioData);
+      } catch (error) {
+        console.error("Error al parsear usuario:", error);
+        localStorage.removeItem("usuario");
+        setCurrentPage("home");
+      }
+    }
+    setCargando(false);
+  }, []);
 
-  const handleLoginClick = () => setCurrentPage("login");
-
-  const handleLoginSuccess = (userData) => {
-    setUsuario(userData);
-    localStorage.setItem("usuario", JSON.stringify(userData));
-
+  const determinarPaginaInicial = (userData) => {
     // 👉 Si es administrador, va directo al panel admin
     if (userData.rol === "admin") {
       setCurrentPage("paneladmin");
@@ -51,8 +62,57 @@ function App() {
       return;
     }
 
-    // 👉 Si es usuario normal y ya hizo la encuesta
+    // 👉 Si ya hizo encuesta pero NO ha hecho la prueba
+    if (!userData.prueba_conocimiento?.completada) {
+      setCurrentPage("prueba-conocimiento");
+      return;
+    }
+
+    // 👉 Si ya hizo ambas, va al dashboard
     setCurrentPage("dashboard");
+  };
+
+  const handleNavigate = (page, params = {}) => {
+    setCurrentPage(page);
+    setPageParams(params);
+  };
+
+  const handleLoginClick = () => setCurrentPage("login");
+
+  const handleLoginSuccess = async (userData) => {
+    setUsuario(userData);
+    localStorage.setItem("usuario", JSON.stringify(userData));
+
+    // Verificar estado actualizado del usuario (incluyendo prueba de conocimientos)
+    try {
+      const response = await fetch(`http://localhost:4000/api/pruebas/verificar-estado/${userData._id}`);
+      const result = await response.json();
+      
+      if (result.success) {
+        // Actualizar usuario con información más reciente
+        const usuarioActualizado = {
+          ...userData,
+          encuesta_inicial: {
+            ...userData.encuesta_inicial,
+            area_interes: result.categoriaInteres
+          },
+          prueba_conocimiento: {
+            completada: result.pruebaCompletada,
+            habilidad: result.habilidadActual
+          }
+        };
+        
+        setUsuario(usuarioActualizado);
+        localStorage.setItem("usuario", JSON.stringify(usuarioActualizado));
+        
+        determinarPaginaInicial(usuarioActualizado);
+      } else {
+        determinarPaginaInicial(userData);
+      }
+    } catch (error) {
+      console.error("Error al verificar estado:", error);
+      determinarPaginaInicial(userData);
+    }
   };
 
   const handleLogout = () => {
@@ -60,6 +120,45 @@ function App() {
     setUsuario(null);
     setCurrentPage("home");
   };
+
+  const handleEncuestaCompletada = () => {
+    // Después de completar encuesta, mostrar prueba de conocimientos
+    setCurrentPage("prueba-conocimiento");
+  };
+
+  const handlePruebaCompletada = () => {
+    // Después de completar prueba, ir al dashboard
+    setCurrentPage("dashboard");
+    
+    // Actualizar usuario localmente
+    if (usuario) {
+      const usuarioActualizado = {
+        ...usuario,
+        prueba_conocimiento: {
+          completada: true,
+          fecha_realizacion: new Date().toISOString()
+        }
+      };
+      setUsuario(usuarioActualizado);
+      localStorage.setItem("usuario", JSON.stringify(usuarioActualizado));
+    }
+  };
+
+  // Mostrar loading mientras verifica el estado
+  if (cargando) {
+    return (
+      <div style={{ 
+        display: 'flex', 
+        justifyContent: 'center', 
+        alignItems: 'center', 
+        height: '100vh',
+        fontSize: '18px',
+        color: '#666'
+      }}>
+        Cargando...
+      </div>
+    );
+  }
 
   switch (currentPage) {
     case "dashboard":
@@ -131,7 +230,16 @@ function App() {
       return (
         <Encuesta
           usuario={usuario}
-          onEncuestaCompletada={() => setCurrentPage("dashboard")}
+          onEncuestaCompletada={handleEncuestaCompletada} // 👈 Cambiado
+        />
+      );
+
+    // 👇 NUEVA PÁGINA PARA TOMAR LA PRUEBA DE CONOCIMIENTOS
+    case "prueba-conocimiento":
+      return (
+        <TomarPrueba
+          usuario={usuario}
+          onPruebaCompletada={handlePruebaCompletada}
         />
       );
 

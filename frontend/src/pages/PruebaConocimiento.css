@@ -1,8 +1,13 @@
+/* 🎨 Fondo completo */
 .prueba-conocimiento-container {
     min-height: 100vh;
     background: var(--color-dark);
     color: var(--color-light);
     padding: 20px;
+    width: 100vw;
+    box-sizing: border-box;
+    padding: 40px;
+    padding-top: 80px;
 }
 
 .prueba-header {
@@ -283,10 +288,86 @@
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
 }
 
+/* MODALES - ESTILOS COMO EN LOGIN */
+.modal-overlay-prueba {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(8px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10000;
+    animation: fadeIn 0.4s ease-out;
+}
+
+.modal-prueba {
+    background: linear-gradient(135deg, #1a0033, #2d0066);
+    border: 2px solid #d163f2;
+    border-radius: 20px;
+    padding: 40px 30px;
+    text-align: center;
+    max-width: 400px;
+    width: 90%;
+    box-shadow: 0 0 40px rgba(209, 99, 242, 0.6);
+    animation: modalPop 0.5s ease-out;
+}
+
+.modal-icon-prueba {
+    font-size: 70px;
+    margin-bottom: 15px;
+}
+
+.modal-prueba h3 {
+    color: #fff;
+    font-size: 24px;
+    margin: 15px 0;
+}
+
+.modal-prueba p {
+    color: #e0d4ff;
+    font-size: 16px;
+    margin-bottom: 25px;
+}
+
+.modal-btn-aceptar {
+    background: #d163f2;
+    color: white;
+    border: none;
+    padding: 14px 40px;
+    border-radius: 12px;
+    font-size: 18px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 5px 15px rgba(209, 99, 242, 0.4);
+}
+
+.modal-btn-aceptar:hover {
+    background: #e040fb;
+    transform: translateY(-3px);
+    box-shadow: 0 10px 25px rgba(209, 99, 242, 0.6);
+}
+
+/* Animaciones */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
+@keyframes modalPop {
+    from { transform: scale(0.7); opacity: 0; }
+    to   { transform: scale(1); opacity: 1; }
+}
+
 /* RESPONSIVE */
 @media (max-width: 768px) {
     .prueba-conocimiento-container {
         padding: 15px;
+        padding-top: 60px;
     }
 
     .prueba-header {
@@ -318,12 +399,4 @@ html,
 body {
     overflow-x: hidden;
     width: 100%;
-}
-
-/* 🔧 Ajuste para que el contenedor ocupe toda la pantalla */
-.prueba-conocimiento-container {
-    width: 100vw;
-    box-sizing: border-box;
-    padding: 40px;
-    padding-top: 80px;
 }

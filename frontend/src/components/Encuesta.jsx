@@ -10,11 +10,9 @@ function Encuesta({ usuario, onEncuestaCompletada }) {
   const [mostrarModal, setMostrarModal] = useState(false); // ← NUEVO
 
   const opcionesArea = [
-    "Matemáticas básicas",
-    "Razonamiento lógico",
-    "Retos",
-    "Preparación escolar",
-    "Otra",
+    "matematicas",
+    "tecnologia",
+    "idiomas",
   ];
 
   const formularioCompleto = area && comodidad && estilo && tiempo && objetivo;
@@ -35,8 +33,17 @@ function Encuesta({ usuario, onEncuestaCompletada }) {
         }),
       });
 
+      const result = await resp.json(); // <-- leer el usuario actualizado
+
       if (resp.ok) {
-        setMostrarModal(true); // ← Mostramos el modal bonito
+
+        // 🔥🔥 **PASO CRUCIAL**
+        // Guardamos el usuario ACTUALIZADO en localStorage.
+        if (result.usuario) {
+          localStorage.setItem("usuario", JSON.stringify(result.usuario));
+        }
+
+        setMostrarModal(true);
       } else {
         alert("Error al guardar los datos");
       }
@@ -45,6 +52,7 @@ function Encuesta({ usuario, onEncuestaCompletada }) {
       alert("Error de conexión");
     }
   };
+
 
   const cerrarModal = () => {
     setMostrarModal(false);

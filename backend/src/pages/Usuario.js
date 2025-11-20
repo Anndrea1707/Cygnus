@@ -18,7 +18,7 @@ const usuarioSchema = new mongoose.Schema(
     avatar: { type: String, default: "" },
     fondo: { type: String, default: "" },
 
-    // ⭐ NUEVO
+    // ⭐ ENCUESTA INICIAL
     encuesta_inicial: {
       completada: { type: Boolean, default: false },
       area_interes: { type: String, default: null },
@@ -28,11 +28,19 @@ const usuarioSchema = new mongoose.Schema(
       objetivo: { type: String, default: null }
     },
 
+    // ⭐ NUEVO: PRUEBA DE CONOCIMIENTO
+    prueba_conocimiento: {
+      completada: { type: Boolean, default: false },
+      fecha_realizacion: { type: Date, default: null },
+      puntuacion: { type: Number, default: 0 },
+      habilidad: { type: Number, min: 1, max: 5, default: 1 }, // Nueva habilidad del 1-5
+      categoria_evaluada: { type: String, default: null }
+    },
+
     creado_en: { type: Date, default: Date.now },
   },
   { collection: "usuarios" }
 );
-
 
 // ✅ Exportar correctamente el modelo
 const Usuario = mongoose.model("Usuario", usuarioSchema);
