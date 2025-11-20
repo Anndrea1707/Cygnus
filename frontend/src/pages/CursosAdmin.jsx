@@ -45,8 +45,8 @@ const CursosAdmin = ({ onNavigate, onLogout, usuario, currentPage }) => {
     };
 
     const abrirEditar = (c) => {
-        setCursoActual(c);
-        setModal("editar");
+        // En lugar de abrir el modal simple, navega a la vista de edición completa
+        onNavigate("crearcursosadmin", c); // Pasa el curso a editar
     };
 
     const manejarCambio = (e) => {
@@ -137,7 +137,7 @@ const CursosAdmin = ({ onNavigate, onLogout, usuario, currentPage }) => {
 
                     <button className="btn-agregar" onClick={() => onNavigate("crearcursosadmin")}>
                         + Crear Curso Completo
-                    </button>
+                    </button>F
                 </div>
 
                 {/* GRID DE CURSOS */}
@@ -154,7 +154,7 @@ const CursosAdmin = ({ onNavigate, onLogout, usuario, currentPage }) => {
 
                             <div className="acciones-card">
                                 <button className="btn-editar" onClick={() => abrirEditar(c)}>Editar</button>
-                                <button className="btn-eliminar" onClick={() => abrirEliminar(c)}>Eliminar</button>
+                                <button className="btn-eliminarC" onClick={() => abrirEliminar(c)}>Eliminar</button>
                             </div>
                         </div>
                     ))}
@@ -222,7 +222,7 @@ const CursosAdmin = ({ onNavigate, onLogout, usuario, currentPage }) => {
                         </p>
 
                         <div className="modal-botones">
-                            <button className="btn-eliminar" onClick={confirmarEliminar}>Eliminar</button>
+                            <button className="btn-eliminarC" onClick={confirmarEliminar}>Eliminar</button>
                             <button className="btn-cerrar" onClick={() => setModal(null)}>Cancelar</button>
                         </div>
                     </div>

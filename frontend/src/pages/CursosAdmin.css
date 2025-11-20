@@ -38,7 +38,7 @@
 .input-busqueda,
 .select-filtro {
   padding: 12px;
-  background: rgba(255,255,255,0.85);
+  background: rgba(255, 255, 255, 0.85);
   border-radius: 10px;
   border: none;
   color: black;
@@ -91,3 +91,12 @@
   justify-content: space-between;
 }
 
+.btn-eliminarC {
+  background: #ff4757;
+  color: white;
+  border: none;
+}
+
+.btn-eliminarC:hover {
+  background: #711c23;
+}
