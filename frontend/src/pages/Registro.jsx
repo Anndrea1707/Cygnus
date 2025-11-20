@@ -22,9 +22,17 @@ function Registro({ onBackToLogin }) {
   const [passwordValid, setPasswordValid] = useState(false);
   const [passwordsMatch, setPasswordsMatch] = useState(false);
   const [showValidation, setShowValidation] = useState(false);
+
+  // MODAL NUEVO
+  const [mostrarModalRegistro, setMostrarModalRegistro] = useState(false);
+  const [modalIcono, setModalIcono] = useState("🎉");
+  const [modalTitulo, setModalTitulo] = useState("");
+  const [modalMensaje, setModalMensaje] = useState("");
+
+  // Modal de términos
   const [showModal, setShowModal] = useState(false);
 
-  // ✅ Validar contraseña
+  // Validar contraseña
   const validarContrasena = (pass) => {
     const regex =
       /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&.#_-])[A-Za-z\d@$!%*?&.#_-]{8,}$/;
@@ -79,16 +87,26 @@ function Registro({ onBackToLogin }) {
     e.preventDefault();
 
     if (!passwordValid) {
-      alert("⚠️ La contraseña debe tener mínimo 8 caracteres, una mayúscula, una minúscula, un número y un símbolo especial.");
+      setModalIcono("⚠️");
+      setModalTitulo("Contraseña inválida");
+      setModalMensaje("La contraseña debe tener mínimo 8 caracteres, una mayúscula, una minúscula, un número y un símbolo especial.");
+      setMostrarModalRegistro(true);
       return;
     }
+
     if (!passwordsMatch) {
-      alert("⚠️ Las contraseñas no coinciden.");
+      setModalIcono("⚠️");
+      setModalTitulo("Las contraseñas no coinciden");
+      setModalMensaje("Verifica nuevamente tus contraseñas.");
+      setMostrarModalRegistro(true);
       return;
     }
 
     if (!formData.aceptarTerminos) {
-      alert("⚠️ Debes aceptar los términos y condiciones.");
+      setModalIcono("⚠️");
+      setModalTitulo("Términos no aceptados");
+      setModalMensaje("Debes aceptar los términos y condiciones.");
+      setMostrarModalRegistro(true);
       return;
     }
 
@@ -98,21 +116,29 @@ function Registro({ onBackToLogin }) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           ...formData,
-          contrasena: formData.pass_user, // se envía al backend igual
+          contrasena: formData.pass_user,
           confirmar_contrasena: formData.pass_confirm,
         }),
       });
 
       const data = await response.json();
+
       if (response.ok) {
-        alert(data.mensaje);
-        onBackToLogin();
+        setModalIcono("🎉");
+        setModalTitulo("Usuario registrado correctamente");
+        setModalMensaje(data.mensaje || "Te has registrado con éxito 🚀");
+        setMostrarModalRegistro(true);
       } else {
-        alert(data.mensaje || "❌ Error al registrar usuario");
+        setModalIcono("❌");
+        setModalTitulo("Error al registrar");
+        setModalMensaje(data.mensaje || "Ocurrió un error inesperado");
+        setMostrarModalRegistro(true);
       }
     } catch (error) {
-      alert("❌ Error al conectar con el servidor");
-      console.error(error);
+      setModalIcono("❌");
+      setModalTitulo("Error de conexión");
+      setModalMensaje("No se pudo conectar con el servidor.");
+      setMostrarModalRegistro(true);
     }
   };
 
@@ -146,7 +172,6 @@ function Registro({ onBackToLogin }) {
               value={formData.cedula}
               onChange={handleChange}
               required
-              autoComplete="off"
             />
           </div>
 
@@ -158,7 +183,6 @@ function Registro({ onBackToLogin }) {
               value={formData.nombre_completo}
               onChange={handleChange}
               required
-              autoComplete="off"
             />
           </div>
 
@@ -170,7 +194,6 @@ function Registro({ onBackToLogin }) {
               value={formData.correo}
               onChange={handleChange}
               required
-              autoComplete="off"
             />
           </div>
 
@@ -184,7 +207,6 @@ function Registro({ onBackToLogin }) {
             />
           </div>
 
-          {/* Contraseña */}
           <div className="input-group password-wrapper">
             <input
               type={showPassword ? "text" : "password"}
@@ -193,7 +215,6 @@ function Registro({ onBackToLogin }) {
               value={formData.pass_user}
               onChange={handleChange}
               required
-              autoComplete="new-password"
             />
             <button
               type="button"
@@ -202,13 +223,12 @@ function Registro({ onBackToLogin }) {
             >
               <img
                 src={showPassword ? ojoAbierto : ojoCerrado}
-                alt="Mostrar/Ocultar"
+                alt="mostrar"
                 className="eye-icon"
               />
             </button>
           </div>
 
-          {/* Confirmar contraseña */}
           <div className="input-group password-wrapper">
             <input
               type={showConfirmPassword ? "text" : "password"}
@@ -217,7 +237,6 @@ function Registro({ onBackToLogin }) {
               value={formData.pass_confirm}
               onChange={handleChange}
               required
-              autoComplete="new-password"
             />
             <button
               type="button"
@@ -226,7 +245,7 @@ function Registro({ onBackToLogin }) {
             >
               <img
                 src={showConfirmPassword ? ojoAbierto : ojoCerrado}
-                alt="Mostrar/Ocultar"
+                alt="mostrar"
                 className="eye-icon"
               />
             </button>
@@ -239,6 +258,7 @@ function Registro({ onBackToLogin }) {
                   ? "✅ Contraseña válida"
                   : "❌ Usa mayúsculas, minúsculas, número y símbolo (mín. 8 caracteres)"}
               </li>
+
               <li style={{ color: passwordsMatch ? "#b4ff9f" : "#ffd1d1" }}>
                 {passwordsMatch
                   ? "✅ Las contraseñas coinciden"
@@ -247,7 +267,6 @@ function Registro({ onBackToLogin }) {
             </ul>
           )}
 
-          {/* Checkbox con modal */}
           <div className="checkbox-group">
             <input
               type="checkbox"
@@ -275,21 +294,43 @@ function Registro({ onBackToLogin }) {
         </form>
       </div>
 
-      {/* Modal de términos */}
+      {/* Modal términos */}
       {showModal && (
         <div className="modal-overlay">
           <div className="modal-content">
             <h2>Términos y Condiciones</h2>
             <p>
-              🔒 Tus datos personales están protegidos.  
-              Este registro se realiza únicamente con fines académicos.  
+              🔒 Tus datos personales están protegidos.
+              Este registro se realiza únicamente con fines académicos.
               La información se mantiene privada y segura según nuestra política de datos.
             </p>
+
             <button
               className="modal-btn"
               onClick={() => {
                 setShowModal(false);
                 setFormData({ ...formData, aceptarTerminos: true });
+              }}
+            >
+              Aceptar
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL DE REGISTRO */}
+      {mostrarModalRegistro && (
+        <div className="modal-overlay-login">
+          <div className="modal-login">
+            <div className="modal-icon-login">{modalIcono}</div>
+            <h3>{modalTitulo}</h3>
+            <p>{modalMensaje}</p>
+
+            <button
+              className="modal-btn-aceptar"
+              onClick={() => {
+                setMostrarModalRegistro(false);
+                if (modalIcono === "🎉") onBackToLogin();
               }}
             >
               Aceptar

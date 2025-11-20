@@ -24,8 +24,7 @@
   backdrop-filter: blur(6px);
   overflow-y: auto;
   scroll-behavior: smooth;
-  scrollbar-width: none; /* 🔹 Scroll invisible */
-  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
 .registro-container::-webkit-scrollbar {
   display: none;
@@ -55,12 +54,7 @@
   gap: 15px;
 }
 
-/* ✅ Inputs específicos del registro (sin íconos) */
-.registro-container .input-group {
-  margin-bottom: 15px;
-  width: 100%;
-}
-
+/* Inputs */
 .registro-container .input-group input {
   width: 100%;
   border: none;
@@ -68,7 +62,7 @@
   background-color: #a44bbe;
   color: #fff;
   font-size: 0.95rem;
-  padding: 10px 15px; /* ← Solo padding normal, sin espacio para ícono */
+  padding: 10px 15px;
   outline: none;
   transition: 0.3s;
   font-family: 'Outfit', sans-serif;
@@ -80,14 +74,26 @@
   box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
 }
 
+/* PLACEHOLDER BLANCO */
+.registro-container .input-group input::placeholder {
+  color: #ffffff !important;
+  opacity: 1;
+}
+
+/* Fecha en blanco */
+.registro-container .input-group input[type="date"]::-webkit-datetime-edit {
+  color: #ffffff;
+}
+.registro-container .input-group input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: brightness(5);
+}
+
 /* Checkbox */
-.registro-container .checkbox-group {
+.checkbox-group {
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 0.9rem;
   margin-top: 10px;
-  justify-content: flex-start;
 }
 
 /* Botón principal */
@@ -111,124 +117,65 @@
 .register-btn.disabled {
   background-color: #7d7d7d;
   cursor: not-allowed;
-  transform: none;
 }
 
-/* Mensaje dinámico */
+/* Mensaje estado */
 .estado-mensaje {
-  margin-top: 8px;
-  font-size: 0.85rem;
-  color: #fff;
-  opacity: 0.9;
   text-align: center;
-  animation: fadeIn 0.5s ease;
+  font-size: 0.85rem;
+  margin-top: 8px;
+  color: #fff;
 }
 
 /* Volver */
 .back-text {
   display: block;
   color: #fff;
-  font-size: 0.9rem;
   margin-top: 12px;
-  text-decoration: none;
-  transition: 0.3s;
-  font-family: 'Outfit', sans-serif;
   cursor: pointer;
   text-align: center;
 }
-
 .back-text:hover {
   color: #a44bbe;
   text-shadow: 0px 0px 10px #e879f9;
 }
 
+/* Animación */
 @keyframes float {
   0%, 100% { transform: translateY(0); }
   50% { transform: translateY(-8px); }
 }
-/* Animación para la validación de contraseñas */
-.password-validation {
-  font-size: 0.8rem;
-  margin-top: -8px;
-  margin-bottom: 5px;
-  list-style: none;
-  padding-left: 10px;
-  color: #fff;
-  opacity: 0.9;
-  text-align: left;
-  animation: fadeInSmooth 0.5s ease forwards;
-}
 
-@keyframes fadeInSmooth {
-  from {
-    opacity: 0;
-    transform: translateY(-5px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-/* === MODAL === */
+/* Modal términos */
 .modal-overlay {
   position: fixed;
   top: 0;
   left: 0;
-  width: 100vw;
-  height: 100vh;
-  background: rgba(0, 0, 0, 0.6);
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.6);
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 2000;
-  animation: fadeIn 0.4s ease;
 }
 
 .modal-content {
   background-color: #d163f2;
-  color: white;
   padding: 25px 35px;
   border-radius: 20px;
   max-width: 400px;
   text-align: center;
-  box-shadow: 0 0 20px rgba(0, 0, 0, 0.4);
-  animation: scaleUp 0.3s ease;
-}
-
-.modal-content h2 {
-  font-family: 'Changa', sans-serif;
-  margin-bottom: 10px;
-}
-
-.modal-content p {
-  font-size: 0.95rem;
-  line-height: 1.4;
-  margin-bottom: 20px;
+  box-shadow: 0 0 20px rgba(0,0,0,0.4);
 }
 
 .modal-btn {
   background-color: #1d175a;
-  border: none;
   padding: 8px 20px;
   border-radius: 25px;
   color: white;
   cursor: pointer;
   font-weight: 600;
-  transition: all 0.2s ease;
 }
-
 .modal-btn:hover {
-  transform: scale(1.05);
-  background-color: #2a227a;
-}
-
-@keyframes scaleUp {
-  from {
-    transform: scale(0.85);
-    opacity: 0;
-  }
-  to {
-    transform: scale(1);
-    opacity: 1;
-  }
+  background: #2a227a;
 }

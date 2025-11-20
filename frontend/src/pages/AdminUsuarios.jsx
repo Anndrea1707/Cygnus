@@ -29,7 +29,7 @@ export default function AdminUsuarios({ usuario, onNavigate, onLogout }) {
         MODALES
   ============================ */
   const [mostrarModal, setMostrarModal] = useState(false);
-  const [modalTipo, setModalTipo] = useState(""); // avatar | fondo
+  const [modalTipo, setModalTipo] = useState(""); 
   const [eliminarModal, setEliminarModal] = useState(false);
   const [recursoAEliminar, setRecursoAEliminar] = useState({ tipo: "", id: "" });
 
@@ -92,7 +92,6 @@ export default function AdminUsuarios({ usuario, onNavigate, onLogout }) {
         headers: { "Content-Type": "multipart/form-data" },
       });
 
-      // limpiar inputs
       if (modalTipo === "avatar") {
         setImagenAvatar(null);
         setNombreAvatar("");
@@ -106,7 +105,6 @@ export default function AdminUsuarios({ usuario, onNavigate, onLogout }) {
 
       cargarRecursos();
     } catch (err) {
-      console.error(err);
       alert("Error al subir");
     }
 
@@ -137,7 +135,14 @@ export default function AdminUsuarios({ usuario, onNavigate, onLogout }) {
 
   return (
     <div className="admin-page-wrapper">
-      <NavbarPrincipal usuario={usuario} onNavigate={onNavigate} onLogout={onLogout} />
+      
+      {/* 🔥 CORRECCIÓN: AQUÍ ESTÁ EL FIX */}
+      <NavbarPrincipal
+        usuario={usuario}
+        onNavigate={onNavigate}
+        onLogout={onLogout}
+        currentPage="usuarios"
+      />
 
       <main className="admin-main-content">
         <div className="admin-container">
@@ -291,7 +296,11 @@ export default function AdminUsuarios({ usuario, onNavigate, onLogout }) {
             <button className="modal-btn-aceptar" onClick={confirmarSubida}>
               Aceptar
             </button>
-            <button className="modal-btn-aceptar" style={{ background: "#666", marginTop: "10px" }} onClick={cerrarModal}>
+            <button
+              className="modal-btn-aceptar"
+              style={{ background: "#666", marginTop: "10px" }}
+              onClick={cerrarModal}
+            >
               Cancelar
             </button>
           </div>
@@ -299,7 +308,7 @@ export default function AdminUsuarios({ usuario, onNavigate, onLogout }) {
       )}
 
       {/* ============================
-            MODAL ELIMINAR RECURSO
+            MODAL ELIMINAR
       ============================ */}
       {eliminarModal && (
         <div className="modal-overlay">
@@ -307,10 +316,16 @@ export default function AdminUsuarios({ usuario, onNavigate, onLogout }) {
             <div className="modal-icon">🗑️</div>
             <h3>¿Deseas eliminar este {recursoAEliminar.tipo}?</h3>
             <p>Esta acción no se puede deshacer.</p>
+
             <button className="modal-btn-aceptar" onClick={confirmarEliminar}>
               Eliminar
             </button>
-            <button className="modal-btn-aceptar" style={{ background: "#666", marginTop: "10px" }} onClick={cerrarEliminarModal}>
+
+            <button
+              className="modal-btn-aceptar"
+              style={{ background: "#666", marginTop: "10px" }}
+              onClick={cerrarEliminarModal}
+            >
               Cancelar
             </button>
           </div>

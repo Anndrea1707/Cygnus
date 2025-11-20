@@ -44,6 +44,7 @@ export default function NavbarPrincipal({
 
   const nombreUsuario =
     usuarioActual?.apodo || usuarioActual?.nombre_completo || "Usuario";
+
   const avatarUsuario =
     usuarioActual?.avatar ||
     "https://cdn-icons-png.flaticon.com/128/1068/1068549.png";
@@ -64,8 +65,8 @@ export default function NavbarPrincipal({
             rol === "usuario"
               ? onNavigate("dashboard")
               : rol === "admin"
-                ? onNavigate("paneladmin")
-                : onNavigate("home")
+              ? onNavigate("paneladmin")
+              : onNavigate("home")
           }
         >
           <img src={logo} alt="Logo Cygnus" className="logo-img" />
@@ -73,6 +74,7 @@ export default function NavbarPrincipal({
         </div>
 
         <ul className="nav-links">
+          {/* PUBLICO */}
           {rol === "publico" && (
             <>
               <li>
@@ -110,6 +112,7 @@ export default function NavbarPrincipal({
             </>
           )}
 
+          {/* USUARIO */}
           {rol === "usuario" && (
             <>
               <li>
@@ -126,7 +129,8 @@ export default function NavbarPrincipal({
                 </button>
               </li>
               <li>
-                <button className={currentPage === "biblioteca" ? "nav-btn active" : "nav-btn"}
+                <button
+                  className={currentPage === "biblioteca" ? "nav-btn active" : "nav-btn"}
                   onClick={() => onNavigate("biblioteca")}
                 >
                   Biblioteca
@@ -135,6 +139,7 @@ export default function NavbarPrincipal({
             </>
           )}
 
+          {/* ADMIN */}
           {rol === "admin" && (
             <>
               <li>
@@ -145,13 +150,16 @@ export default function NavbarPrincipal({
                   Panel
                 </button>
               </li>
+
               <li>
-                <button className={currentPage === "cursosadmin" ? "nav-btn active" : "nav-btn"}
+                <button
+                  className={currentPage === "cursosadmin" ? "nav-btn active" : "nav-btn"}
                   onClick={() => onNavigate("cursosadmin")}
                 >
                   Cursos
                 </button>
               </li>
+
               <li>
                 <button
                   className={currentPage === "adminusuarios" ? "nav-btn active" : "nav-btn"}
@@ -160,6 +168,7 @@ export default function NavbarPrincipal({
                   Usuarios
                 </button>
               </li>
+
               <li>
                 <button
                   className={currentPage === "usuarios" ? "nav-btn active" : "nav-btn"}
@@ -168,6 +177,7 @@ export default function NavbarPrincipal({
                   Avatares
                 </button>
               </li>
+
               <li>
                 <button
                   className={currentPage === "bibliotecaadmin" ? "nav-btn active" : "nav-btn"}
@@ -180,6 +190,7 @@ export default function NavbarPrincipal({
           )}
         </ul>
 
+        {/* BOTÓN LOGIN O USER MENU */}
         {rol === "publico" ? (
           <button className="btn-login" onClick={onLoginClick}>
             Iniciar Sesión
@@ -190,14 +201,16 @@ export default function NavbarPrincipal({
               className="user-info"
               onClick={() => setMenuAbierto(!menuAbierto)}
             >
-              <img src={avatarUsuario} alt="Usuario" className="dashboard-avatar" />
+              <img src={avatarUsuario} className="dashboard-avatar" />
               <span className="dashboard-nombre">{nombreUsuario}</span>
               <span className="arrow">&#9662;</span>
             </div>
 
             {menuAbierto && (
               <div className="user-menu">
-                <button onClick={() => onNavigate(rol === "admin" ? "adminperfil" : "perfil")}>
+                <button
+                  onClick={() => onNavigate(rol === "admin" ? "adminperfil" : "perfil")}
+                >
                   Ver perfil
                 </button>
                 <button onClick={confirmarLogout}>Cerrar sesión</button>
@@ -207,15 +220,18 @@ export default function NavbarPrincipal({
         )}
       </nav>
 
+      {/* MODAL LOGOUT */}
       {mostrarModal && (
         <div className="modal-overlay">
           <div className="modal-content">
             <h3>¿Seguro que deseas cerrar sesión?</h3>
             <p>Tu sesión se cerrará y volverás a la vista principal.</p>
+
             <div className="modal-buttons">
               <button className="btn-cancelar" onClick={cancelarLogout}>
                 Cancelar
               </button>
+
               <button className="btn-aceptar" onClick={aceptarLogout}>
                 Cerrar sesión
               </button>
