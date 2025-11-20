@@ -44,10 +44,11 @@ const CursosAdmin = ({ onNavigate, onLogout, usuario, currentPage }) => {
         setModal("crear");
     };
 
-    const abrirEditar = (c) => {
-        // En lugar de abrir el modal simple, navega a la vista de edición completa
-        onNavigate("crearcursosadmin", c); // Pasa el curso a editar
-    };
+// En CursosAdmin.jsx asegúrate de que sea así:
+const abrirEditar = (curso) => {
+    console.log("Curso seleccionado para editar:", curso);
+    onNavigate("crearcursosadmin", curso); // ← Pasar el curso completo directamente
+};
 
     const manejarCambio = (e) => {
         setCursoActual({ ...cursoActual, [e.target.name]: e.target.value });

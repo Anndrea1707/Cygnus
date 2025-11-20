@@ -3,7 +3,7 @@ import axios from "axios";
 import "./CrearCursosAdmin.css";
 
 const CrearCursosAdmin = ({ onNavigate, cursoEditar }) => {
-    // Estado principal del curso
+    const [cargando, setCargando] = useState(false);
     const [form, setForm] = useState({
         nombre: "",
         descripcion: "",
@@ -12,26 +12,22 @@ const CrearCursosAdmin = ({ onNavigate, cursoEditar }) => {
         categoria: "",
         imagen: "",
     });
-
-    // Estados para los diferentes modales
     const [modalModulo, setModalModulo] = useState(false);
     const [modalContenido, setModalContenido] = useState({ 
         abierto: false, 
         moduloIndex: null, 
         contenidoIndex: null, 
-        modo: 'crear' // 'crear' o 'editar'
+        modo: 'crear'
     });
     const [modalEvaluacionModulo, setModalEvaluacionModulo] = useState({ abierto: false, moduloIndex: null });
     const [modalEvaluacionFinal, setModalEvaluacionFinal] = useState(false);
     const [modalPregunta, setModalPregunta] = useState({ 
         abierto: false, 
-        tipo: null, // 'modulo' o 'final'
+        tipo: null,
         moduloIndex: null,
         preguntaIndex: null,
-        modo: 'crear' // 'crear' o 'editar'
+        modo: 'crear'
     });
-
-    // Estados para datos
     const [imagenPreview, setImagenPreview] = useState(null);
     const [modulos, setModulos] = useState([]);
     const [evaluacionFinal, setEvaluacionFinal] = useState({
@@ -39,8 +35,6 @@ const CrearCursosAdmin = ({ onNavigate, cursoEditar }) => {
         descripcion: "",
         preguntas: []
     });
-
-    // Estados para formularios temporales
     const [nuevoModulo, setNuevoModulo] = useState({ 
         nombre: "", 
         descripcion: "", 
@@ -49,7 +43,6 @@ const CrearCursosAdmin = ({ onNavigate, cursoEditar }) => {
         contenido: [],
         evaluacion: { titulo: "", descripcion: "", preguntas: [] }
     });
-
     const [nuevoContenido, setNuevoContenido] = useState({
         titulo: "",
         descripcion: "",
@@ -57,7 +50,6 @@ const CrearCursosAdmin = ({ onNavigate, cursoEditar }) => {
         recursoExtra: "",
         tipoRecurso: "url"
     });
-
     const [nuevaPregunta, setNuevaPregunta] = useState({
         interrogante: "",
         opciones: ["", "", "", ""],
@@ -65,28 +57,99 @@ const CrearCursosAdmin = ({ onNavigate, cursoEditar }) => {
         dificultad: "1"
     });
 
-    // Cargar datos del curso si estamos editando
+    // Estados para controlar edición
+    const [esEdicion, setEsEdicion] = useState(false);
+    const [cursoId, setCursoId] = useState(null);
+    const [cursoCargado, setCursoCargado] = useState(false);
+
     useEffect(() => {
-        if (cursoEditar) {
+        console.log("🔍 Props recibidas - cursoEditar:", cursoEditar);
+        
+        // Si hay cursoEditar con _id, estamos en modo edición
+        if (cursoEditar && cursoEditar._id) {
+            console.log("🎯 MODO EDICIÓN ACTIVADO");
+            console.log("📦 Curso recibido:", cursoEditar);
+            setEsEdicion(true);
+            setCursoId(cursoEditar._id);
+            llenarFormularioConDatos(cursoEditar);
+            setCursoCargado(true);
+        } 
+        // Si cursoEditar es undefined o null, es creación
+        else {
+            console.log("📝 MODO CREACIÓN ACTIVADO - No hay curso para editar");
+            setEsEdicion(false);
+            setCursoId(null);
+            resetFormulario();
+            setCursoCargado(true);
+        }
+    }, [cursoEditar]);
+
+    const llenarFormularioConDatos = (curso) => {
+        console.log("🖊️ Iniciando carga de datos en formulario...");
+        
+        if (!curso) {
+            console.log("❌ Error: Curso es null o undefined");
+            return;
+        }
+
+        try {
+            // Información básica del curso
             setForm({
-                nombre: cursoEditar.nombre || "",
-                descripcion: cursoEditar.descripcion || "",
-                horas: cursoEditar.horas || "",
-                nivel: cursoEditar.nivel || "",
-                categoria: cursoEditar.categoria || "",
-                imagen: cursoEditar.imagen || "",
+                nombre: curso.nombre || "",
+                descripcion: curso.descripcion || "",
+                horas: curso.horasEstimadas || curso.horas || "",
+                nivel: curso.nivel || "",
+                categoria: curso.categoria || "",
+                imagen: curso.imagen || "",
             });
-            setModulos(cursoEditar.modulos || []);
-            setEvaluacionFinal(cursoEditar.evaluacionFinal || {
+
+            // Módulos
+            setModulos(curso.modulos || []);
+
+            // Evaluación final
+            setEvaluacionFinal(curso.evaluacionFinal || {
                 titulo: "",
                 descripcion: "",
                 preguntas: []
             });
-            setImagenPreview(cursoEditar.imagen || null);
-        }
-    }, [cursoEditar]);
 
-    // Manejo de cambios en el formulario principal
+            // Imagen preview
+            setImagenPreview(curso.imagen || null);
+
+            console.log("✅ FORMULARIO LLENADO EXITOSAMENTE");
+            console.log("📊 DATOS CARGADOS:");
+            console.log("   - Nombre:", curso.nombre);
+            console.log("   - Horas:", curso.horasEstimadas || curso.horas);
+            console.log("   - Nivel:", curso.nivel);
+            console.log("   - Categoría:", curso.categoria);
+            console.log("   - Módulos:", curso.modulos?.length || 0);
+            console.log("   - Preguntas evaluación final:", curso.evaluacionFinal?.preguntas?.length || 0);
+            
+        } catch (error) {
+            console.error("❌ Error al llenar formulario:", error);
+        }
+    };
+
+    const resetFormulario = () => {
+        console.log("🔄 Iniciando reset de formulario...");
+        setForm({
+            nombre: "",
+            descripcion: "",
+            horas: "",
+            nivel: "",
+            categoria: "",
+            imagen: "",
+        });
+        setModulos([]);
+        setEvaluacionFinal({
+            titulo: "",
+            descripcion: "",
+            preguntas: []
+        });
+        setImagenPreview(null);
+        console.log("✅ Formulario reseteado para nuevo curso");
+    };
+
     const manejarCambio = (e) => {
         const { name, value } = e.target;
         setForm(prev => ({
@@ -95,15 +158,12 @@ const CrearCursosAdmin = ({ onNavigate, cursoEditar }) => {
         }));
     };
 
-    // Subida de imagen del curso
     const subirImagen = async (e) => {
         const file = e.target.files[0];
         if (!file) return;
         setImagenPreview(URL.createObjectURL(file));
-
         const formData = new FormData();
         formData.append("imagen", file);
-
         try {
             const res = await axios.post("http://localhost:4000/api/cursos/upload", formData);
             setForm({ ...form, imagen: res.data.url });
@@ -112,14 +172,11 @@ const CrearCursosAdmin = ({ onNavigate, cursoEditar }) => {
         }
     };
 
-    // Subida de imagen para módulo
     const subirImagenModulo = async (e, setImagenState) => {
         const file = e.target.files[0];
         if (!file) return;
-
         const formData = new FormData();
         formData.append("imagen", file);
-
         try {
             const res = await axios.post("http://localhost:4000/api/cursos/upload", formData);
             setImagenState(res.data.url);
@@ -128,14 +185,11 @@ const CrearCursosAdmin = ({ onNavigate, cursoEditar }) => {
         }
     };
 
-    // Subida de archivo para recurso extra
     const subirRecursoExtra = async (e, setRecursoState) => {
         const file = e.target.files[0];
         if (!file) return;
-
         const formData = new FormData();
         formData.append("imagen", file);
-
         try {
             const res = await axios.post("http://localhost:4000/api/cursos/upload", formData);
             setRecursoState(res.data.url);
@@ -144,7 +198,6 @@ const CrearCursosAdmin = ({ onNavigate, cursoEditar }) => {
         }
     };
 
-    // Gestión de módulos
     const abrirModalModulo = () => {
         setNuevoModulo({ 
             nombre: "", 
@@ -162,17 +215,14 @@ const CrearCursosAdmin = ({ onNavigate, cursoEditar }) => {
             alert("El nombre del módulo es obligatorio");
             return;
         }
-
         if (modulos.length >= 4) {
             alert("Máximo 4 módulos permitidos");
             return;
         }
-
         setModulos([...modulos, { ...nuevoModulo }]);
         setModalModulo(false);
     };
 
-    // Gestión de contenido de módulos - CREAR
     const abrirModalContenidoCrear = (moduloIndex) => {
         setNuevoContenido({
             titulo: "",
@@ -189,7 +239,6 @@ const CrearCursosAdmin = ({ onNavigate, cursoEditar }) => {
         });
     };
 
-    // Gestión de contenido de módulos - EDITAR
     const abrirModalContenidoEditar = (moduloIndex, contenidoIndex) => {
         const contenido = modulos[moduloIndex].contenido[contenidoIndex];
         setNuevoContenido({
@@ -212,20 +261,16 @@ const CrearCursosAdmin = ({ onNavigate, cursoEditar }) => {
             alert("El título del contenido es obligatorio");
             return;
         }
-
         const modulosActualizados = [...modulos];
-        
         if (modalContenido.modo === 'crear') {
             modulosActualizados[modalContenido.moduloIndex].contenido.push({ ...nuevoContenido });
         } else {
             modulosActualizados[modalContenido.moduloIndex].contenido[modalContenido.contenidoIndex] = { ...nuevoContenido };
         }
-        
         setModulos(modulosActualizados);
         setModalContenido({ abierto: false, moduloIndex: null, contenidoIndex: null, modo: 'crear' });
     };
 
-    // Gestión de evaluaciones de módulos
     const abrirModalEvaluacionModulo = (moduloIndex) => {
         setModalEvaluacionModulo({ abierto: true, moduloIndex });
     };
@@ -234,7 +279,6 @@ const CrearCursosAdmin = ({ onNavigate, cursoEditar }) => {
         setModalEvaluacionModulo({ abierto: false, moduloIndex: null });
     };
 
-    // Gestión de evaluación final
     const abrirModalEvaluacionFinal = () => {
         setModalEvaluacionFinal(true);
     };
@@ -243,7 +287,6 @@ const CrearCursosAdmin = ({ onNavigate, cursoEditar }) => {
         setModalEvaluacionFinal(false);
     };
 
-    // Gestión de preguntas - CREAR
     const abrirModalPreguntaCrear = (tipo, moduloIndex = null) => {
         setNuevaPregunta({
             interrogante: "",
@@ -260,7 +303,6 @@ const CrearCursosAdmin = ({ onNavigate, cursoEditar }) => {
         });
     };
 
-    // Gestión de preguntas - EDITAR
     const abrirModalPreguntaEditar = (tipo, moduloIndex = null, preguntaIndex) => {
         let pregunta;
         if (tipo === 'modulo') {
@@ -268,7 +310,6 @@ const CrearCursosAdmin = ({ onNavigate, cursoEditar }) => {
         } else {
             pregunta = evaluacionFinal.preguntas[preguntaIndex];
         }
-
         setNuevaPregunta({
             interrogante: pregunta.interrogante || "",
             opciones: [...pregunta.opciones],
@@ -289,12 +330,10 @@ const CrearCursosAdmin = ({ onNavigate, cursoEditar }) => {
             alert("Completa todas las opciones de la pregunta");
             return;
         }
-
         if (nuevaPregunta.opcionCorrecta === "") {
             alert("Selecciona la opción correcta");
             return;
         }
-
         if (modalPregunta.tipo === 'modulo') {
             const modulosActualizados = [...modulos];
             if (modalPregunta.modo === 'crear') {
@@ -318,7 +357,6 @@ const CrearCursosAdmin = ({ onNavigate, cursoEditar }) => {
                 }));
             }
         }
-
         setModalPregunta({ abierto: false, tipo: null, moduloIndex: null, preguntaIndex: null, modo: 'crear' });
     };
 
@@ -328,30 +366,27 @@ const CrearCursosAdmin = ({ onNavigate, cursoEditar }) => {
         setNuevaPregunta(prev => ({ ...prev, opciones: nuevasOpciones }));
     };
 
-    // Creación final del curso
     const crearCurso = async () => {
         if (!validarCursoCompleto()) return;
-
         const cursoData = {
             ...form,
-            fechaPublicacion: cursoEditar ? cursoEditar.fechaPublicacion : new Date().toISOString(),
+            horas: form.horas,
             modulos: modulos,
             evaluacionFinal: evaluacionFinal
         };
-
+        console.log("💾 Guardando curso:", cursoData);
         try {
-            if (cursoEditar) {
-                // Actualizar curso existente
-                await axios.put(`http://localhost:4000/api/cursos/${cursoEditar._id}`, cursoData);
+            if (esEdicion && cursoId) {
+                await axios.put(`http://localhost:4000/api/cursos/${cursoId}`, cursoData);
                 alert("¡Curso actualizado exitosamente!");
             } else {
-                // Crear nuevo curso
                 await axios.post("http://localhost:4000/api/cursos", cursoData);
                 alert("¡Curso creado exitosamente!");
             }
             onNavigate("cursosadmin");
         } catch (error) {
-            alert("Error al guardar el curso");
+            console.error("Error al guardar el curso:", error);
+            alert(`Error al guardar el curso: ${error.response?.data?.mensaje || error.message}`);
         }
     };
 
@@ -360,40 +395,19 @@ const CrearCursosAdmin = ({ onNavigate, cursoEditar }) => {
             alert("Completa todos los campos básicos del curso");
             return false;
         }
-
         if (modulos.length === 0) {
             alert("Agrega al menos un módulo al curso");
             return false;
         }
-
-        // Validar que cada módulo tenga contenido
         for (let modulo of modulos) {
             if (modulo.contenido.length === 0) {
                 alert(`El módulo "${modulo.nombre}" no tiene contenido`);
                 return false;
             }
         }
-
-        // Validar evaluación final (20 preguntas, 4 por dificultad)
-        if (evaluacionFinal.preguntas.length !== 20) {
-            alert("La evaluación final debe tener exactamente 20 preguntas (4 por cada nivel de dificultad)");
-            return false;
-        }
-
-        const preguntasPorDificultad = {1:0, 2:0, 3:0, 4:0, 5:0};
-        evaluacionFinal.preguntas.forEach(p => preguntasPorDificultad[p.dificultad]++);
-        
-        for (let i = 1; i <= 5; i++) {
-            if (preguntasPorDificultad[i] !== 4) {
-                alert(`Debe haber exactamente 4 preguntas de dificultad ${i}`);
-                return false;
-            }
-        }
-
         return true;
     };
 
-    // Eliminar elementos
     const eliminarModulo = (index) => {
         const nuevosModulos = modulos.filter((_, i) => i !== index);
         setModulos(nuevosModulos);
@@ -418,6 +432,17 @@ const CrearCursosAdmin = ({ onNavigate, cursoEditar }) => {
         }
     };
 
+    if (!cursoCargado) {
+        return (
+            <div className="crear-curso-page">
+                <div className="form-card">
+                    <h2>Cargando...</h2>
+                    <p>Por favor espera mientras cargamos la información.</p>
+                </div>
+            </div>
+        );
+    }
+
     return (
         <div className="crear-curso-page">
             <button className="back-btn" onClick={() => onNavigate("cursosadmin")}>
@@ -426,15 +451,14 @@ const CrearCursosAdmin = ({ onNavigate, cursoEditar }) => {
 
             <div className="form-card">
                 <h1 className="titulo-principal">
-                    {cursoEditar ? "Editar Curso" : "Crear Nuevo Curso"}
+                    {esEdicion ? `Editar Curso: ${form.nombre}` : "Crear Nuevo Curso"}
                 </h1>
                 <p className="subtitulo">
-                    {cursoEditar 
+                    {esEdicion 
                         ? "Modifica los campos que necesites del curso existente" 
                         : "Completa todos los campos para registrar un nuevo curso completo"}
                 </p>
 
-                {/* Sección de información básica */}
                 <div className="seccion-curso">
                     <h2 className="titulo-seccion">Información Básica del Curso</h2>
                     <div className="form-grid">
@@ -496,11 +520,17 @@ const CrearCursosAdmin = ({ onNavigate, cursoEditar }) => {
                             <label>Imagen del curso *</label>
                             <input type="file" accept="image/*" onChange={subirImagen} />
                             {imagenPreview && <img src={imagenPreview} alt="Vista previa" className="imagen-preview" />}
+                            {form.imagen && !imagenPreview && (
+                                <div>
+                                    <p>Imagen actual:</p>
+                                    <img src={form.imagen} alt="Imagen actual" className="imagen-preview" />
+                                </div>
+                            )}
                         </div>
                     </div>
                 </div>
 
-                {/* Sección de módulos */}
+
                 <div className="seccion-curso">
                     <div className="seccion-header">
                         <h2 className="titulo-seccion">Módulos del Curso</h2>
@@ -544,7 +574,6 @@ const CrearCursosAdmin = ({ onNavigate, cursoEditar }) => {
                                     </button>
                                 </div>
 
-                                {/* Lista de contenido del módulo */}
                                 {modulo.contenido.length > 0 && (
                                     <div className="contenido-lista">
                                         <h4>Contenido:</h4>
@@ -570,7 +599,6 @@ const CrearCursosAdmin = ({ onNavigate, cursoEditar }) => {
                                     </div>
                                 )}
 
-                                {/* Lista de preguntas del módulo */}
                                 {modulo.evaluacion.preguntas.length > 0 && (
                                     <div className="preguntas-lista">
                                         <h4>Preguntas de evaluación:</h4>
@@ -600,7 +628,6 @@ const CrearCursosAdmin = ({ onNavigate, cursoEditar }) => {
                     </div>
                 </div>
 
-                {/* Sección de evaluación final */}
                 <div className="seccion-curso">
                     <div className="seccion-header">
                         <h2 className="titulo-seccion">Evaluación Final del Curso</h2>
@@ -641,11 +668,10 @@ const CrearCursosAdmin = ({ onNavigate, cursoEditar }) => {
                 </div>
 
                 <button className="btn-crear-curso" onClick={crearCurso}>
-                    {cursoEditar ? "Actualizar Curso" : "Crear Curso Completo"}
+                    {esEdicion ? "Guardar Cambios" : "Crear Curso Completo"}
                 </button>
             </div>
 
-            {/* Modal para agregar módulo */}
             {modalModulo && (
                 <div className="backdrop">
                     <div className="modal-card grande">
@@ -690,7 +716,6 @@ const CrearCursosAdmin = ({ onNavigate, cursoEditar }) => {
                 </div>
             )}
 
-            {/* Modal para agregar/editar contenido */}
             {modalContenido.abierto && (
                 <div className="backdrop">
                     <div className="modal-card grande">
@@ -777,7 +802,6 @@ const CrearCursosAdmin = ({ onNavigate, cursoEditar }) => {
                 </div>
             )}
 
-            {/* Modal para evaluación de módulo */}
             {modalEvaluacionModulo.abierto && (
                 <div className="backdrop">
                     <div className="modal-card grande">
@@ -855,7 +879,6 @@ const CrearCursosAdmin = ({ onNavigate, cursoEditar }) => {
                 </div>
             )}
 
-            {/* Modal para evaluación final */}
             {modalEvaluacionFinal && (
                 <div className="backdrop">
                     <div className="modal-card grande">
@@ -937,7 +960,6 @@ const CrearCursosAdmin = ({ onNavigate, cursoEditar }) => {
                 </div>
             )}
 
-            {/* Modal para agregar/editar pregunta */}
             {modalPregunta.abierto && (
                 <div className="backdrop">
                     <div className="modal-card grande">
