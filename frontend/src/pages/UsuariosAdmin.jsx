@@ -70,15 +70,6 @@ const UsuariosAdmin = ({ onNavigate, onLogout, usuario, currentPage }) => {
   /* ====================================================
                    CREAR / EDITAR
   ====================================================== */
-  const abrirCrear = () => {
-    setUsuarioActual({
-      _id: "",
-      nombre_completo: "",
-      correo: "",
-      rol: "",
-    });
-    setModal("crear");
-  };
 
   const abrirEditar = (u) => {
     setUsuarioActual(u);
@@ -145,10 +136,6 @@ const UsuariosAdmin = ({ onNavigate, onLogout, usuario, currentPage }) => {
         <p className="descripcion-admin">
           Administra los usuarios registrados, revisa encuestas y controla accesos.
         </p>
-
-        <button className="btn-agregar" onClick={abrirCrear}>
-          + Nuevo Usuario
-        </button>
 
         {/* TABLA */}
         <div className="tabla-contenedor">

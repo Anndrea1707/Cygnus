@@ -2,238 +2,260 @@ import React, { useState, useEffect } from "react";
 import "./GestionarPruebas.css";
 
 export default function GestionarPruebas({ onNavigate }) {
-    const [pruebas, setPruebas] = useState([]);
+    const [prueba, setPrueba] = useState(null);
     const [loading, setLoading] = useState(true);
-    const [cargandoCategorias, setCargandoCategorias] = useState({});
-
-    const categorias = [
-        { key: "matematicas", label: "Matemáticas", icon: "🧮" },
-        { key: "tecnologia", label: "Tecnología", icon: "💻" },
-        { key: "idiomas", label: "Idiomas", icon: "🌎" }
-    ];
+    const [accionLoading, setAccionLoading] = useState(false);
+    const [showModalEliminar, setShowModalEliminar] = useState(false);
+    const [pruebaAEliminar, setPruebaAEliminar] = useState(null);
 
     useEffect(() => {
-        cargarPruebas();
+        cargarPruebaActual();
     }, []);
 
-    const cargarPruebas = async () => {
+    const cargarPruebaActual = async () => {
         try {
             setLoading(true);
-            const response = await fetch('http://localhost:4000/api/pruebas/', {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                }
+            const resp = await fetch("http://localhost:4000/api/pruebas/actual", {
+                method: "GET",
+                headers: { "Content-Type": "application/json" }
             });
 
-            const result = await response.json();
-
-            if (result.success) {
-                setPruebas(result.data);
+            if (resp.status === 404) {
+                setPrueba(null);
             } else {
-                console.error('Error al cargar pruebas:', result.message);
+                const result = await resp.json();
+                if (result.success) {
+                    setPrueba({
+                        ...result.prueba,
+                        fechaCreacion: result.prueba.fechaCreacion || result.prueba.fecha || new Date().toISOString(),
+                        intentosRealizados: result.prueba.intentosRealizados || 0,
+                        promedioPuntaje: result.prueba.promedioPuntaje || 0
+                    });
+                } else {
+                    console.error("Error cargando prueba:", result.message);
+                    setPrueba(null);
+                }
             }
         } catch (error) {
-            console.error('Error de conexión:', error);
+            console.error("Error de conexión al cargar prueba:", error);
+            setPrueba(null);
         } finally {
             setLoading(false);
         }
     };
 
-    const verificarCategoria = async (categoria) => {
+    const handleCrearPrueba = async () => {
         try {
-            setCargandoCategorias(prev => ({ ...prev, [categoria]: true }));
-
-            const response = await fetch('http://localhost:4000/api/pruebas/verificar-categoria', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ categoria })
-            });
-
-            const result = await response.json();
-            return result;
+            setAccionLoading(true);
+            const resp = await fetch("http://localhost:4000/api/pruebas/actual", { method: "GET" });
+            if (resp.status === 404) {
+                onNavigate("crearprueba");
+            } else {
+                const r = await resp.json();
+                alert("❌ Ya existe una prueba diagnóstica activa. Debes eliminarla antes de crear otra.");
+            }
         } catch (error) {
-            console.error('Error al verificar categoría:', error);
-            return { success: false, existe: false };
+            console.error("Error comprobando existencia de prueba:", error);
+            alert("Error de conexión al verificar existencia de prueba");
         } finally {
-            setCargandoCategorias(prev => ({ ...prev, [categoria]: false }));
+            setAccionLoading(false);
         }
-    };
-
-    const handleCrearPrueba = async (categoria) => {
-        const verificacion = await verificarCategoria(categoria);
-
-        if (verificacion.existe) {
-            alert(`Ya existe una prueba activa en ${categoria.label}. Solo se permite una prueba por categoría.`);
-            return;
-        }
-
-        // Navegar a crear prueba con la categoría pre-seleccionada
-        onNavigate("crearprueba", { categoriaPreSeleccionada: categoria.key });
     };
 
     const handleEditarPrueba = (pruebaId) => {
-        console.log('Editar prueba:', pruebaId);
-        // Navegar a editar prueba con el ID
-        onNavigate("editarprueba", { pruebaId });
+        if (!pruebaId) return;
+        onNavigate("editarprueba", { pruebaId: pruebaId });
     };
 
-    // En GestionarPruebas.jsx - actualiza la función handleEliminarPrueba:
-    const handleEliminarPrueba = async (pruebaId, categoria) => {
-        if (!window.confirm(`¿Estás seguro de que quieres eliminar la prueba de ${categoria}?`)) {
-            return;
-        }
+    const abrirModalEliminar = (pruebaId) => {
+        if (!pruebaId) return;
+        setPruebaAEliminar(pruebaId);
+        setShowModalEliminar(true);
+    };
+
+    const cerrarModalEliminar = () => {
+        setShowModalEliminar(false);
+        setPruebaAEliminar(null);
+    };
+
+    const handleEliminarPrueba = async () => {
+        if (!pruebaAEliminar) return;
 
         try {
-            console.log('🗑️ Enviando solicitud para eliminar prueba:', pruebaId);
-
-            const response = await fetch(`http://localhost:4000/api/pruebas/${pruebaId}`, {
-                method: 'DELETE',
-                headers: {
-                    'Content-Type': 'application/json',
-                    // Si necesitas autenticación, añade el header aquí
-                    // 'Authorization': `Bearer ${token}`
-                }
+            setAccionLoading(true);
+            const resp = await fetch(`http://localhost:4000/api/pruebas/${pruebaAEliminar}`, {
+                method: "DELETE",
+                headers: { "Content-Type": "application/json" }
             });
 
-            console.log('📥 Respuesta del servidor - Status:', response.status);
-
-            const result = await response.json();
-            console.log('📥 Respuesta del servidor - Data:', result);
-
+            const result = await resp.json();
             if (result.success) {
-                alert('✅ Prueba eliminada exitosamente');
-                cargarPruebas(); // Recargar la lista
+                alert("✅ Prueba eliminada correctamente");
+                cargarPruebaActual();
             } else {
-                alert(`❌ Error al eliminar: ${result.message}`);
+                alert("❌ Error al eliminar: " + (result.message || "Desconocido"));
             }
         } catch (error) {
-            console.error('❌ Error completo al eliminar:', error);
-            alert('❌ Error de conexión al eliminar la prueba: ' + error.message);
+            console.error("Error eliminando prueba:", error);
+            alert("❌ Error de conexión al eliminar la prueba");
+        } finally {
+            setAccionLoading(false);
+            cerrarModalEliminar();
         }
     };
-    const obtenerPruebaPorCategoria = (categoriaKey) => {
-        return pruebas.find(prueba =>
-            prueba.categoria === categoriaKey && prueba.activa
-        );
-    };
 
-    const volverAlPanel = () => {
-        onNavigate("paneladmin");
-    };
+    const volverAlPanel = () => onNavigate("paneladmin");
 
     if (loading) {
         return (
             <div className="gestionar-pruebas-container">
                 <div className="pruebas-header">
-                    <button className="btn-volver" onClick={volverAlPanel}>
-                        ← Volver al Panel
-                    </button>
-                    <h1>Gestionar Pruebas de Conocimiento</h1>
+                    <button className="btn-volver" onClick={volverAlPanel}>← Volver al Panel</button>
+                    <h1>Gestionar Prueba Diagnóstica</h1>
                 </div>
-                <div className="loading">Cargando pruebas...</div>
+                <div className="loading">Cargando información...</div>
             </div>
         );
     }
 
     return (
         <div className="gestionar-pruebas-container">
-            {/* HEADER */}
-            <div className="pruebas-header">
-                <button className="btn-volver" onClick={volverAlPanel}>
-                    ← Volver al Panel
-                </button>
-                <h1>Gestionar Pruebas de Conocimiento</h1>
-                <p>Administra las pruebas disponibles por categoría</p>
-            </div>
+            {/* Modal de Confirmación de Eliminación */}
+            {showModalEliminar && (
+                <div className="modal-overlay">
+                    <div className="modal-confirmacion">
+                        <span className="modal-icon">⚠️</span>
+                        <h3>¿Eliminar Prueba?</h3>
+                        <p>Estás a punto de eliminar la prueba diagnóstica activa. Esta acción no se puede deshacer.</p>
 
-            {/* CATEGORÍAS */}
-            <div className="categorias-grid">
-                {categorias.map((categoria) => {
-                    const prueba = obtenerPruebaPorCategoria(categoria.key);
-                    const estaCargando = cargandoCategorias[categoria.key];
-
-                    return (
-                        <div key={categoria.key} className="categoria-card">
-                            <div className="categoria-header">
-                                <span className="categoria-icono">{categoria.icon}</span>
-                                <h3>{categoria.label}</h3>
-                            </div>
-
-                            <div className="categoria-content">
-                                {prueba ? (
-                                    <div className="prueba-existente">
-                                        <div className="prueba-info">
-                                            <h4>Prueba Activa</h4>
-                                            <p><strong>Preguntas:</strong> {prueba.preguntas.length}</p>
-                                            <p><strong>Creada:</strong> {new Date(prueba.fechaCreacion).toLocaleDateString()}</p>
-                                            <p><strong>Intentos:</strong> {prueba.intentosRealizados}</p>
-                                        </div>
-
-                                        <div className="prueba-actions">
-                                            <button
-                                                className="btn-editar"
-                                                onClick={() => handleEditarPrueba(prueba._id)} // Asegúrate de que sea prueba._id
-                                            >
-                                                ✏️ Editar
-                                            </button>
-                                            <button
-                                                className="btn-eliminar"
-                                                onClick={() => handleEliminarPrueba(prueba._id, categoria.label)}
-                                            >
-                                                🗑️ Eliminar
-                                            </button>
-                                        </div>
-                                    </div>
-                                ) : (
-                                    <div className="prueba-inexistente">
-                                        <p>No hay prueba activa en esta categoría</p>
-                                        <button
-                                            className="btn-crear"
-                                            onClick={() => handleCrearPrueba(categoria)}
-                                            disabled={estaCargando}
-                                        >
-                                            {estaCargando ? 'Verificando...' : '➕ Crear Prueba'}
-                                        </button>
-                                    </div>
-                                )}
-                            </div>
-
-                            <div className="categoria-status">
-                                <span className={`status-badge ${prueba ? 'activa' : 'inactiva'}`}>
-                                    {prueba ? '🟢 Activa' : '🔴 Sin prueba'}
-                                </span>
-                            </div>
+                        <div className="modal-advertencia">
+                            <p><strong>⚠️ Advertencia:</strong> Los usuarios no podrán realizar la prueba hasta que se cree una nueva.</p>
                         </div>
-                    );
-                })}
+
+                        <div className="modal-buttons">
+                            <button
+                                className="modal-btn-cancelar"
+                                onClick={cerrarModalEliminar}
+                                disabled={accionLoading}
+                            >
+                                ✕ Cancelar
+                            </button>
+                            <button
+                                className="modal-btn-confirmar"
+                                onClick={handleEliminarPrueba}
+                                disabled={accionLoading}
+                            >
+                                {accionLoading ? (
+                                    <span className="btn-loading"></span>
+                                ) : (
+                                    "🗑️ Confirmar Eliminación"
+                                )}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            <div className="pruebas-header">
+                <button className="btn-volver" onClick={volverAlPanel}>← Volver al Panel</button>
+                <h1>Gestionar Prueba Diagnóstica</h1>
+                <p>Administra la prueba diagnóstica única del sistema</p>
             </div>
 
-            {/* ESTADÍSTICAS */}
+            {prueba ? (
+                <div className="single-prueba-card">
+                    {/* Botones flotantes mejorados */}
+                    <div className="single-prueba-actions">
+                        <button
+                            className="btn-floating btn-edit"
+                            onClick={() => handleEditarPrueba(prueba._id)}
+                            disabled={accionLoading}
+                        >
+                            ✏️ Editar
+                        </button>
+
+                        <button
+                            className="btn-floating btn-delete"
+                            onClick={() => abrirModalEliminar(prueba._id)}
+                            disabled={accionLoading}
+                        >
+                            🗑️ Eliminar
+                        </button>
+                    </div>
+
+                    {/* Título */}
+                    <h2 className="single-prueba-title">
+                        Prueba Diagnóstica Activa
+                    </h2>
+
+                    {/* Información de la prueba */}
+                    <div className="single-prueba-info">
+                        <div className="info-box">
+                            <p className="info-box-title">Preguntas</p>
+                            <p className="info-box-value p-icon-preguntas">
+                                {prueba.preguntas.length}
+                            </p>
+                        </div>
+
+                        <div className="info-box">
+                            <p className="info-box-title">Fecha de creación</p>
+                            <p className="info-box-value p-icon-fecha">
+                                {new Date(prueba.fechaCreacion).toLocaleDateString('es-ES', {
+                                    year: 'numeric',
+                                    month: 'long',
+                                    day: 'numeric'
+                                })}
+                            </p>
+                        </div>
+
+                        <div className="info-box">
+                            <p className="info-box-title">Intentos realizados</p>
+                            <p className="info-box-value p-icon-intentos">
+                                {prueba.intentosRealizados}
+                            </p>
+                        </div>
+
+                        <div className="info-box">
+                            <p className="info-box-title">Promedio general</p>
+                            <p className="info-box-value">
+                                {Math.round(prueba.promedioPuntaje)}%
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            ) : (
+                <div className="single-prueba-card">
+                    <div style={{ textAlign: 'center', padding: '40px' }}>
+                        <h2 style={{ color: 'var(--color-light-text)', marginBottom: '20px' }}>
+                            📝 No hay prueba activa
+                        </h2>
+                        <p style={{ color: 'var(--color-light-text)', marginBottom: '30px' }}>
+                            Crea una nueva prueba diagnóstica para que los usuarios puedan comenzar a evaluar sus conocimientos.
+                        </p>
+                        <button
+                            className="btn-crear"
+                            onClick={handleCrearPrueba}
+                            disabled={accionLoading}
+                        >
+                            ➕ Crear Nueva Prueba
+                        </button>
+                    </div>
+                </div>
+            )}
+
             <div className="estadisticas-section">
-                <h3>📊 Resumen General</h3>
+                <h3>📊 Resumen del Sistema</h3>
                 <div className="estadisticas-grid">
                     <div className="estadistica-card">
-                        <span className="estadistica-numero">
-                            {pruebas.filter(p => p.activa).length}
-                        </span>
-                        <span className="estadistica-label">Pruebas Activas</span>
+                        <span className="estadistica-numero">{prueba ? 1 : 0}</span>
+                        <span className="estadistica-label">Prueba Activa</span>
                     </div>
                     <div className="estadistica-card">
-                        <span className="estadistica-numero">
-                            {pruebas.reduce((total, p) => total + p.intentosRealizados, 0)}
-                        </span>
+                        <span className="estadistica-numero">{prueba ? (prueba.intentosRealizados || 0) : 0}</span>
                         <span className="estadistica-label">Total Intentos</span>
                     </div>
                     <div className="estadistica-card">
-                        <span className="estadistica-numero">
-                            {pruebas.length > 0
-                                ? Math.round(pruebas.reduce((total, p) => total + p.promedioPuntaje, 0) / pruebas.length)
-                                : 0
-                            }%
-                        </span>
+                        <span className="estadistica-numero">{prueba ? Math.round(prueba.promedioPuntaje || 0) : 0}%</span>
                         <span className="estadistica-label">Promedio General</span>
                     </div>
                 </div>

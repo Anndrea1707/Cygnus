@@ -38,18 +38,6 @@ export default function PanelAdmin({ usuario, onLogout, onNavigate }) {
       accion: "Gestionar Biblioteca",
       destino: "bibliotecaadmin"
     },
-    {
-      titulo: "👨‍💼 Gestión de Administradores",
-      descripcion: "Gestiona los permisos y cuentas de otros administradores del sistema.",
-      accion: "Gestionar Admins",
-      destino: "gestionarAdmins"
-    },
-    {
-      titulo: "📊 Análisis de Datos",
-      descripcion: "Revisa métricas, estadísticas y reportes del rendimiento de la plataforma.",
-      accion: "Ver Reportes",
-      destino: "reportes"
-    }
   ];
 
   // Rotación automática de frases

@@ -1,70 +1,110 @@
 import React, { useState, useEffect } from "react";
-import "./PruebaConocimiento.css"; // Reutilizamos los mismos estilos
+import "./PruebaConocimiento.css";
 
-export default function EditarPrueba({ onNavigate, pruebaId }) {
+export default function EditarPrueba({ onNavigate, params }) {
+
     const [pruebaData, setPruebaData] = useState({
-        categoria: "",
         preguntas: Array(5).fill().map(() => ({
             pregunta: "",
             opciones: ["", "", "", ""],
             respuestaCorrecta: 0
         }))
     });
+
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
+    const [pruebaId, setPruebaId] = useState(null);
 
-    const categorias = [
-        "matematicas",
-        "tecnologia",
-        "idiomas"
-    ];
+    // ==========================================
+    // CARGAR PRUEBA POR ID
+    // ==========================================
 
     useEffect(() => {
-        cargarPrueba();
-    }, [pruebaId]);
+        // Obtener el ID de los parámetros o de la prueba activa
+        if (params && params.pruebaId) {
+            setPruebaId(params.pruebaId);
+            cargarPruebaPorId(params.pruebaId);
+        } else {
+            cargarPruebaActiva();
+        }
+    }, [params]);
 
-    const cargarPrueba = async () => {
+    const cargarPruebaPorId = async (id) => {
         try {
             setLoading(true);
-            const response = await fetch(`http://localhost:4000/api/pruebas/${pruebaId}`, {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                }
-            });
+            const response = await fetch(`http://localhost:4000/api/pruebas/${id}`);
+
+            if (!response.ok) {
+                throw new Error(`Error ${response.status}: ${response.statusText}`);
+            }
 
             const result = await response.json();
 
-            if (result.success) {
-                // Transformar los datos del backend al formato del frontend
-                const pruebaTransformada = {
-                    categoria: result.data.categoria,
-                    preguntas: result.data.preguntas.map(pregunta => ({
-                        pregunta: pregunta.enunciado,
-                        opciones: pregunta.opciones.map(opcion => opcion.texto),
-                        respuestaCorrecta: pregunta.opciones.findIndex(op => op.letra === pregunta.respuestaCorrecta)
-                    }))
-                };
-                setPruebaData(pruebaTransformada);
-            } else {
-                alert(`Error al cargar la prueba: ${result.message}`);
-                onNavigate("gestionarpruebas");
+            if (!result.success) {
+                alert("No se pudo cargar la prueba: " + (result.message || "Error desconocido"));
+                return onNavigate("gestionarpruebas");
             }
+
+            transformarDatosPrueba(result.prueba);
+
         } catch (error) {
-            console.error('Error de conexión:', error);
-            alert('Error de conexión al cargar la prueba');
+            console.error("Error cargando prueba por ID:", error);
+            alert("Error al cargar la prueba: " + error.message);
             onNavigate("gestionarpruebas");
         } finally {
             setLoading(false);
         }
     };
 
-    const handleCategoriaChange = (e) => {
+    const cargarPruebaActiva = async () => {
+        try {
+            setLoading(true);
+            const response = await fetch("http://localhost:4000/api/pruebas/actual");
+
+            if (!response.ok) {
+                throw new Error(`Error ${response.status}: ${response.statusText}`);
+            }
+
+            const result = await response.json();
+
+            if (!result.success) {
+                alert("No existe una prueba activa para editar");
+                return onNavigate("gestionarpruebas");
+            }
+
+            setPruebaId(result.prueba._id);
+            // Ahora cargamos los datos completos usando el endpoint por ID
+            await cargarPruebaPorId(result.prueba._id);
+
+        } catch (error) {
+            console.error("Error cargando prueba activa:", error);
+            alert("Error al conectar con el servidor: " + error.message);
+            onNavigate("gestionarpruebas");
+        }
+    };
+
+    const transformarDatosPrueba = (pruebaBackend) => {
+        const preguntasTransformadas = pruebaBackend.preguntas.map(p => {
+            // Encontrar el índice de la respuesta correcta
+            const respuestaCorrectaIndex = p.opciones.findIndex(
+                op => op.letra === p.respuestaCorrecta
+            );
+
+            return {
+                pregunta: p.enunciado,
+                opciones: p.opciones.map(op => op.texto),
+                respuestaCorrecta: respuestaCorrectaIndex >= 0 ? respuestaCorrectaIndex : 0
+            };
+        });
+
         setPruebaData({
-            ...pruebaData,
-            categoria: e.target.value
+            preguntas: preguntasTransformadas
         });
     };
+
+    // ==========================================
+    // MANEJO DE INPUTS
+    // ==========================================
 
     const handlePreguntaChange = (index, field, value) => {
         const nuevasPreguntas = [...pruebaData.preguntas];
@@ -72,194 +112,164 @@ export default function EditarPrueba({ onNavigate, pruebaId }) {
         if (field === "pregunta") {
             nuevasPreguntas[index].pregunta = value;
         } else if (field.startsWith("opcion")) {
-            const opcionIndex = parseInt(field.replace("opcion", ""));
-            nuevasPreguntas[index].opciones[opcionIndex] = value;
+            const opIndex = parseInt(field.replace("opcion", ""));
+            nuevasPreguntas[index].opciones[opIndex] = value;
         } else if (field === "respuestaCorrecta") {
             nuevasPreguntas[index].respuestaCorrecta = parseInt(value);
         }
 
-        setPruebaData({
-            ...pruebaData,
-            preguntas: nuevasPreguntas
-        });
+        setPruebaData({ ...pruebaData, preguntas: nuevasPreguntas });
     };
+
+    // ==========================================
+    // VALIDACIÓN
+    // ==========================================
+
+    const validarFormulario = () => {
+        for (let i = 0; i < pruebaData.preguntas.length; i++) {
+            const p = pruebaData.preguntas[i];
+
+            if (!p.pregunta.trim()) {
+                alert(`La pregunta ${i + 1} no puede estar vacía`);
+                return false;
+            }
+
+            for (let j = 0; j < p.opciones.length; j++) {
+                if (!p.opciones[j].trim()) {
+                    alert(`La opción ${String.fromCharCode(65 + j)} de la pregunta ${i + 1} no puede estar vacía`);
+                    return false;
+                }
+            }
+
+            if (p.respuestaCorrecta === undefined || p.respuestaCorrecta === null) {
+                alert(`Debe seleccionar una respuesta correcta para la pregunta ${i + 1}`);
+                return false;
+            }
+        }
+        return true;
+    };
+
+    // ==========================================
+    // GUARDAR CAMBIOS
+    // ==========================================
 
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        // Validaciones básicas
-        if (!pruebaData.categoria) {
-            alert("Por favor selecciona una categoría");
+        if (!validarFormulario()) {
             return;
         }
 
-        for (let i = 0; i < pruebaData.preguntas.length; i++) {
-            const pregunta = pruebaData.preguntas[i];
-            if (!pregunta.pregunta.trim()) {
-                alert(`La pregunta ${i + 1} no puede estar vacía`);
-                return;
-            }
-
-            for (let j = 0; j < pregunta.opciones.length; j++) {
-                if (!pregunta.opciones[j].trim()) {
-                    alert(`La opción ${j + 1} de la pregunta ${i + 1} no puede estar vacía`);
-                    return;
-                }
-            }
-
-            const opcionesUnicas = new Set(pregunta.opciones.map(op => op.toLowerCase().trim()));
-            if (opcionesUnicas.size !== pregunta.opciones.length) {
-                alert(`La pregunta ${i + 1} tiene opciones repetidas`);
-                return;
-            }
+        if (!pruebaId) {
+            alert("Error: No se identificó la prueba a editar");
+            return;
         }
 
         try {
             setSaving(true);
-            console.log('📤 Enviando datos actualizados al servidor:', pruebaData);
 
             const response = await fetch(`http://localhost:4000/api/pruebas/${pruebaId}`, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
-                    categoria: pruebaData.categoria,
                     preguntas: pruebaData.preguntas
                 })
             });
 
+            if (!response.ok) {
+                throw new Error(`Error ${response.status}: ${response.statusText}`);
+            }
+
             const result = await response.json();
-            console.log('📥 Respuesta del servidor:', result);
 
             if (result.success) {
-                alert("✅ ¡Prueba actualizada exitosamente!");
+                alert("✅ Prueba actualizada correctamente");
                 onNavigate("gestionarpruebas");
             } else {
-                alert(`❌ Error al actualizar la prueba: ${result.message}`);
+                alert("❌ Error: " + (result.message || "Error desconocido"));
             }
+
         } catch (error) {
-            console.error('❌ Error completo:', error);
-            alert('❌ Error de conexión al actualizar la prueba: ' + error.message);
+            console.error("Error guardando prueba:", error);
+            alert("❌ Error al guardar: " + error.message);
         } finally {
             setSaving(false);
         }
     };
 
-    const volverAGestion = () => {
-        onNavigate("gestionarpruebas");
-    };
+    const volverAGestion = () => onNavigate("gestionarpruebas");
 
     if (loading) {
         return (
             <div className="prueba-conocimiento-container">
                 <div className="prueba-header">
-                    <button className="btn-volver" onClick={volverAGestion}>
-                        ← Volver a Gestión
-                    </button>
-                    <h1>Editando Prueba</h1>
+                    <button className="back-btn" onClick={volverAGestion}>← Volver</button>
+                    <h1 className="titulo-seccion">Editar Prueba Diagnóstica</h1>
                 </div>
-                <div className="loading">Cargando prueba...</div>
+                <div className="loading">Cargando datos de la prueba...</div>
             </div>
         );
     }
 
     return (
         <div className="prueba-conocimiento-container">
-            {/* BOTÓN VOLVER */}
             <div className="prueba-header">
-                <button className="btn-volver" onClick={volverAGestion}>
-                    ← Volver a Gestión
-                </button>
-                <h1>Editar Prueba de Conocimiento</h1>
+                <button className="back-btn" onClick={volverAGestion}>← Volver</button>
+                <h1 className="titulo-seccion">Editar Prueba Diagnóstica</h1>
             </div>
 
             <form onSubmit={handleSubmit} className="prueba-form">
-
-                {/* SELECCIÓN DE CATEGORÍA */}
-                <div className="categoria-section">
-                    <label htmlFor="categoria" className="form-label">
-                        Categoría de la Prueba *
-                    </label>
-                    <select
-                        id="categoria"
-                        value={pruebaData.categoria}
-                        onChange={handleCategoriaChange}
-                        className="categoria-select"
-                        required
-                    >
-                        <option value="">Selecciona una categoría</option>
-                        {categorias.map((categoria, index) => (
-                            <option key={index} value={categoria}>
-                                {categoria}
-                            </option>
-                        ))}
-                    </select>
-                </div>
-
-                {/* FORMULARIO DE PREGUNTAS */}
                 <div className="preguntas-container">
-                    <h2 className="preguntas-titulo">Preguntas (5 en total)</h2>
-
-                    {pruebaData.preguntas.map((pregunta, preguntaIndex) => (
-                        <div key={preguntaIndex} className="pregunta-card">
-                            <div className="pregunta-header">
-                                <h3>Pregunta {preguntaIndex + 1}</h3>
+                    {pruebaData.preguntas.map((p, index) => (
+                        <div key={index} className="pregunta-card">
+                            <div className="pregunta-title">
+                                <h3>Pregunta {index + 1}</h3>
                             </div>
 
-                            {/* ENUNCIADO DE LA PREGUNTA */}
-                            <div className="pregunta-input-group">
-                                <label className="form-label">
-                                    Enunciado de la pregunta *
-                                </label>
-                                <textarea
-                                    value={pregunta.pregunta}
-                                    onChange={(e) => handlePreguntaChange(preguntaIndex, "pregunta", e.target.value)}
-                                    placeholder="Escribe aquí la pregunta..."
-                                    className="pregunta-textarea"
-                                    rows="3"
-                                    required
-                                />
-                            </div>
+                            <textarea
+                                className="pregunta-textarea"
+                                value={p.pregunta}
+                                onChange={(e) => handlePreguntaChange(index, "pregunta", e.target.value)}
+                                placeholder="Escribe el enunciado de la pregunta..."
+                                rows={3}
+                                required
+                            />
 
-                            {/* OPCIONES DE RESPUESTA */}
                             <div className="opciones-container">
-                                <label className="form-label">Opciones de respuesta *</label>
-                                {pregunta.opciones.map((opcion, opcionIndex) => (
-                                    <div key={opcionIndex} className="opcion-input-group">
+                                {p.opciones.map((op, opIndex) => (
+                                    <div key={opIndex} className="opcion-item">
                                         <span className="opcion-letra">
-                                            {String.fromCharCode(65 + opcionIndex)}
+                                            {String.fromCharCode(65 + opIndex)}
                                         </span>
                                         <input
                                             type="text"
-                                            value={opcion}
-                                            onChange={(e) => handlePreguntaChange(preguntaIndex, `opcion${opcionIndex}`, e.target.value)}
-                                            placeholder={`Opción ${String.fromCharCode(65 + opcionIndex)}...`}
                                             className="opcion-input"
+                                            value={op}
+                                            onChange={(e) =>
+                                                handlePreguntaChange(index, `opcion${opIndex}`, e.target.value)
+                                            }
+                                            placeholder={`Texto de la opción ${String.fromCharCode(65 + opIndex)}`}
                                             required
                                         />
                                     </div>
                                 ))}
                             </div>
 
-                            {/* RESPUESTA CORRECTA */}
                             <div className="respuesta-correcta-group">
-                                <label className="form-label">
-                                    Respuesta correcta *
-                                </label>
+                                <label>Respuesta correcta:</label>
                                 <div className="opciones-radio">
-                                    {pregunta.opciones.map((opcion, opcionIndex) => (
-                                        <label key={opcionIndex} className="radio-label">
+                                    {p.opciones.map((_, opIndex) => (
+                                        <label key={opIndex} className="radio-label">
                                             <input
                                                 type="radio"
-                                                name={`respuestaCorrecta-${preguntaIndex}`}
-                                                value={opcionIndex}
-                                                checked={pregunta.respuestaCorrecta === opcionIndex}
-                                                onChange={(e) => handlePreguntaChange(preguntaIndex, "respuestaCorrecta", parseInt(e.target.value))}
+                                                name={`respuesta-${index}`}
+                                                checked={p.respuestaCorrecta === opIndex}
+                                                onChange={() =>
+                                                    handlePreguntaChange(index, "respuestaCorrecta", opIndex)
+                                                }
                                                 required
                                             />
-                                            <span className="radio-custom"></span>
-                                            {String.fromCharCode(65 + opcionIndex)}
+                                            <span>{String.fromCharCode(65 + opIndex)}</span>
                                         </label>
                                     ))}
                                 </div>
@@ -268,13 +278,23 @@ export default function EditarPrueba({ onNavigate, pruebaId }) {
                     ))}
                 </div>
 
-                {/* BOTONES DE ACCIÓN */}
-                <div className="form-buttons">
-                    <button type="button" className="btn-cancelar" onClick={volverAGestion}>
-                        Cancelar
+                <div className="form-buttons-top">
+                    <button
+                        type="submit"
+                        className={`btn-guardar ${saving ? 'btn-loading' : ''}`}
+                        disabled={saving}
+                    >
+                        {!saving && "💾 "}
+                        {saving ? "Guardando..." : "Guardar Cambios"}
                     </button>
-                    <button type="submit" className="btn-crear" disabled={saving}>
-                        {saving ? 'Guardando...' : 'Guardar Cambios'}
+
+                    <button
+                        type="button"
+                        className="btn-cancelar"
+                        onClick={volverAGestion}
+                        disabled={saving}
+                    >
+                        ✕ Cancelar
                     </button>
                 </div>
             </form>
