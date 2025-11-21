@@ -7,6 +7,7 @@ export default function EvaluacionModulo({ curso, modulo, moduloIndex, onNavigat
     const [tiempoRestante, setTiempoRestante] = useState(null);
     const [evaluacionCompletada, setEvaluacionCompletada] = useState(false);
     const [puntaje, setPuntaje] = useState(0);
+    const [mostrarModalFinal, setMostrarModalFinal] = useState(false);
 
     const preguntas = modulo?.evaluacion?.preguntas || [];
     const tiempoTotal = preguntas.length * 2 * 60; // 2 minutos por pregunta en segundos
@@ -73,57 +74,126 @@ export default function EvaluacionModulo({ curso, modulo, moduloIndex, onNavigat
         setEvaluacionCompletada(true);
     };
 
+    const manejarContinuar = () => {
+        const esUltimoModulo = moduloIndex === curso.modulos.length - 1;
+        
+        if (esUltimoModulo) {
+            // Es el último módulo, mostrar modal de evaluación final
+            setMostrarModalFinal(true);
+        } else {
+            // Hay más módulos, continuar al siguiente
+            if (onEvaluacionCompletada) {
+                onEvaluacionCompletada(moduloIndex);
+            }
+        }
+    };
+
+    const irAEvaluacionFinal = () => {
+        setMostrarModalFinal(false);
+        onNavigate("evaluacion-final", { 
+            curso,
+            evaluacion: curso.evaluacionFinal 
+        });
+    };
+
+    const volverAlCurso = () => {
+        setMostrarModalFinal(false);
+        onNavigate("curso-vista", { curso });
+    };
+
     const pregunta = preguntas[preguntaActual];
 
     if (evaluacionCompletada) {
         return (
-            <div className="evaluacion-completada">
-                <div className="evaluacion-header">
-                    <h1>🎯 Evaluación Completada</h1>
-                    <p>Módulo: {modulo.nombre}</p>
+            <>
+                <div className="evaluacion-completada">
+                    <div className="evaluacion-header">
+                        <h1>🎯 Evaluación Completada</h1>
+                        <p>Módulo: {modulo.nombre}</p>
+                    </div>
+
+                    <div className="resultado-container">
+                        <div className="puntaje-circular">
+                            <div className="puntaje-numero">{puntaje.toFixed(0)}%</div>
+                            <div className="puntaje-texto">Puntaje</div>
+                        </div>
+
+                        <div className="estadisticas">
+                            <div className="estadistica">
+                                <span className="estadistica-valor">{preguntas.length}</span>
+                                <span className="estadistica-label">Total preguntas</span>
+                            </div>
+                            <div className="estadistica">
+                                <span className="estadistica-valor">
+                                    {respuestas.filter((resp, index) => resp === parseInt(preguntas[index].opcionCorrecta)).length}
+                                </span>
+                                <span className="estadistica-label">Correctas</span>
+                            </div>
+                            <div className="estadistica">
+                                <span className="estadistica-valor">
+                                    {respuestas.filter((resp, index) => resp !== parseInt(preguntas[index].opcionCorrecta)).length}
+                                </span>
+                                <span className="estadistica-label">Incorrectas</span>
+                            </div>
+                        </div>
+
+                        <div className="acciones-resultado">
+                            <button 
+                                className="btn-volver-curso"
+                                onClick={() => onNavigate("curso-vista", { curso })}
+                            >
+                                🏠 Volver al curso
+                            </button>
+                            <button 
+                                className="btn-continuar"
+                                onClick={manejarContinuar}
+                            >
+                                🚀 {moduloIndex === curso.modulos.length - 1 ? 'Ir a evaluación final' : 'Continuar al siguiente módulo'}
+                            </button>
+                        </div>
+                    </div>
                 </div>
 
-                <div className="resultado-container">
-                    <div className="puntaje-circular">
-                        <div className="puntaje-numero">{puntaje.toFixed(0)}%</div>
-                        <div className="puntaje-texto">Puntaje</div>
-                    </div>
-
-                    <div className="estadisticas">
-                        <div className="estadistica">
-                            <span className="estadistica-valor">{preguntas.length}</span>
-                            <span className="estadistica-label">Total preguntas</span>
+                {/* Modal para evaluación final */}
+                {mostrarModalFinal && (
+                    <div className="modal-overlay">
+                        <div className="modal-confirmacion">
+                            <div className="modal-header">
+                                <h2>🎓 ¡Módulos Completados!</h2>
+                            </div>
+                            <div className="modal-body">
+                                <p>Has completado todos los módulos del curso <strong>{curso.nombre}</strong>.</p>
+                                <p>¿Deseas continuar con la evaluación final?</p>
+                                <div className="evaluacion-info">
+                                    <div className="info-item">
+                                        <span>📝 Preguntas:</span>
+                                        <span>{curso.evaluacionFinal?.preguntas?.length || 0}</span>
+                                    </div>
+                                    <div className="info-item">
+                                        <span>⏱️ Duración:</span>
+                                        <span>{curso.evaluacionFinal ? `${curso.evaluacionFinal.preguntas.length * 2} minutos` : 'No disponible'}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="modal-actions">
+                                <button 
+                                    className="btn-volver"
+                                    onClick={volverAlCurso}
+                                >
+                                    Volver al curso
+                                </button>
+                                <button 
+                                    className="btn-continuar"
+                                    onClick={irAEvaluacionFinal}
+                                    disabled={!curso.evaluacionFinal || !curso.evaluacionFinal.preguntas || curso.evaluacionFinal.preguntas.length === 0}
+                                >
+                                    Ir a evaluación final
+                                </button>
+                            </div>
                         </div>
-                        <div className="estadistica">
-                            <span className="estadistica-valor">
-                                {respuestas.filter((resp, index) => resp === parseInt(preguntas[index].opcionCorrecta)).length}
-                            </span>
-                            <span className="estadistica-label">Correctas</span>
-                        </div>
-                        <div className="estadistica">
-                            <span className="estadistica-valor">
-                                {respuestas.filter((resp, index) => resp !== parseInt(preguntas[index].opcionCorrecta)).length}
-                            </span>
-                            <span className="estadistica-label">Incorrectas</span>
-                        </div>
                     </div>
-
-                    <div className="acciones-resultado">
-                        <button 
-                            className="btn-revisar"
-                            onClick={() => setEvaluacionCompletada(false)}
-                        >
-                            📝 Revisar respuestas
-                        </button>
-                        <button 
-                            className="btn-continuar"
-                            onClick={() => onEvaluacionCompletada()}
-                        >
-                            🚀 Continuar al siguiente módulo
-                        </button>
-                    </div>
-                </div>
-            </div>
+                )}
+            </>
         );
     }
 
