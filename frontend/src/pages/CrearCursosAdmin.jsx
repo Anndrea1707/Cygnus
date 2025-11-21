@@ -62,6 +62,24 @@ const CrearCursosAdmin = ({ onNavigate, cursoEditar }) => {
     const [cursoId, setCursoId] = useState(null);
     const [cursoCargado, setCursoCargado] = useState(false);
 
+    // Modal bonito (igual que Login)
+    const [mostrarModal, setMostrarModal] = useState(false);
+    const [modalTitulo, setModalTitulo] = useState("");
+    const [modalMensaje, setModalMensaje] = useState("");
+    const [modalIcono, setModalIcono] = useState("");
+    const [modalCallback, setModalCallback] = useState(null);
+
+    const cerrarModal = () => {
+        setMostrarModal(false);
+        // Ejecutar callback si existe (por ejemplo navegar después de OK)
+        if (modalCallback && typeof modalCallback === "function") {
+            const cb = modalCallback;
+            setModalCallback(null);
+            // ejecutar en next tick
+            setTimeout(() => cb(), 0);
+        }
+    };
+
     useEffect(() => {
         console.log("🔍 Props recibidas - cursoEditar:", cursoEditar);
         
@@ -103,21 +121,20 @@ const CrearCursosAdmin = ({ onNavigate, cursoEditar }) => {
             });
 
             // Módulos
-           // Saneamos módulos para garantizar estructura completa
-const modulosSanitizados = (curso.modulos || []).map(m => ({
-    ...m,
-    contenido: Array.isArray(m.contenido) ? m.contenido : [],
-    evaluacion: m.evaluacion
-        ? {
-            titulo: m.evaluacion.titulo || "",
-            descripcion: m.evaluacion.descripcion || "",
-            preguntas: Array.isArray(m.evaluacion.preguntas) ? m.evaluacion.preguntas : []
-        }
-        : { titulo: "", descripcion: "", preguntas: [] }
-}));
+            // Saneamos módulos para garantizar estructura completa
+            const modulosSanitizados = (curso.modulos || []).map(m => ({
+                ...m,
+                contenido: Array.isArray(m.contenido) ? m.contenido : [],
+                evaluacion: m.evaluacion
+                    ? {
+                        titulo: m.evaluacion.titulo || "",
+                        descripcion: m.evaluacion.descripcion || "",
+                        preguntas: Array.isArray(m.evaluacion.preguntas) ? m.evaluacion.preguntas : []
+                    }
+                    : { titulo: "", descripcion: "", preguntas: [] }
+            }));
 
-setModulos(modulosSanitizados);
-
+            setModulos(modulosSanitizados);
 
             // Evaluación final
             setEvaluacionFinal(curso.evaluacionFinal || {
@@ -179,7 +196,11 @@ setModulos(modulosSanitizados);
             const res = await axios.post("http://localhost:4000/api/cursos/upload", formData);
             setForm({ ...form, imagen: res.data.url });
         } catch (error) {
-            alert("Error al subir la imagen");
+            // Modal en vez de alert
+            setModalIcono("❌");
+            setModalTitulo("Error al subir imagen");
+            setModalMensaje("Ocurrió un error al subir la imagen del curso.");
+            setMostrarModal(true);
         }
     };
 
@@ -192,7 +213,10 @@ setModulos(modulosSanitizados);
             const res = await axios.post("http://localhost:4000/api/cursos/upload", formData);
             setImagenState(res.data.url);
         } catch (error) {
-            alert("Error al subir la imagen del módulo");
+            setModalIcono("❌");
+            setModalTitulo("Error al subir imagen del módulo");
+            setModalMensaje("No se pudo subir la imagen de portada del módulo.");
+            setMostrarModal(true);
         }
     };
 
@@ -205,7 +229,10 @@ setModulos(modulosSanitizados);
             const res = await axios.post("http://localhost:4000/api/cursos/upload", formData);
             setRecursoState(res.data.url);
         } catch (error) {
-            alert("Error al subir el recurso extra");
+            setModalIcono("❌");
+            setModalTitulo("Error al subir recurso");
+            setModalMensaje("No se pudo subir el recurso extra.");
+            setMostrarModal(true);
         }
     };
 
@@ -223,11 +250,17 @@ setModulos(modulosSanitizados);
 
     const guardarModulo = () => {
         if (!nuevoModulo.nombre.trim()) {
-            alert("El nombre del módulo es obligatorio");
+            setModalIcono("❌");
+            setModalTitulo("Nombre requerido");
+            setModalMensaje("El nombre del módulo es obligatorio.");
+            setMostrarModal(true);
             return;
         }
         if (modulos.length >= 4) {
-            alert("Máximo 4 módulos permitidos");
+            setModalIcono("❌");
+            setModalTitulo("Límite de módulos");
+            setModalMensaje("Máximo 4 módulos permitidos.");
+            setMostrarModal(true);
             return;
         }
         setModulos([...modulos, { ...nuevoModulo }]);
@@ -269,7 +302,10 @@ setModulos(modulosSanitizados);
 
     const guardarContenido = () => {
         if (!nuevoContenido.titulo.trim()) {
-            alert("El título del contenido es obligatorio");
+            setModalIcono("❌");
+            setModalTitulo("Título requerido");
+            setModalMensaje("El título del contenido es obligatorio.");
+            setMostrarModal(true);
             return;
         }
         const modulosActualizados = [...modulos];
@@ -338,11 +374,17 @@ setModulos(modulosSanitizados);
 
     const guardarPregunta = () => {
         if (!nuevaPregunta.interrogante.trim() || nuevaPregunta.opciones.some(op => !op.trim())) {
-            alert("Completa todas las opciones de la pregunta");
+            setModalIcono("❌");
+            setModalTitulo("Pregunta incompleta");
+            setModalMensaje("Completa todas las opciones de la pregunta.");
+            setMostrarModal(true);
             return;
         }
         if (nuevaPregunta.opcionCorrecta === "") {
-            alert("Selecciona la opción correcta");
+            setModalIcono("❌");
+            setModalTitulo("Seleccione correcta");
+            setModalMensaje("Selecciona la opción correcta de la pregunta.");
+            setMostrarModal(true);
             return;
         }
         if (modalPregunta.tipo === 'modulo') {
@@ -391,31 +433,51 @@ setModulos(modulosSanitizados);
         try {
             if (esEdicion && cursoId) {
                 await axios.put(`http://localhost:4000/api/cursos/${cursoId}`, cursoData);
-                alert("¡Curso actualizado exitosamente!");
+                // Mostrar modal de éxito y navegar al cerrar
+                setModalIcono("🚀");
+                setModalTitulo("Curso actualizado");
+                setModalMensaje("¡Curso actualizado exitosamente!");
+                setModalCallback(() => () => onNavigate("cursosadmin"));
+                setMostrarModal(true);
             } else {
                 await axios.post("http://localhost:4000/api/cursos", cursoData);
-                alert("¡Curso creado exitosamente!");
+                setModalIcono("🚀");
+                setModalTitulo("Curso creado");
+                setModalMensaje("¡Curso creado exitosamente!");
+                setModalCallback(() => () => onNavigate("cursosadmin"));
+                setMostrarModal(true);
             }
-            onNavigate("cursosadmin");
         } catch (error) {
             console.error("Error al guardar el curso:", error);
-            alert(`Error al guardar el curso: ${error.response?.data?.mensaje || error.message}`);
+            setModalIcono("❌");
+            setModalTitulo("Error al guardar");
+            setModalMensaje(`Error al guardar el curso: ${error.response?.data?.mensaje || error.message}`);
+            setMostrarModal(true);
         }
     };
 
     const validarCursoCompleto = () => {
         // Ya no se requiere categoría
         if (!form.nombre || !form.descripcion || !form.horas || !form.nivel || !form.imagen) {
-            alert("Completa todos los campos básicos del curso");
+            setModalIcono("❌");
+            setModalTitulo("Campos incompletos");
+            setModalMensaje("Completa todos los campos básicos del curso.");
+            setMostrarModal(true);
             return false;
         }
         if (modulos.length === 0) {
-            alert("Agrega al menos un módulo al curso");
+            setModalIcono("❌");
+            setModalTitulo("Sin módulos");
+            setModalMensaje("Agrega al menos un módulo al curso.");
+            setMostrarModal(true);
             return false;
         }
         for (let modulo of modulos) {
             if (!Array.isArray(modulo.contenido) || modulo.contenido.length === 0) {
-                alert(`El módulo "${modulo.nombre}" no tiene contenido`);
+                setModalIcono("❌");
+                setModalTitulo("Módulo sin contenido");
+                setModalMensaje(`El módulo "${modulo.nombre}" no tiene contenido.`);
+                setMostrarModal(true);
                 return false;
             }
         }
@@ -1029,6 +1091,18 @@ setModulos(modulosSanitizados);
                                 {modalPregunta.modo === 'editar' ? 'Actualizar Pregunta' : 'Guardar Pregunta'}
                             </button>
                         </div>
+                    </div>
+                </div>
+            )}
+
+            {/* ---------- MODAL GLOBAL (estilo Login) ---------- */}
+            {mostrarModal && (
+                <div className="modal-overlay-login">
+                    <div className="modal-login">
+                        <div className="modal-icon-login">{modalIcono}</div>
+                        <h3>{modalTitulo}</h3>
+                        <p>{modalMensaje}</p>
+                        <button className="modal-btn-aceptar" onClick={cerrarModal}>Aceptar</button>
                     </div>
                 </div>
             )}

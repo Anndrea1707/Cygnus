@@ -338,22 +338,24 @@
     background: #ff3742;
 }
 
-/* Modales */
+/* =====================================================
+   ⭐ MODALES - CORREGIDOS
+===================================================== */
 .backdrop {
     position: fixed;
     inset: 0;
-    background: rgba(0, 0, 0, 0.8);
+    background: rgba(0, 0, 0, 0.78);
     backdrop-filter: blur(8px);
     display: flex;
     align-items: center;
     justify-content: center;
-    z-index: 1000;
+    z-index: 2000;
     padding: 20px;
 }
 
 .modal-card {
     background: rgba(30, 20, 50, 0.95);
-    backdrop-filter: blur(16px);
+    backdrop-filter: blur(18px);
     padding: 32px;
     border-radius: 20px;
     border: 1px solid #7b2cbf;
@@ -362,6 +364,7 @@
     text-align: center;
     max-height: 90vh;
     overflow-y: auto;
+    animation: modal-entrada 0.25s ease-out;
 }
 
 .modal-card.grande {
@@ -395,11 +398,11 @@
     border: none;
     border-radius: 12px;
     cursor: pointer;
-    transition: all 0.3s;
+    transition: 0.3s;
 }
 
 .btn-cancelar:hover {
-    background: #555;
+    background: #666;
 }
 
 .btn-guardar-modulo {
@@ -409,15 +412,68 @@
     border: none;
     border-radius: 12px;
     cursor: pointer;
-    transition: all 0.3s;
+    transition: 0.3s;
 }
 
 .btn-guardar-modulo:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(157, 78, 221, 0.4);
+    transform: translateY(-3px);
+    box-shadow: 0 4px 14px rgba(157, 78, 221, 0.4);
 }
 
-/* Sección de preguntas en modales */
+/* Animación */
+@keyframes modal-entrada {
+    from { opacity: 0; transform: scale(0.8); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+/* =====================================================
+   ⚠️ ALERTA MODAL (Opción A)
+===================================================== */
+.alerta-modal {
+    background: rgba(20, 0, 30, 0.95);
+    border: 1px solid #b5179e;
+    padding: 28px;
+    border-radius: 16px;
+    text-align: center;
+    width: 90%;
+    max-width: 380px;
+    animation: alerta-pop 0.25s ease-out;
+}
+
+.alerta-modal h3 {
+    color: #ff79c6;
+    font-size: 1.4rem;
+    margin-bottom: 15px;
+}
+
+.alerta-modal p {
+    color: #f3d9ff;
+    font-size: 1rem;
+    margin-bottom: 18px;
+}
+
+.alerta-btn {
+    background: #b5179e;
+    color: white;
+    padding: 10px 26px;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.alerta-btn:hover {
+    background: #e34ba9;
+    transform: scale(1.03);
+}
+
+@keyframes alerta-pop {
+    from { opacity: 0; transform: translateY(-10px) scale(0.9); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* ===================================================== */
+
 .seccion-preguntas {
     margin-top: 25px;
     padding-top: 20px;
@@ -486,7 +542,7 @@
     font-weight: normal;
 }
 
-/* Recurso extra options */
+/* Recurso extra */
 .recurso-extra-options {
     margin-top: 10px;
 }
@@ -502,7 +558,6 @@
     align-items: center;
     gap: 8px;
     cursor: pointer;
-    font-weight: normal;
 }
 
 .radio-group input[type="radio"] {
@@ -511,77 +566,34 @@
 
 /* Responsive */
 @media (max-width: 768px) {
-    .form-card {
-        padding: 20px;
-        margin: 20px;
-    }
-    
-    .titulo-principal {
-        font-size: 2rem;
-    }
-    
-    .seccion-header {
-        flex-direction: column;
-        gap: 10px;
-        align-items: flex-start;
-    }
-    
-    .modulos-lista {
-        grid-template-columns: 1fr;
-    }
-    
-    .modal-card.grande {
-        max-width: 95%;
-    }
-    
-    .btn-crear-curso {
-        width: 80%;
-    }
-    
-    .modal-actions {
-        flex-direction: column;
-    }
-    
-    .dificultad-stats {
-        flex-direction: column;
-    }
-    
-    .radio-group {
-        flex-direction: column;
-        gap: 10px;
-    }
-    
-    .opcion-input {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 5px;
-    }
-    
-    .opcion-input span {
-        min-width: auto;
-    }
+    .form-card { padding: 20px; margin: 20px; }
+    .titulo-principal { font-size: 2rem; }
+    .seccion-header { flex-direction: column; gap: 10px; align-items: flex-start; }
+    .modulos-lista { grid-template-columns: 1fr; }
+    .modal-card.grande { max-width: 95%; }
+    .btn-crear-curso { width: 80%; }
+    .modal-actions { flex-direction: column; }
+    .dificultad-stats { flex-direction: column; }
+    .radio-group { flex-direction: column; gap: 10px; }
+    .opcion-input { flex-direction: column; align-items: flex-start; gap: 5px; }
+    .opcion-input span { min-width: auto; }
 }
 
-/* Scroll personalizado */
-.modal-card::-webkit-scrollbar {
-    width: 8px;
-}
-
+/* Scroll */
+.modal-card::-webkit-scrollbar { width: 8px; }
 .modal-card::-webkit-scrollbar-track {
     background: rgba(255, 255, 255, 0.1);
     border-radius: 4px;
 }
-
 .modal-card::-webkit-scrollbar-thumb {
     background: #7b2cbf;
     border-radius: 4px;
 }
-
 .modal-card::-webkit-scrollbar-thumb:hover {
     background: #9d4edd;
 }
 
-/* Botones de edición y eliminación pequeños */
+/* Botones pequeños */
 .acciones-contenido,
 .acciones-pregunta {
     display: flex;
@@ -628,32 +640,19 @@
     transform: scale(1.1);
 }
 
-/* Mejoras en los items de contenido y preguntas */
-.contenido-item,
-.pregunta-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 8px 12px;
-    background: rgba(255, 255, 255, 0.05);
-    border-radius: 8px;
-    margin-bottom: 8px;
-    font-size: 0.9rem;
-}
-
+/* Hover mejora */
 .contenido-item:hover,
 .pregunta-item:hover {
     background: rgba(255, 255, 255, 0.08);
 }
 
-/* 🚫 Evitar desplazamiento horizontal */
+/* Evitar desplazamiento horizontal */
 html,
 body {
     overflow-x: hidden;
     width: 100%;
 }
 
-/* 🔧 Ajuste para que el contenedor ocupe toda la pantalla */
 .crear-curso-page {
     width: 100vw;
     box-sizing: border-box;
