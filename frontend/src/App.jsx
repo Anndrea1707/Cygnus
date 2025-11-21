@@ -25,6 +25,9 @@ import EditarPrueba from "./pages/EditarPrueba";
 import TomarPrueba from "./components/TomarPrueba";
 import CursosUsuario from "./pages/CursosUsuario";
 import CursoVista from "./pages/CursoVista";
+import CursoContenido from "./pages/CursoContenido";
+import EvaluacionModulo from "./pages/EvaluacionModulo";
+import EvaluacionFinal from "./pages/EvaluacionFinal";
 
 
 function App() {
@@ -385,6 +388,52 @@ function App() {
         <EditarPrueba
           onNavigate={handleNavigate}
           pruebaId={pageParams.pruebaId}
+        />
+      );
+
+    // En App.jsx - agregar estos casos al switch
+    case "curso-contenido":
+      return (
+        <CursoContenido
+          curso={pageParams.curso}
+          onNavigate={handleNavigate}
+          onFinalizarCurso={() => {
+            // Lógica cuando se finaliza el curso
+            console.log("Curso finalizado");
+            onNavigate("cursosusuario");
+          }}
+        />
+      );
+
+    case "evaluacion-modulo":
+      return (
+        <EvaluacionModulo
+          curso={pageParams.curso}
+          modulo={pageParams.modulo}
+          moduloIndex={pageParams.moduloIndex}
+          onNavigate={handleNavigate}
+          onEvaluacionCompletada={() => {
+            // Lógica cuando se completa la evaluación del módulo
+            onNavigate("curso-contenido", {
+              curso: pageParams.curso,
+              moduloIndex: pageParams.moduloIndex + 1,
+              contenidoIndex: 0
+            });
+          }}
+        />
+      );
+
+    case "evaluacion-final":
+      return (
+        <EvaluacionFinal
+          curso={pageParams.curso}
+          evaluacion={pageParams.evaluacion}
+          onNavigate={handleNavigate}
+          onEvaluacionCompletada={() => {
+            // Lógica cuando se completa la evaluación final
+            console.log("Evaluación final completada");
+            onNavigate("cursosusuario");
+          }}
         />
       );
 

@@ -39,13 +39,15 @@ export default function EditarPrueba({ onNavigate, params }) {
             }
 
             const result = await response.json();
+            console.log("📊 Resultado de carga por ID:", result); // Para debug
 
             if (!result.success) {
                 alert("No se pudo cargar la prueba: " + (result.message || "Error desconocido"));
                 return onNavigate("gestionarpruebas");
             }
 
-            transformarDatosPrueba(result.prueba);
+            // CORRECCIÓN: Usar result.data en lugar de result.prueba
+            transformarDatosPrueba(result.data);
 
         } catch (error) {
             console.error("Error cargando prueba por ID:", error);
@@ -66,6 +68,7 @@ export default function EditarPrueba({ onNavigate, params }) {
             }
 
             const result = await response.json();
+            console.log("📊 Resultado de prueba activa:", result); // Para debug
 
             if (!result.success) {
                 alert("No existe una prueba activa para editar");
@@ -84,11 +87,26 @@ export default function EditarPrueba({ onNavigate, params }) {
     };
 
     const transformarDatosPrueba = (pruebaBackend) => {
-        const preguntasTransformadas = pruebaBackend.preguntas.map(p => {
+        console.log("🔄 Transformando datos:", pruebaBackend); // Para debug
+
+        if (!pruebaBackend || !pruebaBackend.preguntas) {
+            console.error("❌ Datos de prueba inválidos:", pruebaBackend);
+            alert("Error: Los datos de la prueba son inválidos");
+            return;
+        }
+
+        const preguntasTransformadas = pruebaBackend.preguntas.map((p, index) => {
             // Encontrar el índice de la respuesta correcta
             const respuestaCorrectaIndex = p.opciones.findIndex(
                 op => op.letra === p.respuestaCorrecta
             );
+
+            console.log(`Pregunta ${index + 1}:`, {
+                enunciado: p.enunciado,
+                respuestaCorrecta: p.respuestaCorrecta,
+                indiceEncontrado: respuestaCorrectaIndex,
+                opciones: p.opciones.map(op => ({ letra: op.letra, texto: op.texto }))
+            });
 
             return {
                 pregunta: p.enunciado,

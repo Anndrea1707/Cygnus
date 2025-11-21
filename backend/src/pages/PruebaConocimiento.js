@@ -4,7 +4,7 @@ const router = express.Router();
 const Usuario = require("./Usuario");
 
 // =============================================
-// MODELO DE PRUEBA DE CONOCIMIENTO
+// MODELO DE PRUEBA DIAGNÓSTICA ÚNICA
 // =============================================
 
 const opcionSchema = new mongoose.Schema({
@@ -42,13 +42,8 @@ const preguntaSchema = new mongoose.Schema({
     }
 });
 
-const pruebaConocimientoSchema = new mongoose.Schema({
-    categoria: {
-        type: String,
-        required: [true, 'La categoría es requerida'],
-        enum: ['matematicas', 'tecnologia', 'idiomas'],
-        trim: true
-    },
+const pruebaDiagnosticaSchema = new mongoose.Schema({
+    // ELIMINADO: campo categoría para prueba única
     preguntas: {
         type: [preguntaSchema],
         validate: {
@@ -86,7 +81,7 @@ const pruebaConocimientoSchema = new mongoose.Schema({
     timestamps: true
 });
 
-const PruebaConocimiento = mongoose.model('PruebaConocimiento', pruebaConocimientoSchema);
+const PruebaDiagnostica = mongoose.model('PruebaDiagnostica', pruebaDiagnosticaSchema);
 
 // =============================================
 // MIDDLEWARES
@@ -108,48 +103,43 @@ const adminMiddleware = async (req, res, next) => {
     next();
 };
 
-const verificarCategoriaMiddleware = async (req, res, next) => {
+// =============================================
+// RUTAS ACTUALIZADAS PARA PRUEBA ÚNICA
+// =============================================
+
+// ✅ 1. Obtener la prueba activa única
+router.get("/actual", async (req, res) => {
     try {
-        const { categoria } = req.body;
-        console.log('🔍 Verificando categoría:', categoria);
+        const prueba = await PruebaDiagnostica.findOne({ activa: true });
 
-        if (!categoria) {
-            return res.status(400).json({
+        if (!prueba) {
+            return res.status(404).json({
                 success: false,
-                message: 'Categoría es requerida'
+                message: "No hay prueba diagnóstica creada"
             });
         }
 
-        const pruebaExistente = await PruebaConocimiento.findOne({
-            categoria: categoria.toLowerCase(),
-            activa: true
-        });
+        // Enviar sin respuestas correctas
+        const pruebaParaUsuario = {
+            _id: prueba._id,
+            preguntas: prueba.preguntas.map(p => ({
+                enunciado: p.enunciado,
+                opciones: p.opciones.map(op => ({
+                    letra: op.letra,
+                    texto: op.texto
+                }))
+            }))
+        };
 
-        console.log('📊 Prueba existente encontrada:', pruebaExistente ? 'SÍ' : 'NO');
+        res.json({ success: true, prueba: pruebaParaUsuario });
 
-        if (pruebaExistente) {
-            return res.status(400).json({
-                success: false,
-                message: `Ya existe una prueba activa en la categoría ${categoria}. Solo se permite una prueba por categoría.`
-            });
-        }
-
-        next();
     } catch (error) {
-        console.error('❌ Error en verificarCategoriaMiddleware:', error);
-        res.status(500).json({
-            success: false,
-            message: 'Error al verificar categoría',
-            error: error.message
-        });
+        console.error("Error al obtener la prueba:", error);
+        res.status(500).json({ success: false, message: "Error del servidor" });
     }
-};
+});
 
-// =============================================
-// RUTAS PARA LA GESTIÓN DE PRUEBAS
-// =============================================
-
-// ✅ 1. Verificar si el usuario ya realizó la prueba
+// ✅ 2. Verificar estado del usuario
 router.get("/verificar-estado/:usuarioId", async (req, res) => {
     try {
         const usuario = await Usuario.findById(req.params.usuarioId);
@@ -164,7 +154,6 @@ router.get("/verificar-estado/:usuarioId", async (req, res) => {
         res.json({
             success: true,
             pruebaCompletada: usuario.prueba_conocimiento?.completada || false,
-            categoriaInteres: usuario.encuesta_inicial?.area_interes,
             habilidadActual: usuario.prueba_conocimiento?.habilidad || 1
         });
 
@@ -177,55 +166,12 @@ router.get("/verificar-estado/:usuarioId", async (req, res) => {
     }
 });
 
-// ✅ 2. Obtener prueba por categoría (para mostrar al usuario)
-router.get("/obtener-por-categoria/:categoria", async (req, res) => {
-    try {
-        const prueba = await PruebaConocimiento.findOne({ 
-            categoria: req.params.categoria,
-            activa: true 
-        });
-
-        if (!prueba) {
-            return res.status(404).json({ 
-                success: false, 
-                message: "No hay prueba disponible para esta categoría" 
-            });
-        }
-
-        // No enviar las respuestas correctas al frontend
-        const pruebaParaUsuario = {
-            _id: prueba._id,
-            categoria: prueba.categoria,
-            preguntas: prueba.preguntas.map(p => ({
-                enunciado: p.enunciado,
-                opciones: p.opciones.map(op => ({
-                    letra: op.letra,
-                    texto: op.texto
-                }))
-            }))
-        };
-
-        res.json({
-            success: true,
-            prueba: pruebaParaUsuario
-        });
-
-    } catch (error) {
-        console.error("Error al obtener prueba:", error);
-        res.status(500).json({ 
-            success: false, 
-            message: "Error del servidor" 
-        });
-    }
-});
-
-// ✅ 3. Calificar prueba y calcular habilidad
+// ✅ 3. Calificar prueba
 router.post("/calificar", async (req, res) => {
     try {
         const { usuarioId, pruebaId, respuestas } = req.body;
 
-        // Obtener la prueba con respuestas correctas
-        const prueba = await PruebaConocimiento.findById(pruebaId);
+        const prueba = await PruebaDiagnostica.findById(pruebaId);
         if (!prueba) {
             return res.status(404).json({ 
                 success: false, 
@@ -233,7 +179,6 @@ router.post("/calificar", async (req, res) => {
             });
         }
 
-        // Calificar respuestas
         let correctas = 0;
         respuestas.forEach((respuestaUsuario, index) => {
             const letraRespuesta = String.fromCharCode(65 + respuestaUsuario);
@@ -242,10 +187,8 @@ router.post("/calificar", async (req, res) => {
             }
         });
 
-        // Calcular puntuación (0-100)
         const puntuacion = (correctas / prueba.preguntas.length) * 100;
 
-        // Calcular habilidad (1-5) basado en la puntuación
         let habilidad;
         if (puntuacion >= 90) habilidad = 5;
         else if (puntuacion >= 70) habilidad = 4;
@@ -260,8 +203,7 @@ router.post("/calificar", async (req, res) => {
                 "prueba_conocimiento.completada": true,
                 "prueba_conocimiento.fecha_realizacion": new Date(),
                 "prueba_conocimiento.puntuacion": puntuacion,
-                "prueba_conocimiento.habilidad": habilidad,
-                "prueba_conocimiento.categoria_evaluada": prueba.categoria
+                "prueba_conocimiento.habilidad": habilidad
             },
             { new: true }
         );
@@ -288,23 +230,23 @@ router.post("/calificar", async (req, res) => {
     }
 });
 
-// ✅ 4. CREAR PRUEBA CON RESTRICCIÓN
-router.post('/crear', authMiddleware, adminMiddleware, verificarCategoriaMiddleware, async (req, res) => {
+// ✅ 4. Crear prueba (solo una activa)
+router.post('/crear', authMiddleware, adminMiddleware, async (req, res) => {
     try {
         console.log('📥 Body recibido:', JSON.stringify(req.body, null, 2));
 
-        const { categoria, preguntas } = req.body;
-        const creadoPor = req.usuario.id;
-        const nombreCreador = req.usuario.nombre;
-
-        // Validar categoría
-        const categoriasPermitidas = ['matematicas', 'tecnologia', 'idiomas'];
-        if (!categoriasPermitidas.includes(categoria)) {
+        // Verificar si ya existe prueba activa
+        const pruebaExistente = await PruebaDiagnostica.findOne({ activa: true });
+        if (pruebaExistente) {
             return res.status(400).json({
                 success: false,
-                message: 'Categoría no válida. Use: matematicas, tecnologia, idiomas'
+                message: "Ya existe una prueba diagnóstica activa. Debe eliminarla antes de crear otra."
             });
         }
+
+        const { preguntas } = req.body;
+        const creadoPor = req.usuario.id;
+        const nombreCreador = req.usuario.nombre;
 
         // Validar número de preguntas
         if (!preguntas || preguntas.length !== 5) {
@@ -316,7 +258,7 @@ router.post('/crear', authMiddleware, adminMiddleware, verificarCategoriaMiddlew
 
         console.log('🔍 Procesando preguntas...');
 
-        // Procesar preguntas con validación adicional
+        // Procesar preguntas
         const preguntasProcesadas = preguntas.map((pregunta, index) => {
             console.log(`📝 Procesando pregunta ${index + 1}:`, pregunta.pregunta);
 
@@ -339,22 +281,11 @@ router.post('/crear', authMiddleware, adminMiddleware, verificarCategoriaMiddlew
 
         console.log('💾 Creando documento en MongoDB...');
 
-        const nuevaPrueba = new PruebaConocimiento({
-            categoria: categoria.toLowerCase(),
+        const nuevaPrueba = new PruebaDiagnostica({
             preguntas: preguntasProcesadas,
             creadoPor,
             nombreCreador
         });
-
-        // Validar antes de guardar
-        const erroresValidacion = nuevaPrueba.validateSync();
-        if (erroresValidacion) {
-            console.error('❌ Error de validación:', erroresValidacion);
-            return res.status(400).json({
-                success: false,
-                message: 'Error de validación: ' + erroresValidacion.message
-            });
-        }
 
         await nuevaPrueba.save();
         console.log('✅ Prueba guardada exitosamente:', nuevaPrueba._id);
@@ -364,7 +295,6 @@ router.post('/crear', authMiddleware, adminMiddleware, verificarCategoriaMiddlew
             message: 'Prueba creada exitosamente',
             data: {
                 id: nuevaPrueba._id,
-                categoria: nuevaPrueba.categoria,
                 preguntas: nuevaPrueba.preguntas.length
             }
         });
@@ -373,79 +303,34 @@ router.post('/crear', authMiddleware, adminMiddleware, verificarCategoriaMiddlew
         console.error('❌ Error completo al crear prueba:', error);
         res.status(500).json({
             success: false,
-            message: 'Error interno del servidor: ' + error.message,
-            error: process.env.NODE_ENV === 'development' ? error.stack : undefined
+            message: 'Error interno del servidor: ' + error.message
         });
     }
 });
 
-// ✅ 5. Verificar si ya existe prueba en la categoría
-router.post('/verificar-categoria', authMiddleware, adminMiddleware, async (req, res) => {
-    try {
-        const { categoria } = req.body;
-
-        const pruebaExistente = await PruebaConocimiento.findOne({
-            categoria: categoria.toLowerCase(),
-            activa: true
-        });
-
-        res.json({
-            success: true,
-            existe: !!pruebaExistente,
-            prueba: pruebaExistente
-        });
-
-    } catch (error) {
-        console.error('Error al verificar categoría:', error);
-        res.status(500).json({
-            success: false,
-            message: 'Error interno del servidor',
-            error: error.message
-        });
-    }
-});
-
-// ✅ 6. Obtener todas las pruebas
+// ✅ 5. Obtener todas las pruebas (para admin)
 router.get('/', authMiddleware, adminMiddleware, async (req, res) => {
     try {
-        const { categoria, page = 1, limit = 10 } = req.query;
-
-        const filtro = { activa: true };
-        if (categoria) filtro.categoria = categoria.toLowerCase();
-
-        const pruebas = await PruebaConocimiento.find(filtro)
-            .sort({ fechaCreacion: -1 })
-            .limit(limit * 1)
-            .skip((page - 1) * limit);
-
-        const total = await PruebaConocimiento.countDocuments(filtro);
+        const pruebas = await PruebaDiagnostica.find().sort({ fechaCreacion: -1 });
 
         res.json({
             success: true,
-            data: pruebas,
-            paginacion: {
-                paginaActual: parseInt(page),
-                totalPaginas: Math.ceil(total / limit),
-                totalPruebas: total
-            }
+            data: pruebas
         });
 
     } catch (error) {
         console.error('Error al obtener pruebas:', error);
         res.status(500).json({
             success: false,
-            message: 'Error interno del servidor',
-            error: error.message
+            message: 'Error interno del servidor'
         });
     }
 });
 
-// ✅ 7. Obtener prueba por ID
+// ✅ 6. Obtener prueba por ID
 router.get('/:id', authMiddleware, async (req, res) => {
     try {
-        const { id } = req.params;
-
-        const prueba = await PruebaConocimiento.findById(id);
+        const prueba = await PruebaDiagnostica.findById(req.params.id);
 
         if (!prueba) {
             return res.status(404).json({
@@ -463,19 +348,15 @@ router.get('/:id', authMiddleware, async (req, res) => {
         console.error('Error al obtener prueba:', error);
         res.status(500).json({
             success: false,
-            message: 'Error interno del servidor',
-            error: error.message
+            message: 'Error interno del servidor'
         });
     }
 });
 
-// ✅ 8. Eliminar prueba (eliminación lógica)
+// ✅ 7. Eliminar prueba (desactivar)
 router.delete('/:id', authMiddleware, adminMiddleware, async (req, res) => {
     try {
-        const { id } = req.params;
-        console.log('🗑️ Intentando eliminar prueba ID:', id);
-
-        const prueba = await PruebaConocimiento.findById(id);
+        const prueba = await PruebaDiagnostica.findById(req.params.id);
         if (!prueba) {
             return res.status(404).json({
                 success: false,
@@ -486,8 +367,6 @@ router.delete('/:id', authMiddleware, adminMiddleware, async (req, res) => {
         prueba.activa = false;
         await prueba.save();
 
-        console.log('✅ Prueba eliminada (desactivada) exitosamente:', id);
-
         res.json({
             success: true,
             message: 'Prueba eliminada exitosamente'
@@ -497,22 +376,18 @@ router.delete('/:id', authMiddleware, adminMiddleware, async (req, res) => {
         console.error('❌ Error al eliminar prueba:', error);
         res.status(500).json({
             success: false,
-            message: 'Error interno del servidor',
-            error: error.message
+            message: 'Error interno del servidor'
         });
     }
 });
 
-// ✅ 9. Actualizar prueba existente
+// ✅ 8. Actualizar prueba
 router.put('/:id', authMiddleware, adminMiddleware, async (req, res) => {
     try {
         const { id } = req.params;
-        const { categoria, preguntas } = req.body;
+        const { preguntas } = req.body;
 
-        console.log('📝 Actualizando prueba ID:', id);
-        console.log('📥 Datos recibidos:', JSON.stringify(req.body, null, 2));
-
-        const prueba = await PruebaConocimiento.findById(id);
+        const prueba = await PruebaDiagnostica.findById(id);
         if (!prueba) {
             return res.status(404).json({
                 success: false,
@@ -520,34 +395,7 @@ router.put('/:id', authMiddleware, adminMiddleware, async (req, res) => {
             });
         }
 
-        // Validar categoría si se está cambiando
-        if (categoria && categoria !== prueba.categoria) {
-            const categoriasPermitidas = ['matematicas', 'tecnologia', 'idiomas'];
-            if (!categoriasPermitidas.includes(categoria)) {
-                return res.status(400).json({
-                    success: false,
-                    message: 'Categoría no válida. Use: matematicas, tecnologia, idiomas'
-                });
-            }
-
-            // Verificar que no exista otra prueba en la nueva categoría
-            const pruebaExistente = await PruebaConocimiento.findOne({
-                categoria: categoria.toLowerCase(),
-                activa: true,
-                _id: { $ne: id }
-            });
-
-            if (pruebaExistente) {
-                return res.status(400).json({
-                    success: false,
-                    message: `Ya existe una prueba activa en la categoría ${categoria}. Solo se permite una prueba por categoría.`
-                });
-            }
-
-            prueba.categoria = categoria.toLowerCase();
-        }
-
-        // Actualizar preguntas si se proporcionan
+        // Actualizar preguntas
         if (preguntas) {
             if (preguntas.length !== 5) {
                 return res.status(400).json({
@@ -578,7 +426,6 @@ router.put('/:id', authMiddleware, adminMiddleware, async (req, res) => {
         }
 
         await prueba.save();
-        console.log('✅ Prueba actualizada exitosamente:', id);
 
         res.json({
             success: true,
@@ -594,6 +441,5 @@ router.put('/:id', authMiddleware, adminMiddleware, async (req, res) => {
         });
     }
 });
-
 
 module.exports = router;

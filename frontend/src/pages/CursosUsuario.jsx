@@ -5,82 +5,140 @@ import "./CursosUsuario.css";
 
 export default function CursosUsuario({ currentPage, usuario, onNavigate, onLogout, onLoginClick }) {
     const [cursos, setCursos] = useState([]);
-    const [cursoSeleccionado, setCursoSeleccionado] = useState(null);
-    const [categoriaFiltro, setCategoriaFiltro] = useState("Todos");
+    const [modalCurso, setModalCurso] = useState(null);
+    const [nivelFiltro, setNivelFiltro] = useState("Todos");
+    const [busqueda, setBusqueda] = useState("");
+    const [loading, setLoading] = useState(true);
 
     // Traer cursos desde la API
     useEffect(() => {
-        fetch("/api/cursos")
-            .then(res => res.json())
-            .then(data => setCursos(data))
-            .catch(err => console.error("Error al cargar cursos:", err));
+        const cargarCursos = async () => {
+            try {
+                setLoading(true);
+                const res = await fetch("/api/cursos");
+                const data = await res.json();
+                setCursos(data);
+            } catch (err) {
+                console.error("Error al cargar cursos:", err);
+            } finally {
+                setLoading(false);
+            }
+        };
+        cargarCursos();
     }, []);
 
-    const categorias = ["Todos", ...new Set(cursos.map(c => c.categoria))];
-    const cursosFiltrados =
-        categoriaFiltro === "Todos" ? cursos : cursos.filter(c => c.categoria === categoriaFiltro);
+    const niveles = ["Todos", "básico", "intermedio", "avanzado"];
 
-    // Detalle de curso
-    if (cursoSeleccionado) {
-        const handleEmpezar = () => {
-            onNavigate("modulo", { cursoId: cursoSeleccionado._id, moduloIndex: 0 });
-        };
+    // Filtrar cursos
+    const cursosFiltrados = cursos.filter(curso => {
+        const coincideNivel = nivelFiltro === "Todos" || curso.nivel === nivelFiltro;
+        const coincideBusqueda = curso.nombre.toLowerCase().includes(busqueda.toLowerCase()) ||
+            curso.descripcion.toLowerCase().includes(busqueda.toLowerCase());
+
+        return coincideNivel && coincideBusqueda;
+    });
+
+    // Componente de Card de Curso
+    const CardCurso = ({ curso }) => (
+        <div className="tarjeta-curso">
+            <img src={curso.imagen} alt={curso.nombre} className="imagen-curso" />
+            <div className="contenido-curso">
+                <div className="curso-header">
+                    <h3>{curso.nombre}</h3>
+                    <span className={`etiqueta-nivel nivel-${curso.nivel?.toLowerCase()}`}>
+                        {curso.nivel}
+                    </span>
+                </div>
+                <p className="curso-descripcion">{curso.descripcion}</p>
+
+                <div className="curso-meta">
+                    <span className="meta-item">⏱️ {curso.horas || curso.horasEstimadas}h</span>
+                    <span className="meta-item">📚 {curso.modulos?.length || 0} módulos</span>
+                </div>
+
+                <button
+                    className="btn-detalles"
+                    onClick={() => setModalCurso(curso)}
+                >
+                    Ver más
+                </button>
+            </div>
+        </div>
+    );
+
+    // Modal de información básica
+    const ModalCurso = ({ curso, onClose, onVerDetalles }) => {
+        if (!curso) return null;
 
         return (
-            <div className="detalle-curso">
-                <NavbarPrincipal
-                    currentPage={currentPage}
-                    usuario={usuario}
-                    onNavigate={onNavigate}
-                    onLogout={onLogout}
-                    onLoginClick={onLoginClick}
-                />
+            <div className="modal-overlay" onClick={onClose}>
+                <div className="modal-contenido" onClick={(e) => e.stopPropagation()}>
+                    <button className="modal-cerrar" onClick={onClose}>×</button>
 
-                <button className="btn-volver" onClick={() => setCursoSeleccionado(null)}>
-                    ← Volver a cursos
-                </button>
+                    <div className="modal-header">
+                        <img src={curso.imagen} alt={curso.nombre} className="modal-imagen" />
+                        <div className="modal-info-basica">
+                            <h2>{curso.nombre}</h2>
+                            <span className={`etiqueta-nivel nivel-${curso.nivel?.toLowerCase()}`}>
+                                {curso.nivel}
+                            </span>
+                        </div>
+                    </div>
 
-                <div className="detalle-contenido">
-                    <img
-                        src={cursoSeleccionado.imagen}
-                        alt={cursoSeleccionado.nombre || cursoSeleccionado.titulo}
-                        className="detalle-imagen"
-                    />
-                    <div className="detalle-info">
-                        <h1>{cursoSeleccionado.nombre || cursoSeleccionado.titulo}</h1>
-                        <p>{cursoSeleccionado.descripcion}</p>
-                        <p><strong>Duración:</strong> {cursoSeleccionado.horas} horas</p>
-                        <p><strong>Nivel:</strong> {cursoSeleccionado.nivel}</p>
+                    <div className="modal-body">
+                        <p className="modal-descripcion">{curso.descripcion}</p>
 
-                        {cursoSeleccionado.contenidos && cursoSeleccionado.contenidos.length > 0 && (
-                            <div className="detalle-linea-tiempo">
-                                <h3>Módulos del curso</h3>
+                        <div className="modal-stats">
+                            <div className="stat">
+                                <strong>⏱️ Duración:</strong> {curso.horas || curso.horasEstimadas} horas
+                            </div>
+                            <div className="stat">
+                                <strong>📚 Módulos:</strong> {curso.modulos?.length || 0}
+                            </div>
+                            <div className="stat">
+                                <strong>🎯 Nivel:</strong> {curso.nivel}
+                            </div>
+                        </div>
+
+                        {curso.modulos && curso.modulos.length > 0 && (
+                            <div className="modal-modulos-preview">
+                                <h4>Estructura del curso:</h4>
                                 <ul>
-                                    {cursoSeleccionado.contenidos.map((m, i) => (
-                                        <li key={i}>
-                                            <span className="punto"></span>
-                                            {m.nombre} {/* Aquí se evita el error de objeto */}
+                                    {curso.modulos.slice(0, 3).map((modulo, index) => (
+                                        <li key={index}>
+                                            <span className="modulo-indice">M{index + 1}</span>
+                                            {modulo.nombre}
                                         </li>
                                     ))}
+                                    {curso.modulos.length > 3 && (
+                                        <li className="mas-modulos">
+                                            +{curso.modulos.length - 3} módulos más...
+                                        </li>
+                                    )}
                                 </ul>
                             </div>
                         )}
+                    </div>
 
+                    <div className="modal-actions">
                         <button
-                            className="btn-login-detalles"
-                            onClick={() => onNavigate("curso-vista", cursoSeleccionado)}
+                            className="btn-secundario"
+                            onClick={onClose}
                         >
-                            Ver más
+                            Cerrar
+                        </button>
+                        <button
+                            className="btn-primario"
+                            onClick={() => onVerDetalles(curso)} // ✅ Aquí se pasa el curso
+                        >
+                            Ver detalles completos
                         </button>
                     </div>
                 </div>
-
-                <Footer />
             </div>
         );
-    }
+    };
 
-    // Lista de cursos
     return (
         <div className="cursos-principal">
             <NavbarPrincipal
@@ -92,38 +150,92 @@ export default function CursosUsuario({ currentPage, usuario, onNavigate, onLogo
             />
 
             <section className="seccion-cursos">
-                <h2 className="titulo-seccion">Cursos disponibles</h2>
-
-                <div className="filtro-categorias">
-                    {categorias.map((cat) => (
-                        <button
-                            key={cat}
-                            className={`btn-categoria ${categoriaFiltro === cat ? "activo" : ""}`}
-                            onClick={() => setCategoriaFiltro(cat)}
-                        >
-                            {cat}
-                        </button>
-                    ))}
+                <div className="hero-cursos">
+                    <h1 className="titulo-hero">Explora Nuestros Cursos</h1>
+                    <p className="subtitulo-hero">
+                        Aprende a tu propio ritmo con nuestra plataforma educativa
+                    </p>
                 </div>
 
-                <div className="grid-cursos">
-                    {cursosFiltrados.map((curso) => (
-                        <div key={curso._id} className="tarjeta-curso">
-                            <img src={curso.imagen} alt={curso.nombre || curso.titulo} className="imagen-curso" />
-                            <div className="contenido-curso">
-                                <h3>{curso.nombre || curso.titulo}</h3>
-                                <p>{curso.descripcion}</p>
-                                <span className="etiqueta-nivel">Nivel {curso.nivel}</span>
-                                <button className="btn-detalles" onClick={() => setCursoSeleccionado(curso)}>
-                                    Ver más
-                                </button>
-                            </div>
+                {/* Sistema de Filtros */}
+                <div className="filtros-avanzados">
+                    <div className="filtro-busqueda">
+                        <input
+                            type="text"
+                            placeholder="🔍 Buscar cursos por nombre..."
+                            value={busqueda}
+                            onChange={(e) => setBusqueda(e.target.value)}
+                            className="input-busqueda"
+                        />
+                    </div>
+
+                    <div className="filtros-grid">
+                        <div className="filtro-grupo">
+                            <label>Filtrar por nivel:</label>
+                            <select
+                                value={nivelFiltro}
+                                onChange={(e) => setNivelFiltro(e.target.value)}
+                                className="select-filtro"
+                            >
+                                {niveles.map(nivel => (
+                                    <option key={nivel} value={nivel}>
+                                        {nivel === "Todos" ? "Todos los niveles" : nivel.charAt(0).toUpperCase() + nivel.slice(1)}
+                                    </option>
+                                ))}
+                            </select>
                         </div>
-                    ))}
+                    </div>
                 </div>
+
+                {/* Todos los Cursos */}
+                <section className="seccion-todos-cursos">
+                    <h2 className="titulo-seccion">
+                        {nivelFiltro === "Todos" ? "Todos los cursos" : `Cursos ${nivelFiltro}`}
+                        <span className="contador-cursos">({cursosFiltrados.length})</span>
+                    </h2>
+
+                    {loading ? (
+                        <div className="cargando">
+                            <div className="spinner"></div>
+                            <p>Cargando cursos...</p>
+                        </div>
+                    ) : cursosFiltrados.length === 0 ? (
+                        <div className="sin-resultados">
+                            <p>No se encontraron cursos con los filtros seleccionados.</p>
+                            <button
+                                className="btn-limpiar-filtros"
+                                onClick={() => {
+                                    setBusqueda("");
+                                    setNivelFiltro("Todos");
+                                }}
+                            >
+                                Limpiar filtros
+                            </button>
+                        </div>
+                    ) : (
+                        <div className="grid-cursos">
+                            {cursosFiltrados.map(curso => (
+                                <CardCurso key={curso._id} curso={curso} />
+                            ))}
+                        </div>
+                    )}
+                </section>
             </section>
 
             <Footer />
+
+            {/* Modal */}
+            {modalCurso && (
+                <ModalCurso
+                    curso={modalCurso}
+                    onClose={() => setModalCurso(null)}
+                    onVerDetalles={(cursoSeleccionado) => { // ✅ Recibe el curso como parámetro
+                        setModalCurso(null);
+                        console.log("🔄 Navegando a curso-vista con:", cursoSeleccionado);
+                        onNavigate("curso-vista", { curso: cursoSeleccionado }); // ✅ Pasa como objeto
+                    }}
+                />
+            )}
         </div>
     );
 }

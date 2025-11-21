@@ -19,23 +19,17 @@ function TomarPrueba({ usuario, onPruebaCompletada }) {
             setCargando(true);
             setError("");
 
-            // Obtener la categoría de interés del usuario desde la encuesta
-            const categoriaInteres = usuario.encuesta_inicial?.area_interes;
+            console.log("🔍 Cargando prueba diagnóstica única...");
 
-            console.log("🔍 Categoría de interés del usuario:", categoriaInteres);
-
-            if (!categoriaInteres) {
-                setError("No tienes un área de interés definida. Completa la encuesta primero.");
-                return;
-            }
-
-            const categoriaPrueba = categoriaInteres.toLowerCase().trim();
-
-            console.log("🎯 Usando categoría normalizada:", categoriaPrueba);
-
-            const response = await fetch(`http://localhost:4000/api/pruebas/obtener-por-categoria/${categoriaPrueba}`);
+            const response = await fetch("http://localhost:4000/api/pruebas/actual");
 
             console.log("📡 Status de respuesta:", response.status);
+
+            if (response.status === 404) {
+                setError("No hay prueba diagnóstica disponible en este momento.");
+                setCargando(false);
+                return;
+            }
 
             const result = await response.json();
             console.log("📊 Resultado de la búsqueda:", result);
@@ -44,7 +38,7 @@ function TomarPrueba({ usuario, onPruebaCompletada }) {
                 setPrueba(result.prueba);
                 setRespuestas(Array(result.prueba.preguntas.length).fill(null));
             } else {
-                setError("No hay prueba disponible para tu área de interés en este momento.");
+                setError("No hay prueba diagnóstica disponible en este momento.");
             }
         } catch (error) {
             console.error("Error al cargar prueba:", error);
@@ -103,15 +97,14 @@ function TomarPrueba({ usuario, onPruebaCompletada }) {
         onPruebaCompletada();
     };
 
-    // ... el resto del código se mantiene igual ...
     if (cargando) {
         return (
             <div className="prueba-fondo">
                 <div className="prueba-card">
                     <div className="cargando-prueba">
                         <div className="spinner"></div>
-                        <h3>Cargando prueba de conocimientos...</h3>
-                        <p>Preparando tu evaluación personalizada</p>
+                        <h3>Cargando prueba diagnóstica...</h3>
+                        <p>Preparando tu evaluación</p>
                     </div>
                 </div>
             </div>
@@ -142,7 +135,7 @@ function TomarPrueba({ usuario, onPruebaCompletada }) {
                     <div className="error-prueba">
                         <div className="error-icon">📝</div>
                         <h2>Prueba no disponible</h2>
-                        <p>No hay pruebas disponibles para tu categoría en este momento.</p>
+                        <p>No hay prueba diagnóstica disponible en este momento.</p>
                         <button onClick={onPruebaCompletada} className="btn-continuar">
                             Continuar al Dashboard
                         </button>
@@ -156,21 +149,21 @@ function TomarPrueba({ usuario, onPruebaCompletada }) {
         <>
             <div className="prueba-fondo">
                 <div className="prueba-card">
-                    <h2 className="prueba-titulo">Prueba de Conocimientos</h2>
+                    <h2 className="prueba-titulo">Prueba Diagnóstica</h2>
                     <p className="prueba-subtitulo">
-                        Responde las siguientes preguntas para determinar tu nivel de habilidad en <strong>{prueba.categoria}</strong>
+                        Responde las siguientes preguntas para determinar tu nivel de habilidad inicial
                     </p>
 
                     <div className="prueba-info">
                         <span>⏱️ Tómate tu tiempo</span>
                         <span>📝 {prueba.preguntas.length} preguntas</span>
-                        <span>🎯 Personaliza tu experiencia</span>
+                        <span>🎯 Diagnóstico personalizado</span>
                     </div>
 
                     <div className="preguntas-container">
                         {prueba.preguntas.map((pregunta, preguntaIndex) => (
                             <div key={preguntaIndex} className="pregunta">
-                                <label>
+                                <label className="pregunta-label">
                                     {preguntaIndex + 1}. {pregunta.enunciado}
                                 </label>
 
@@ -215,9 +208,19 @@ function TomarPrueba({ usuario, onPruebaCompletada }) {
                     <div className="modal-exito">
                         <div className="modal-icon">🎯</div>
                         <h3>¡Prueba Completada!</h3>
-                        <p>Tu nivel de habilidad es: <strong>Nivel {resultado.habilidad}/5</strong></p>
-                        <p>Puntuación: {resultado.puntuacion.toFixed(1)}%</p>
-                        <p>Respuestas correctas: {resultado.correctas}</p>
+                        <div className="resultado-detalles">
+                            <p>Tu nivel de habilidad es: <strong className="nivel-habilidad">Nivel {resultado.habilidad}/5</strong></p>
+                            <p>Puntuación: <strong>{resultado.puntuacion.toFixed(1)}%</strong></p>
+                            <p>Respuestas correctas: <strong>{resultado.correctas}</strong></p>
+                        </div>
+                        <p className="mensaje-motivacion">
+                            {resultado.habilidad >= 4
+                                ? "¡Excelente! Tienes buenos conocimientos base."
+                                : resultado.habilidad >= 3
+                                    ? "Buen trabajo. Tienes una base sólida para comenzar."
+                                    : "No te preocupes, este es tu punto de partida para mejorar."
+                            }
+                        </p>
                         <button className="modal-btn-aceptar" onClick={cerrarModal}>
                             Continuar al Dashboard
                         </button>
