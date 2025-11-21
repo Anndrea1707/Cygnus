@@ -1,4 +1,4 @@
-// src/App.jsx - VERSIÓN CORREGIDA CON NAVEGACIÓN ENTRE MÓDULOS
+// src/App.jsx
 import React, { useState, useEffect } from "react";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
@@ -36,7 +36,6 @@ function App() {
   const [cargando, setCargando] = useState(true);
   const [cursoProgreso, setCursoProgreso] = useState({});
 
-  // Verificar usuario al cargar la aplicación
   useEffect(() => {
     const usuarioGuardado = localStorage.getItem("usuario");
     const progresoGuardado = localStorage.getItem("cursoProgreso");
@@ -95,7 +94,7 @@ function App() {
     localStorage.setItem("usuario", JSON.stringify(userData));
 
     try {
-      const response = await fetch(`http://localhost:4000/api/pruebas/verificar-estado/${userData._id}`);
+      const response = await fetch('http://localhost:4000/api/pruebas/verificar-estado/${userData._id}');
       const result = await response.json();
 
       if (result.success) {
@@ -148,12 +147,10 @@ function App() {
     }
   };
 
-  // ✅ NUEVA FUNCIÓN: Manejar evaluación completada de módulo
   const handleEvaluacionModuloCompletada = (moduloIndexCompletado) => {
     const { curso } = pageParams;
     const siguienteModuloIndex = moduloIndexCompletado + 1;
 
-    // Actualizar progreso
     const nuevoProgreso = {
       ...cursoProgreso,
       [curso.id]: {
@@ -170,29 +167,24 @@ function App() {
     setCursoProgreso(nuevoProgreso);
     localStorage.setItem("cursoProgreso", JSON.stringify(nuevoProgreso));
 
-    // Verificar si hay más módulos
     if (siguienteModuloIndex < curso.modulos.length) {
-      // Navegar al siguiente módulo
       handleNavigate("curso-contenido", {
-        curso: curso,
+        curso,
         moduloIndex: siguienteModuloIndex,
         contenidoIndex: 0
       });
     } else {
-      // Es el último módulo, mostrar modal de evaluación final
       handleNavigate("curso-contenido", {
-        curso: curso,
-        moduloIndex: moduloIndexCompletado, // Mantener en el último módulo completado
+        curso,
+        moduloIndex: moduloIndexCompletado,
         contenidoIndex: curso.modulos[moduloIndexCompletado].contenido.length - 1
       });
     }
   };
 
-  // ✅ NUEVA FUNCIÓN: Manejar finalización de curso
   const handleFinalizarCurso = () => {
     const { curso } = pageParams;
 
-    // Marcar curso como completado
     const nuevoProgreso = {
       ...cursoProgreso,
       [curso.id]: {
@@ -205,15 +197,12 @@ function App() {
     setCursoProgreso(nuevoProgreso);
     localStorage.setItem("cursoProgreso", JSON.stringify(nuevoProgreso));
 
-    // Navegar a la vista de cursos del usuario
     handleNavigate("cursosusuario");
   };
 
-  // ✅ NUEVA FUNCIÓN: Manejar evaluación final completada
   const handleEvaluacionFinalCompletada = () => {
     const { curso } = pageParams;
 
-    // Marcar evaluación final como completada
     const nuevoProgreso = {
       ...cursoProgreso,
       [curso.id]: {
@@ -227,11 +216,9 @@ function App() {
     setCursoProgreso(nuevoProgreso);
     localStorage.setItem("cursoProgreso", JSON.stringify(nuevoProgreso));
 
-    // Navegar a la vista de cursos del usuario
     handleNavigate("cursosusuario");
   };
 
-  // Mostrar loading mientras verifica el estado
   if (cargando) {
     return (
       <div style={{
@@ -267,7 +254,6 @@ function App() {
           currentPage={currentPage}
         />
       );
-
     case "login":
       return (
         <Login
@@ -277,7 +263,6 @@ function App() {
           currentPage={currentPage}
         />
       );
-
     case "registro":
       return (
         <Registro
@@ -285,7 +270,6 @@ function App() {
           currentPage={currentPage}
         />
       );
-
     case "sobreNosotros":
       return (
         <SobreNosotros
@@ -294,7 +278,6 @@ function App() {
           onLoginClick={handleLoginClick}
         />
       );
-
     case "ayuda":
       return (
         <Ayuda
@@ -303,7 +286,6 @@ function App() {
           onLoginClick={handleLoginClick}
         />
       );
-
     case "cursos":
       return (
         <CursosPrincipal
@@ -312,7 +294,6 @@ function App() {
           onLoginClick={handleLoginClick}
         />
       );
-
     case "cursosusuario":
       return (
         <CursosUsuario
@@ -323,7 +304,6 @@ function App() {
           onLoginClick={handleLoginClick}
         />
       );
-
     case "encuesta":
       return (
         <Encuesta
@@ -331,7 +311,6 @@ function App() {
           onEncuestaCompletada={handleEncuestaCompletada}
         />
       );
-
     case "prueba-conocimiento":
       return (
         <TomarPrueba
@@ -339,7 +318,6 @@ function App() {
           onPruebaCompletada={handlePruebaCompletada}
         />
       );
-
     case "paneladmin":
       return (
         <PanelAdmin
@@ -348,7 +326,6 @@ function App() {
           onNavigate={handleNavigate}
         />
       );
-
     case "modificarPerfil":
       return (
         <ModificarPerfil
@@ -357,7 +334,6 @@ function App() {
           onNavigate={handleNavigate}
         />
       );
-
     case "bibliotecaadmin":
       return (
         <Biblioteca
@@ -367,7 +343,6 @@ function App() {
           currentPage={currentPage}
         />
       );
-
     case "usuarios":
       return (
         <AdminUsuarios
@@ -377,7 +352,6 @@ function App() {
           currentPage={currentPage}
         />
       );
-
     case "biblioteca":
       return (
         <BibliotecaUsuario
@@ -387,7 +361,6 @@ function App() {
           currentPage={currentPage}
         />
       );
-
     case "adminusuarios":
       return (
         <UsuariosAdmin
@@ -397,7 +370,6 @@ function App() {
           currentPage={currentPage}
         />
       );
-
     case "adminperfil":
       return (
         <AdminPerfil
@@ -406,7 +378,6 @@ function App() {
           onNavigate={handleNavigate}
         />
       );
-
     case "gestionarAdmins":
       return (
         <GestionarAdmins
@@ -416,7 +387,6 @@ function App() {
           currentPage={currentPage}
         />
       );
-
     case "cursosadmin":
       return (
         <CursosAdmin
@@ -426,7 +396,6 @@ function App() {
           currentPage={currentPage}
         />
       );
-
     case "curso-vista":
       return (
         <CursoVista
@@ -437,7 +406,6 @@ function App() {
           progreso={cursoProgreso[pageParams.curso?.id]}
         />
       );
-
     case "crearcursosadmin":
       return (
         <CrearCursoAdmin
@@ -448,7 +416,6 @@ function App() {
           currentPage={currentPage}
         />
       );
-
     case "crearprueba":
       return (
         <PruebaConocimiento
@@ -456,14 +423,12 @@ function App() {
           categoriaPreSeleccionada={pageParams.categoriaPreSeleccionada}
         />
       );
-
     case "gestionarpruebas":
       return (
         <GestionarPruebas
           onNavigate={handleNavigate}
         />
       );
-
     case "editarprueba":
       return (
         <EditarPrueba
@@ -471,8 +436,6 @@ function App() {
           pruebaId={pageParams.pruebaId}
         />
       );
-
-    // ✅ CASOS CORREGIDOS: Navegación entre módulos y evaluaciones
     case "curso-contenido":
       return (
         <CursoContenido
@@ -483,7 +446,6 @@ function App() {
           onFinalizarCurso={handleFinalizarCurso}
         />
       );
-
     case "evaluacion-modulo":
       return (
         <EvaluacionModulo
@@ -494,7 +456,6 @@ function App() {
           onEvaluacionCompletada={handleEvaluacionModuloCompletada}
         />
       );
-
     case "evaluacion-final":
       return (
         <EvaluacionFinal
@@ -504,14 +465,15 @@ function App() {
           onEvaluacionCompletada={handleEvaluacionFinalCompletada}
         />
       );
-
     default:
       return (
-        <Home
-          currentPage={currentPage}
-          onNavigate={handleNavigate}
-          onLoginClick={handleLoginClick}
-        />
+        <div style={{ position: 'relative', zIndex: 1 }}>
+          <Home
+            currentPage={currentPage}
+            onNavigate={handleNavigate}
+            onLoginClick={handleLoginClick}
+          />
+        </div>
       );
   }
 }
