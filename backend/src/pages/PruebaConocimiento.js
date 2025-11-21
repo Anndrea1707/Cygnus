@@ -66,6 +66,21 @@ const adminMiddleware = (req, res, next) => next();
 // ------------------------------------------------
 // 1. Verificar si el usuario ya hizo la prueba
 // ------------------------------------------------
+router.get("/verificar-existe", async (req, res) => {
+    try {
+        const prueba = await PruebaDiagnostica.findOne({ activa: true });
+
+        res.json({
+            success: true,
+            existe: !!prueba
+        });
+
+    } catch (error) {
+        console.error("Error en verificación:", error);
+        res.status(500).json({ success: false, message: "Error interno" });
+    }
+});
+
 router.get("/estado/:usuarioId", async (req, res) => {
     try {
         const usuario = await Usuario.findById(req.params.usuarioId);
@@ -298,6 +313,41 @@ router.put("/:id", authMiddleware, adminMiddleware, async (req, res) => {
     } catch (error) {
         console.error("Error actualizando prueba:", error);
         res.status(500).json({ success: false, message: "Error interno" });
+    }
+});
+
+// ------------------------------------------------
+// 7. Obtener prueba por ID (para edición)
+// ------------------------------------------------
+router.get("/:id", authMiddleware, adminMiddleware, async (req, res) => {
+    try {
+        const prueba = await PruebaDiagnostica.findById(req.params.id);
+
+        if (!prueba) {
+            return res.status(404).json({ success: false, message: "Prueba no encontrada" });
+        }
+
+        // Enviar con respuestas correctas para edición
+        const pruebaParaEdicion = {
+            _id: prueba._id,
+            preguntas: prueba.preguntas.map(p => ({
+                enunciado: p.enunciado,
+                opciones: p.opciones.map(op => ({
+                    letra: op.letra,
+                    texto: op.texto
+                })),
+                respuestaCorrecta: p.respuestaCorrecta
+            })),
+            fechaCreacion: prueba.fechaCreacion,
+            intentosRealizados: prueba.intentosRealizados,
+            promedioPuntaje: prueba.promedioPuntaje
+        };
+
+        res.json({ success: true, prueba: pruebaParaEdicion });
+
+    } catch (error) {
+        console.error("Error al obtener prueba por ID:", error);
+        res.status(500).json({ success: false, message: "Error del servidor" });
     }
 });
 

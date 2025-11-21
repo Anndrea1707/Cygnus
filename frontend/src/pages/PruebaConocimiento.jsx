@@ -1,9 +1,8 @@
 import React, { useState } from "react";
 import "./PruebaConocimiento.css";
 
-export default function PruebaConocimiento({ onNavigate, categoriaPreSeleccionada }) {
+export default function PruebaConocimiento({ onNavigate }) {
     const [pruebaData, setPruebaData] = useState({
-        categoria: categoriaPreSeleccionada || "",
         preguntas: Array(5).fill().map(() => ({
             pregunta: "",
             opciones: ["", "", "", ""],
@@ -11,17 +10,11 @@ export default function PruebaConocimiento({ onNavigate, categoriaPreSeleccionad
         }))
     });
 
-    // Estados para el modal
+    // Modal
     const [mostrarModal, setMostrarModal] = useState(false);
     const [modalMensaje, setModalMensaje] = useState("");
     const [modalTitulo, setModalTitulo] = useState("");
     const [modalIcono, setModalIcono] = useState("");
-
-    const categorias = [
-        "matematicas",
-        "tecnologia",
-        "idiomas"
-    ];
 
     const mostrarAlerta = (icono, titulo, mensaje) => {
         setModalIcono(icono);
@@ -32,13 +25,6 @@ export default function PruebaConocimiento({ onNavigate, categoriaPreSeleccionad
 
     const cerrarModal = () => {
         setMostrarModal(false);
-    };
-
-    const handleCategoriaChange = (e) => {
-        setPruebaData({
-            ...pruebaData,
-            categoria: e.target.value
-        });
     };
 
     const handlePreguntaChange = (index, field, value) => {
@@ -62,14 +48,10 @@ export default function PruebaConocimiento({ onNavigate, categoriaPreSeleccionad
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        // Validaciones básicas
-        if (!pruebaData.categoria) {
-            mostrarAlerta("❌", "Categoría requerida", "Por favor selecciona una categoría");
-            return;
-        }
-
+        // VALIDACIONES
         for (let i = 0; i < pruebaData.preguntas.length; i++) {
             const pregunta = pruebaData.preguntas[i];
+
             if (!pregunta.pregunta.trim()) {
                 mostrarAlerta("❌", "Pregunta vacía", `La pregunta ${i + 1} no puede estar vacía`);
                 return;
@@ -82,7 +64,10 @@ export default function PruebaConocimiento({ onNavigate, categoriaPreSeleccionad
                 }
             }
 
-            const opcionesUnicas = new Set(pregunta.opciones.map(op => op.toLowerCase().trim()));
+            const opcionesUnicas = new Set(
+                pregunta.opciones.map(op => op.toLowerCase().trim())
+            );
+
             if (opcionesUnicas.size !== pregunta.opciones.length) {
                 mostrarAlerta("❌", "Opciones repetidas", `La pregunta ${i + 1} tiene opciones repetidas`);
                 return;
@@ -90,54 +75,38 @@ export default function PruebaConocimiento({ onNavigate, categoriaPreSeleccionad
         }
 
         try {
-            console.log('📤 Enviando datos al servidor:', pruebaData);
-
-            // PRIMERO VERIFICAR LA CATEGORÍA
-            const verificacionResponse = await fetch('http://localhost:4000/api/pruebas/verificar-categoria', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ categoria: pruebaData.categoria })
+            // 1️⃣ VERIFICAR SI YA EXISTE UNA PRUEBA
+            const verificacionResponse = await fetch("http://localhost:4000/api/pruebas/verificar-existe", {
+                method: "GET",
             });
 
             const verificacionResult = await verificacionResponse.json();
-            console.log('🔍 Resultado verificación:', verificacionResult);
 
             if (verificacionResult.existe) {
-                mostrarAlerta("❌", "Categoría existente", `Ya existe una prueba activa en la categoría ${pruebaData.categoria}. Solo se permite una prueba por categoría.`);
+                mostrarAlerta("❌", "Prueba existente", "Ya existe una prueba diagnóstica. Solo se puede tener UNA.");
                 return;
             }
 
-            // SI NO EXISTE, ENTONCES CREAR
-            const usuario = JSON.parse(localStorage.getItem("usuario"));
-
-            const response = await fetch('http://localhost:4000/api/pruebas/crear', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
+            // 2️⃣ CREAR LA PRUEBA
+            const response = await fetch("http://localhost:4000/api/pruebas/crear", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
-                    categoria: pruebaData.categoria,
-                    preguntas: pruebaData.preguntas
-                })
+                    preguntas: pruebaData.preguntas,
+                }),
             });
 
             const result = await response.json();
-            console.log('📥 Respuesta del servidor:', result);
 
             if (result.success) {
                 mostrarAlerta("✅", "¡Éxito!", "Prueba creada exitosamente");
-                // Navegar al panel admin después de cerrar el modal
-                setTimeout(() => {
-                    onNavigate("paneladmin");
-                }, 2000);
+                setTimeout(() => onNavigate("paneladmin"), 1500);
             } else {
-                mostrarAlerta("❌", "Error", `Error al crear la prueba: ${result.message}`);
+                mostrarAlerta("❌", "Error", result.message || "No se pudo crear la prueba");
             }
+
         } catch (error) {
-            console.error('❌ Error completo:', error);
-            mostrarAlerta("❌", "Error de conexión", 'Error de conexión al crear la prueba: ' + error.message);
+            mostrarAlerta("❌", "Error de conexión", error.message);
         }
     };
 
@@ -147,65 +116,43 @@ export default function PruebaConocimiento({ onNavigate, categoriaPreSeleccionad
 
     return (
         <div className="prueba-conocimiento-container">
-            {/* BOTÓN VOLVER */}
+
             <div className="prueba-header">
-                <button className="btn-volver" onClick={volverAlPanel}>
+                <button className="back-btn" onClick={volverAlPanel}>
                     ← Volver al Panel
                 </button>
-                <h1>Crear Prueba de Conocimiento</h1>
+                <h1>Crear Prueba Diagnóstica</h1>
             </div>
 
             <form onSubmit={handleSubmit} className="prueba-form">
 
-                {/* SELECCIÓN DE CATEGORÍA */}
-                <div className="categoria-section">
-                    <label htmlFor="categoria" className="form-label">
-                        Categoría de la Prueba *
-                    </label>
-                    <select
-                        id="categoria"
-                        value={pruebaData.categoria}
-                        onChange={handleCategoriaChange}
-                        className="categoria-select"
-                        required
-                    >
-                        <option value="">Selecciona una categoría</option>
-                        {categorias.map((categoria, index) => (
-                            <option key={index} value={categoria}>
-                                {categoria}
-                            </option>
-                        ))}
-                    </select>
-                </div>
-
-                {/* FORMULARIO DE PREGUNTAS */}
+                {/* Preguntas */}
                 <div className="preguntas-container">
                     <h2 className="preguntas-titulo">Preguntas (5 en total)</h2>
 
                     {pruebaData.preguntas.map((pregunta, preguntaIndex) => (
                         <div key={preguntaIndex} className="pregunta-card">
+
                             <div className="pregunta-header">
                                 <h3>Pregunta {preguntaIndex + 1}</h3>
                             </div>
 
-                            {/* ENUNCIADO DE LA PREGUNTA */}
                             <div className="pregunta-input-group">
-                                <label className="form-label">
-                                    Enunciado de la pregunta *
-                                </label>
+                                <label className="form-label">Enunciado *</label>
                                 <textarea
                                     value={pregunta.pregunta}
-                                    onChange={(e) => handlePreguntaChange(preguntaIndex, "pregunta", e.target.value)}
-                                    placeholder="Escribe aquí la pregunta..."
+                                    onChange={(e) =>
+                                        handlePreguntaChange(preguntaIndex, "pregunta", e.target.value)
+                                    }
+                                    placeholder="Escribe la pregunta..."
                                     className="pregunta-textarea"
                                     rows="3"
                                     required
                                 />
                             </div>
 
-                            {/* OPCIONES DE RESPUESTA */}
                             <div className="opciones-container">
-                                <label className="form-label">Opciones de respuesta *</label>
+                                <label className="form-label">Opciones *</label>
                                 {pregunta.opciones.map((opcion, opcionIndex) => (
                                     <div key={opcionIndex} className="opcion-input-group">
                                         <span className="opcion-letra">
@@ -214,20 +161,22 @@ export default function PruebaConocimiento({ onNavigate, categoriaPreSeleccionad
                                         <input
                                             type="text"
                                             value={opcion}
-                                            onChange={(e) => handlePreguntaChange(preguntaIndex, `opcion${opcionIndex}`, e.target.value)}
+                                            onChange={(e) =>
+                                                handlePreguntaChange(
+                                                    preguntaIndex,
+                                                    `opcion${opcionIndex}`,
+                                                    e.target.value
+                                                )
+                                            }
                                             placeholder={`Opción ${String.fromCharCode(65 + opcionIndex)}...`}
                                             className="opcion-input"
-                                            required
                                         />
                                     </div>
                                 ))}
                             </div>
 
-                            {/* RESPUESTA CORRECTA */}
                             <div className="respuesta-correcta-group">
-                                <label className="form-label">
-                                    Respuesta correcta *
-                                </label>
+                                <label className="form-label">Respuesta correcta *</label>
                                 <div className="opciones-radio">
                                     {pregunta.opciones.map((opcion, opcionIndex) => (
                                         <label key={opcionIndex} className="radio-label">
@@ -236,8 +185,13 @@ export default function PruebaConocimiento({ onNavigate, categoriaPreSeleccionad
                                                 name={`respuestaCorrecta-${preguntaIndex}`}
                                                 value={opcionIndex}
                                                 checked={pregunta.respuestaCorrecta === opcionIndex}
-                                                onChange={(e) => handlePreguntaChange(preguntaIndex, "respuestaCorrecta", parseInt(e.target.value))}
-                                                required
+                                                onChange={(e) =>
+                                                    handlePreguntaChange(
+                                                        preguntaIndex,
+                                                        "respuestaCorrecta",
+                                                        parseInt(e.target.value)
+                                                    )
+                                                }
                                             />
                                             <span className="radio-custom"></span>
                                             {String.fromCharCode(65 + opcionIndex)}
@@ -249,7 +203,6 @@ export default function PruebaConocimiento({ onNavigate, categoriaPreSeleccionad
                     ))}
                 </div>
 
-                {/* BOTONES DE ACCIÓN */}
                 <div className="form-buttons">
                     <button type="button" className="btn-cancelar" onClick={volverAlPanel}>
                         Cancelar
@@ -260,7 +213,7 @@ export default function PruebaConocimiento({ onNavigate, categoriaPreSeleccionad
                 </div>
             </form>
 
-            {/* MODAL PARA ALERTAS */}
+            {/* Modal */}
             {mostrarModal && (
                 <div className="modal-overlay-prueba">
                     <div className="modal-prueba">
