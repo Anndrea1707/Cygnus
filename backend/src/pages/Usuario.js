@@ -18,23 +18,26 @@ const usuarioSchema = new mongoose.Schema(
     avatar: { type: String, default: "" },
     fondo: { type: String, default: "" },
 
-    // ⭐ ENCUESTA INICIAL
+    // ⭐ ENCUESTA INICIAL (sin área de interés)
     encuesta_inicial: {
       completada: { type: Boolean, default: false },
-      area_interes: { type: String, default: null },
       comodidad_area: { type: String, default: null },
       estilo_aprendizaje: { type: String, default: null },
       tiempo_estudio: { type: String, default: null },
-      objetivo: { type: String, default: null }
+      objetivo: { type: String, default: null },
+
+      // Datos para la curva del olvido / memoria
+      tiempo_area: { type: Number, default: null },  // Años de experiencia
+      tasa_olvido: { type: Number, default: null },  // Decimal 0-1
     },
 
-    // ⭐ NUEVO: PRUEBA DE CONOCIMIENTO
+    // ⭐ PRUEBA DE CONOCIMIENTO
     prueba_conocimiento: {
       completada: { type: Boolean, default: false },
       fecha_realizacion: { type: Date, default: null },
       puntuacion: { type: Number, default: 0 },
-      habilidad: { type: Number, min: 1, max: 5, default: 1 }, // Nueva habilidad del 1-5
-      categoria_evaluada: { type: String, default: null }
+      habilidad: { type: Number, min: 1, max: 5, default: 1 } 
+      // NOTA: Se eliminó categoria_evaluada
     },
 
     creado_en: { type: Date, default: Date.now },
@@ -42,6 +45,6 @@ const usuarioSchema = new mongoose.Schema(
   { collection: "usuarios" }
 );
 
-// ✅ Exportar correctamente el modelo
+// Exportar
 const Usuario = mongoose.model("Usuario", usuarioSchema);
 module.exports = Usuario;

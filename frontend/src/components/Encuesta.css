@@ -14,6 +14,21 @@
   background-color: var(--color-dark-overlay); /* respaldo, considera rgba para transparencia si la imagen carga */
 }
 
+.encuesta-fondo {
+  position: absolute !important;
+  top: 0;
+  left: 0;
+  width: 100vw !important;
+  min-height: 100vh !important;
+  z-index: 9999;
+
+  overflow-y: auto !important;   /* ⭐ Permite scroll vertical */
+  overflow-x: hidden !important; /* Evita scroll horizontal */
+
+  padding: 20px 0;
+}
+
+
 /* 🟣 Tarjeta principal */
 .encuesta-card {
   width: 100%;

@@ -138,7 +138,7 @@ const abrirEditar = (curso) => {
 
                     <button className="btn-agregar" onClick={() => onNavigate("crearcursosadmin")}>
                         + Crear Curso Completo
-                    </button>F
+                    </button>
                 </div>
 
                 {/* GRID DE CURSOS */}
