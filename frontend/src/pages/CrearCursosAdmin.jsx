@@ -9,9 +9,9 @@ const CrearCursosAdmin = ({ onNavigate, cursoEditar }) => {
         descripcion: "",
         horas: "",
         nivel: "",
-        categoria: "",
         imagen: "",
     });
+
     const [modalModulo, setModalModulo] = useState(false);
     const [modalContenido, setModalContenido] = useState({ 
         abierto: false, 
@@ -93,18 +93,31 @@ const CrearCursosAdmin = ({ onNavigate, cursoEditar }) => {
         }
 
         try {
-            // Información básica del curso
+            // Información básica del curso (sin categoría)
             setForm({
                 nombre: curso.nombre || "",
                 descripcion: curso.descripcion || "",
                 horas: curso.horasEstimadas || curso.horas || "",
                 nivel: curso.nivel || "",
-                categoria: curso.categoria || "",
                 imagen: curso.imagen || "",
             });
 
             // Módulos
-            setModulos(curso.modulos || []);
+           // Saneamos módulos para garantizar estructura completa
+const modulosSanitizados = (curso.modulos || []).map(m => ({
+    ...m,
+    contenido: Array.isArray(m.contenido) ? m.contenido : [],
+    evaluacion: m.evaluacion
+        ? {
+            titulo: m.evaluacion.titulo || "",
+            descripcion: m.evaluacion.descripcion || "",
+            preguntas: Array.isArray(m.evaluacion.preguntas) ? m.evaluacion.preguntas : []
+        }
+        : { titulo: "", descripcion: "", preguntas: [] }
+}));
+
+setModulos(modulosSanitizados);
+
 
             // Evaluación final
             setEvaluacionFinal(curso.evaluacionFinal || {
@@ -121,7 +134,6 @@ const CrearCursosAdmin = ({ onNavigate, cursoEditar }) => {
             console.log("   - Nombre:", curso.nombre);
             console.log("   - Horas:", curso.horasEstimadas || curso.horas);
             console.log("   - Nivel:", curso.nivel);
-            console.log("   - Categoría:", curso.categoria);
             console.log("   - Módulos:", curso.modulos?.length || 0);
             console.log("   - Preguntas evaluación final:", curso.evaluacionFinal?.preguntas?.length || 0);
             
@@ -137,7 +149,6 @@ const CrearCursosAdmin = ({ onNavigate, cursoEditar }) => {
             descripcion: "",
             horas: "",
             nivel: "",
-            categoria: "",
             imagen: "",
         });
         setModulos([]);
@@ -368,12 +379,14 @@ const CrearCursosAdmin = ({ onNavigate, cursoEditar }) => {
 
     const crearCurso = async () => {
         if (!validarCursoCompleto()) return;
+
         const cursoData = {
             ...form,
             horas: form.horas,
             modulos: modulos,
             evaluacionFinal: evaluacionFinal
         };
+
         console.log("💾 Guardando curso:", cursoData);
         try {
             if (esEdicion && cursoId) {
@@ -391,7 +404,8 @@ const CrearCursosAdmin = ({ onNavigate, cursoEditar }) => {
     };
 
     const validarCursoCompleto = () => {
-        if (!form.nombre || !form.descripcion || !form.horas || !form.nivel || !form.categoria || !form.imagen) {
+        // Ya no se requiere categoría
+        if (!form.nombre || !form.descripcion || !form.horas || !form.nivel || !form.imagen) {
             alert("Completa todos los campos básicos del curso");
             return false;
         }
@@ -400,7 +414,7 @@ const CrearCursosAdmin = ({ onNavigate, cursoEditar }) => {
             return false;
         }
         for (let modulo of modulos) {
-            if (modulo.contenido.length === 0) {
+            if (!Array.isArray(modulo.contenido) || modulo.contenido.length === 0) {
                 alert(`El módulo "${modulo.nombre}" no tiene contenido`);
                 return false;
             }
@@ -495,15 +509,7 @@ const CrearCursosAdmin = ({ onNavigate, cursoEditar }) => {
                             </select>
                         </div>
 
-                        <div className="input-group">
-                            <label>Categoría *</label>
-                            <select name="categoria" value={form.categoria} onChange={manejarCambio}>
-                                <option value="">Seleccionar categoría</option>
-                                <option value="Matemáticas">Matemáticas</option>
-                                <option value="Tecnología">Tecnología</option>
-                                <option value="Idiomas">Idiomas</option>
-                            </select>
-                        </div>
+                        {/* CATEGORÍA ELIMINADA: no se renderiza */}
 
                         <div className="input-group full">
                             <label>Descripción *</label>
@@ -530,7 +536,6 @@ const CrearCursosAdmin = ({ onNavigate, cursoEditar }) => {
                     </div>
                 </div>
 
-
                 <div className="seccion-curso">
                     <div className="seccion-header">
                         <h2 className="titulo-seccion">Módulos del Curso</h2>
@@ -551,8 +556,9 @@ const CrearCursosAdmin = ({ onNavigate, cursoEditar }) => {
                                 <div className="modulo-header">
                                     <h3>{modulo.nombre}</h3>
                                     <button 
-                                        className="btn-eliminar"
+                                        className="btn-eliminarB"
                                         onClick={() => eliminarModulo(moduloIndex)}
+                                        title="Eliminar módulo"
                                     >
                                         ×
                                     </button>
@@ -574,7 +580,7 @@ const CrearCursosAdmin = ({ onNavigate, cursoEditar }) => {
                                     </button>
                                 </div>
 
-                                {modulo.contenido.length > 0 && (
+                                {modulo.contenido && modulo.contenido.length > 0 && (
                                     <div className="contenido-lista">
                                         <h4>Contenido:</h4>
                                         {modulo.contenido.map((contenido, contenidoIndex) => (
@@ -584,12 +590,14 @@ const CrearCursosAdmin = ({ onNavigate, cursoEditar }) => {
                                                     <button 
                                                         className="btn-editar-pequeno"
                                                         onClick={() => abrirModalContenidoEditar(moduloIndex, contenidoIndex)}
+                                                        title="Editar contenido"
                                                     >
                                                         ✏️
                                                     </button>
                                                     <button 
-                                                        className="btn-eliminar-pequeno"
+                                                        className="btn-eliminarB-pequeno"
                                                         onClick={() => eliminarContenido(moduloIndex, contenidoIndex)}
+                                                        title="Eliminar contenido"
                                                     >
                                                         ×
                                                     </button>
@@ -599,7 +607,7 @@ const CrearCursosAdmin = ({ onNavigate, cursoEditar }) => {
                                     </div>
                                 )}
 
-                                {modulo.evaluacion.preguntas.length > 0 && (
+                                {modulo.evaluacion && modulo.evaluacion.preguntas.length > 0 && (
                                     <div className="preguntas-lista">
                                         <h4>Preguntas de evaluación:</h4>
                                         {modulo.evaluacion.preguntas.map((pregunta, index) => (
@@ -609,12 +617,14 @@ const CrearCursosAdmin = ({ onNavigate, cursoEditar }) => {
                                                     <button 
                                                         className="btn-editar-pequeno"
                                                         onClick={() => abrirModalPreguntaEditar('modulo', moduloIndex, index)}
+                                                        title="Editar pregunta"
                                                     >
                                                         ✏️
                                                     </button>
                                                     <button 
-                                                        className="btn-eliminar-pequeno"
+                                                        className="btn-eliminarB-pequeno"
                                                         onClick={() => eliminarPregunta('modulo', moduloIndex, index)}
+                                                        title="Eliminar pregunta"
                                                     >
                                                         ×
                                                     </button>
@@ -651,12 +661,14 @@ const CrearCursosAdmin = ({ onNavigate, cursoEditar }) => {
                                         <button 
                                             className="btn-editar-pequeno"
                                             onClick={() => abrirModalPreguntaEditar('final', null, index)}
+                                            title="Editar pregunta"
                                         >
                                             ✏️
                                         </button>
                                         <button 
-                                            className="btn-eliminar-pequeno"
+                                            className="btn-eliminarB-pequeno"
                                             onClick={() => eliminarPregunta('final', null, index)}
+                                            title="Eliminar pregunta"
                                         >
                                             ×
                                         </button>
@@ -859,7 +871,7 @@ const CrearCursosAdmin = ({ onNavigate, cursoEditar }) => {
                                                     ✏️
                                                 </button>
                                                 <button 
-                                                    className="btn-eliminar-pequeno"
+                                                    className="btn-eliminarB-pequeno"
                                                     onClick={() => eliminarPregunta('modulo', modalEvaluacionModulo.moduloIndex, index)}
                                                 >
                                                     ×
@@ -940,7 +952,7 @@ const CrearCursosAdmin = ({ onNavigate, cursoEditar }) => {
                                                     ✏️
                                                 </button>
                                                 <button 
-                                                    className="btn-eliminar-pequeno"
+                                                    className="btn-eliminarB-pequeno"
                                                     onClick={() => eliminarPregunta('final', null, index)}
                                                 >
                                                     ×

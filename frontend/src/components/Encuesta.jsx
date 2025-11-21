@@ -2,20 +2,15 @@ import React, { useState } from "react";
 import "./Encuesta.css";
 
 function Encuesta({ usuario, onEncuestaCompletada }) {
-  const [area, setArea] = useState("");
-  const [meses, setMeses] = useState("");        // meses ingresados por el usuario
-  const [olvido, setOlvido] = useState("");      // porcentaje (0-100)
+  const [meses, setMeses] = useState("");
+  const [olvido, setOlvido] = useState("");
   const [comodidad, setComodidad] = useState("");
   const [estilo, setEstilo] = useState("");
   const [tiempo, setTiempo] = useState("");
   const [objetivo, setObjetivo] = useState("");
   const [mostrarModal, setMostrarModal] = useState(false);
 
-  const opcionesArea = ["matematicas", "tecnologia", "idiomas"];
-
-  // Validación: todos los campos requeridos
   const formularioCompleto =
-    area &&
     meses !== "" &&
     olvido !== "" &&
     comodidad &&
@@ -23,10 +18,8 @@ function Encuesta({ usuario, onEncuestaCompletada }) {
     tiempo &&
     objetivo;
 
-  // Función para cerrar modal (ARREGLA el ReferenceError)
   const cerrarModal = () => {
     setMostrarModal(false);
-    // Si existe callback de finalización, lo llamamos
     if (typeof onEncuestaCompletada === "function") {
       onEncuestaCompletada();
     }
@@ -35,21 +28,20 @@ function Encuesta({ usuario, onEncuestaCompletada }) {
   const guardarEncuesta = async () => {
     if (!formularioCompleto) return;
 
-    // Validaciones mínimas y conversión segura
     const mesesNum = Number(meses);
     const olvidoNum = Number(olvido);
 
-    const tiempoAnios = isFinite(mesesNum) ? mesesNum / 12 : null;
-    const tasaOlvido = isFinite(olvidoNum) ? olvidoNum / 100 : null;
+    const tiempoAnios = mesesNum / 12;
+    const tasaOlvido = olvidoNum / 100;
 
     try {
       const resp = await fetch(`/api/encuesta/${usuario._id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          area_interes: area,
-          tiempo_area: tiempoAnios,     // guardamos en AÑOS
-          tasa_olvido: tasaOlvido,      // guardamos en decimal 0-1
+          area_interes: "matematicas",
+          tiempo_area: tiempoAnios,
+          tasa_olvido: tasaOlvido,
           comodidad_area: comodidad,
           estilo_aprendizaje: estilo,
           tiempo_estudio: tiempo,
@@ -77,82 +69,63 @@ function Encuesta({ usuario, onEncuestaCompletada }) {
     <>
       <div className="encuesta-fondo">
         <div className="encuesta-card">
-          <h2 className="encuesta-titulo">Personaliza tu experiencia</h2>
 
-          {/* PREGUNTA 1 */}
+          <h2 className="encuesta-titulo">Encuesta de Matemáticas</h2>
+
+          <p className="encuesta-descripcion">
+            Esta encuesta nos ayuda a conocer tu situación actual en matemáticas,
+            para que podamos adaptar tu aprendizaje de forma personalizada.
+          </p>
+
+          {/* 1 */}
           <div className="pregunta">
-            <label>1. ¿Qué área te gustaría aprender primero?</label>
-            <select value={area} onChange={(e) => setArea(e.target.value)}>
-              <option value="">Selecciona una opción</option>
-              {opcionesArea.map((op, i) => (
-                <option key={i} value={op}>
-                  {op}
-                </option>
+            <label>1. ¿Hace cuánto NO ves o NO repasas matemáticas? (en meses)</label>
+
+            <input
+              type="number"
+              inputMode="numeric"
+              pattern="[0-9]*"
+              min="0"
+              max="120"
+              className="input-numero"
+              placeholder="Ej: 6"
+              value={meses}
+              onChange={(e) => {
+                const val = e.target.value;
+                if (/^\d*$/.test(val) && Number(val) >= 0) {
+                  setMeses(val);
+                }
+              }}
+            />
+          </div>
+
+          {/* 2 */}
+          <div className="pregunta">
+            <label>2. ¿Qué tanto sientes que olvidaste los temás de matemáticas? (0% = nada, 100% = todo)</label>
+
+            <select value={olvido} onChange={(e) => setOlvido(e.target.value)}>
+              <option value="">Selecciona un porcentaje</option>
+              {[0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100].map((n) => (
+                <option key={n} value={n}>{n}%</option>
               ))}
             </select>
           </div>
 
-          {/* NUEVA: tiempo sin ver el tema (meses) */}
-          {area && (
-            <div className="pregunta">
-              <label>
-                2. ¿Hace cuánto NO ves o NO repasas el tema de <strong>{area}</strong>? (meses)
-              </label>
-              <input
-                type="number"
-                min="0"
-                max="120"
-                placeholder="Ej: 6"
-                value={meses}
-                onChange={(e) => setMeses(e.target.value)}
-                style={{
-                  width: "80%",
-                  maxWidth: "400px",
-                  padding: "12px 16px",
-                  borderRadius: "14px",
-                  border: "1px solid var(--color-primary)",
-                  background: "rgba(255,255,255,0.08)",
-                  color: "white",
-                  fontSize: "15px",
-                  outline: "none",
-                  textAlign: "center",
-                }}
-              />
-            </div>
-          )}
-
-          {/* NUEVA: porcentaje de olvido */}
-          {area && meses !== "" && (
-            <div className="pregunta">
-              <label>
-                3. ¿Qué tanto sientes que olvidaste del tema? (0% = recuerdo todo, 100% = olvidé todo)
-              </label>
-              <select value={olvido} onChange={(e) => setOlvido(e.target.value)}>
-                <option value="">Selecciona un porcentaje</option>
-                {[0,10,20,30,40,50,60,70,80,90,100].map((num) => (
-                  <option key={num} value={num}>{num}%</option>
-                ))}
-              </select>
-            </div>
-          )}
-
-          {/* Comodidad */}
-          {area && (
-            <div className="pregunta">
-              <label>4. ¿Qué tan cómodo te sientes con <strong>{area}</strong>?</label>
-              <select value={comodidad} onChange={(e) => setComodidad(e.target.value)}>
-                <option value="">Selecciona una opción</option>
-                <option>Me cuesta bastante</option>
-                <option>A veces entiendo, a veces no</option>
-                <option>Me va bien</option>
-                <option>Me va excelente</option>
-              </select>
-            </div>
-          )}
-
-          {/* Resto */}
+          {/* 3 */}
           <div className="pregunta">
-            <label>5. ¿Cómo prefieres aprender?</label>
+            <label>3. ¿Qué tan cómodo te sientes con matemáticas?</label>
+            <select value={comodidad} onChange={(e) => setComodidad(e.target.value)}>
+              <option value="">Selecciona una opción</option>
+              <option>Me cuesta bastante</option>
+              <option>A veces entiendo, a veces no</option>
+              <option>Me va bien</option>
+              <option>Me va excelente</option>
+            </select>
+          </div>
+
+          {/* 4 */}
+          <div className="pregunta">
+            <label>4. ¿Cómo prefieres aprender?</label>
             <select value={estilo} onChange={(e) => setEstilo(e.target.value)}>
               <option value="">Selecciona una opción</option>
               <option>Explicaciones paso a paso</option>
@@ -162,8 +135,9 @@ function Encuesta({ usuario, onEncuestaCompletada }) {
             </select>
           </div>
 
+          {/* 5 */}
           <div className="pregunta">
-            <label>6. ¿Cuánto tiempo deseas estudiar por sesión?</label>
+            <label>5. ¿Cuánto tiempo deseas estudiar por sesión?</label>
             <select value={tiempo} onChange={(e) => setTiempo(e.target.value)}>
               <option value="">Selecciona una opción</option>
               <option>10–15 minutos</option>
@@ -172,11 +146,12 @@ function Encuesta({ usuario, onEncuestaCompletada }) {
             </select>
           </div>
 
+          {/* 6 */}
           <div className="pregunta">
-            <label>7. ¿Cuál es tu objetivo principal?</label>
+            <label>6. ¿Cuál es tu objetivo principal?</label>
             <select value={objetivo} onChange={(e) => setObjetivo(e.target.value)}>
               <option value="">Selecciona una opción</option>
-              <option>Reforzar para el colegio</option>
+              <option>Reforzar para mis estudios</option>
               <option>Prepararme para exámenes</option>
               <option>Aprender desde cero</option>
               <option>Mejorar habilidades</option>
@@ -194,7 +169,6 @@ function Encuesta({ usuario, onEncuestaCompletada }) {
         </div>
       </div>
 
-      {/* Modal */}
       {mostrarModal && (
         <div className="modal-overlay">
           <div className="modal-exito">

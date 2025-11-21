@@ -330,15 +330,17 @@ function App() {
         />
       );
 
-    case "crearcursosadmin":
-      return (
-        <CrearCursoAdmin
-          usuario={usuario}
-          onNavigate={setCurrentPage}
-          onLogout={handleLogout}
-          currentPage={currentPage}
-        />
-      );
+      case "crearcursosadmin":
+        return (
+          <CrearCursoAdmin
+            usuario={usuario}
+            onNavigate={handleNavigate}   // ✔ AHORA SÍ RECIBE DATA
+            cursoEditar={pageParams}      // ✔ ENVIAMOS EL CURSO COMPLETO
+            onLogout={handleLogout}
+            currentPage={currentPage}
+          />
+        );
+      
 
     case "crearprueba":
       return (

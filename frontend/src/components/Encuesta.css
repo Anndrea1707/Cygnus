@@ -1,340 +1,232 @@
-/* 🎨 Fondo completo con imagen */
-.encuesta-fondo {
-  width: 100%;
-  min-height: 100vh;
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
+/* ===========================
+   FONDO Y ESTRUCTURA GENERAL
+   =========================== */
 
-  display: flex;
-  justify-content: center;
-  align-items: center;
-
-  padding: 40px 0; /* Reducido padding lateral para evitar desplazamientos */
-  background-color: var(--color-dark-overlay); /* respaldo, considera rgba para transparencia si la imagen carga */
-}
-
-.encuesta-fondo {
-  position: absolute !important;
-  top: 0;
-  left: 0;
-  width: 100vw !important;
-  min-height: 100vh !important;
-  z-index: 9999;
-
-  overflow-y: auto !important;   /* ⭐ Permite scroll vertical */
-  overflow-x: hidden !important; /* Evita scroll horizontal */
-
-  padding: 20px 0;
-}
-
-
-/* 🟣 Tarjeta principal */
-.encuesta-card {
-  width: 100%;
-  max-width: 600px;
-  background: var(--color-dark-transparent);
-  backdrop-filter: blur(12px);
-  border: 1px solid var(--color-border-glass);
-
-  padding: 35px 32px;
-  border-radius: 18px;
-
-  color: var(--color-light);
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
-
-  animation: fadeIn 0.6s ease-out;
-
-  display: flex; /* Nuevo: flex para centrar internos */
-  flex-direction: column;
-  align-items: center; /* Centra todos los hijos horizontalmente */
-}
-
-/* ✨ Título */
-.encuesta-titulo {
-  text-align: center;
-  margin-bottom: 25px;
-  font-size: 28px;
-  font-weight: bold;
-  color: var(--color-dorad-ligh);
-}
-
-/* 🔸 Preguntas */
-.pregunta {
-  margin-bottom: 22px;
-  display: flex;
-  flex-direction: column;
-  align-items: center; /* Nuevo: centra label y select */
-  width: 100%; /* Mantiene ancho completo para responsividad */
-}
-
-.pregunta label {
-  font-size: 16px;
-  margin-bottom: 6px;
-  color: var(--color-light-text);
-  text-align: center; /* Nuevo: centra el texto de la label */
-  width: 100%; /* Asegura que ocupe espacio para centrado */
-}
-
-/* 🎀 Select más moderno */
-select {
-  padding: 12px 16px;
-  border-radius: 14px;
-  border: 1px solid var(--color-primary);
-  background: rgba(255, 255, 255, 0.08);
-  color: var(--color-light);
-  font-size: 15px;
-  outline: none;
-  transition: 0.25s ease;
-  appearance: none;
-  position: relative;
-  cursor: pointer;
-  backdrop-filter: blur(6px);
-
-  width: 80%; /* Nuevo: reduce ancho para centrado */
-  max-width: 400px; /* Limita para no ser demasiado ancho */
-  margin: 0 auto; /* Nuevo: centra el select */
-}
-
-/* ✨ Glow al enfocar */
-select:focus {
-  border-color: var(--color-lavandaClaro);
-  box-shadow: 0 0 12px rgba(209, 99, 242, 0.5);
-}
-
-/* ✨ Efecto al pasar el mouse */
-select:hover {
-  background: rgba(255, 255, 255, 0.12);
-}
-
-/* 🔽 Flecha personalizada */
-select {
-  background-image: url("data:image/svg+xml;utf8,<svg fill='%23d163f2' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/></svg>");
-  background-repeat: no-repeat;
-  background-position: right 12px center;
-  background-size: 20px;
-}
-
-/* 🎨 Opciones internas del menú */
-select option {
-  background: var(--color-dark);
-  color: var(--color-light);
-  padding: 12px;
-  font-size: 15px;
-}
-
-/* Efecto hover dentro del menú desplegable */
-select option:hover {
-  background: var(--color-primary-dark);
-  color: white;
-}
-
-/* 🌈 Estilo cuando el combo está abierto (solo algunos navegadores lo permiten) */
-select:focus-visible {
-  outline: none;
-}
-
-/* 🔘 Botón */
-.btn-guardar {
-  width: 80%; /* Nuevo: reduce ancho para centrado */
-  max-width: 400px; /* Limita */
-  padding: 14px;
-  border-radius: 12px;
-  background: var(--color-primary);
-  color: white;
-  font-size: 18px;
-  font-weight: 600;
-  border: none;
-  cursor: pointer;
-  margin: 10px auto 0; /* Nuevo: centra el botón */
-  transition: 0.25s ease;
-}
-
-.btn-guardar:hover {
-  background: var(--color-primary-dark);
-  box-shadow: 0 0 15px var(--color-hover-shadow);
-}
-
-/* Animación */
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(25px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-
-/* 🌸 Scroll moderno dentro del menú */
-select option::-webkit-scrollbar {
-  width: 8px;
-}
-
-select option::-webkit-scrollbar-thumb {
-  background: var(--color-primary);
-  border-radius: 6px;
-}
-
-select option::-webkit-scrollbar-thumb:hover {
-  background: var(--color-primary-dark);
-}
-
-/* FORZAR QUE LA ENCUESTA OCUPA TODA LA PANTALLA Y CENTRADO ABSOLUTO */
-.encuesta-fondo {
-  position: fixed !important;     /* ¡¡LO MÁS IMPORTANTE!! */
-  top: 0;
-  left: 0;
-  width: 100vw !important;
-  height: 100vh !important;
-  z-index: 9999;                  /* por encima de sidebar, navbar, todo */
-
-  background-image: url('../imagenes/fondoEncuesta.jpg');
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  background-color: #0f0029;      /* respaldo por si falla la imagen */
-
-  display: flex;
-  justify-content: center;
-  align-items: center;
-
-  /* Elimina cualquier padding/margin heredado */
-  margin: 0 !important;
-  padding: 20px;
-  box-sizing: border-box;
-}
-
-/* Tarjeta centrada perfectamente */
-.encuesta-card {
-  width: 100%;
-  max-width: 520px;               /* un poco más compacto y elegante */
-  background: rgba(20, 10, 50, 0.85);
-  backdrop-filter: blur(15px);
-  border: 1px solid rgba(209, 99, 242, 0.3);
-  border-radius: 20px;
-  padding: 40px 35px;
-  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6);
-
-  display: flex;
-  flex-direction: column;
-  align-items: center;            /* centra todo el contenido interno */
-  animation: fadeIn 0.8s ease-out;
-}
-
-/* Centrado perfecto de etiquetas y selects */
-.pregunta {
-  width: 100%;
-  max-width: 420px;
-  margin-bottom: 24px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-}
-
-.pregunta label {
-  margin-bottom: 8px;
-  font-size: 16px;
-  color: #e0d4ff;
-}
-
-
-/* Botón centrado */
-.btn-guardar {
-  width: 100%;
-  max-width: 380px;
-  margin-top: 20px;
-  padding: 16px;
-  font-size: 18px;
-  font-weight: 700;
-}
-
-/* Estilo del botón cuando está desactivado */
-.btn-guardar:disabled {
-  background: #555 !important;
-  color: #999 !important;
-  cursor: not-allowed !important;
-  box-shadow: none !important;
-  opacity: 0.6;
-  transform: none !important;
-}
-
-.btn-guardar:disabled:hover {
-  background: #555 !important;
-  box-shadow: none !important;
-}
-
-/* Opcional: efecto suave cuando se activa */
-.btn-guardar {
-  transition: all 0.3s ease;
-}
-
-.btn-guardar:not(:disabled):hover {
-  transform: translateY(-2px);
-}
-
-/* Overlay oscuro */
-.modal-overlay {
-  position: fixed;
-  top: 0; left: 0;
-  width: 100vw;
-  height: 100vh;
-  background: rgba(0, 0, 0, 0.8);
-  backdrop-filter: blur(8px);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 10000;
-  animation: fadeIn 0.4s ease-out;
-}
-
-/* Caja del modal */
-.modal-exito {
-  background: linear-gradient(135deg, #1a0033, #2d0066);
-  border: 2px solid #d163f2;
-  border-radius: 20px;
-  padding: 40px 30px;
-  text-align: center;
-  max-width: 400px;
-  width: 90%;
-  box-shadow: 0 0 40px rgba(209, 99, 242, 0.6);
-  animation: modalPop 0.5s ease-out;
-}
-
-.modal-icon {
-  font-size: 70px;
-  margin-bottom: 15px;
-}
-
-.modal-exito h3 {
-  color: #fff;
-  font-size: 24px;
-  margin: 15px 0;
-}
-
-.modal-exito p {
-  color: #e0d4ff;
-  font-size: 16px;
-  margin-bottom: 25px;
-}
-
-.modal-btn-aceptar {
-  background: #d163f2;
-  color: white;
-  border: none;
-  padding: 14px 40px;
-  border-radius: 12px;
-  font-size: 18px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 5px 15px rgba(209, 99, 242, 0.4);
-}
-
-.modal-btn-aceptar:hover {
-  background: #e040fb;
-  transform: translateY(-3px);
-  box-shadow: 0 10px 25px rgba(209, 99, 242, 0.6);
-}
-
-/* Animaciones */
-@keyframes modalPop {
-  from { transform: scale(0.7); opacity: 0; }
-  to   { transform: scale(1); opacity: 1; }
-}
+   .encuesta-fondo {
+    position: fixed !important;
+    top: 0;
+    left: 0;
+    width: 100vw !important;
+    height: 100vh !important;
+    z-index: 9999;
+  
+    background-image: url('../imagenes/fondoEncuesta.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+  
+    padding: 30px;
+    box-sizing: border-box;
+  
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+  
+  /* ===========================
+     TARJETA PRINCIPAL
+     =========================== */
+  
+  .encuesta-card {
+    width: 100%;
+    max-width: 520px;
+    background: rgba(20, 10, 50, 0.85);
+    backdrop-filter: blur(15px);
+    border: 1px solid rgba(209, 99, 242, 0.3);
+    border-radius: 20px;
+    padding: 40px 35px;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6);
+    animation: fadeIn 0.7s ease-out;
+  
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  /* ===========================
+     TÍTULO Y DESCRIPCIÓN
+     =========================== */
+  
+  .encuesta-titulo {
+    text-align: center;
+    color: var(--color-dorad-ligh);
+    font-size: 28px;
+    margin-bottom: 15px;
+    font-weight: bold;
+  }
+  
+  .encuesta-descripcion {
+    text-align: center;
+    font-size: 15px;
+    color: #e0d4ff;
+    margin-bottom: 25px;
+  }
+  
+  /* ===========================
+     PREGUNTAS
+     =========================== */
+  
+  .pregunta {
+    width: 100%;
+    max-width: 420px;
+    margin-bottom: 24px;
+    text-align: center;
+  }
+  
+  .pregunta label {
+    font-size: 16px;
+    color: #e0d4ff;
+    margin-bottom: 10px;
+    display: block;
+  }
+  
+  
+  /* ===========================
+     INPUT NÚMEROS (PARCHE VISUAL)
+     =========================== */
+  
+  .input-numero {
+    width: 80%;
+    max-width: 350px;
+    padding: 12px 16px;
+    border-radius: 14px;
+    border: 1px solid var(--color-primary);
+    background: rgba(255, 255, 255, 0.08);
+    color: white;
+    font-size: 16px;
+    outline: none;
+    text-align: center;
+  }
+  
+  .input-numero:focus {
+    border-color: var(--color-lavandaClaro);
+    box-shadow: 0 0 12px rgba(209, 99, 242, 0.4);
+  }
+  
+  
+  /* ===========================
+     SELECTS
+     =========================== */
+  
+  select {
+    width: 80%;
+    max-width: 380px;
+    padding: 12px 16px;
+    border-radius: 14px;
+    border: 1px solid var(--color-primary);
+    background: rgba(255, 255, 255, 0.08);
+    color: white;
+    font-size: 16px;
+    outline: none;
+    cursor: pointer;
+    appearance: none;
+    text-align: center;
+  }
+  
+  /* FIX menú desplegable */
+  select option {
+    background-color: #180030 !important;
+    color: #ffffff !important;
+  }
+  
+  select option:hover {
+    background-color: #8a2be2 !important;
+    color: #ffffff !important;
+  }
+  
+  select option:checked {
+    background-color: #180030 !important;
+    color: #ffffff !important;
+  }
+  
+  
+  /* ===========================
+     BOTÓN GUARDAR
+     =========================== */
+  
+  .btn-guardar {
+    width: 100%;
+    max-width: 380px;
+    padding: 16px;
+    border-radius: 12px;
+    background: var(--color-primary);
+    color: white;
+    font-size: 18px;
+    font-weight: 700;
+    border: none;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: all 0.3s ease;
+  }
+  
+  .btn-guardar:hover:not(:disabled) {
+    background: var(--color-primary-dark);
+    transform: translateY(-2px);
+  }
+  
+  .btn-guardar:disabled {
+    background: #555;
+    color: #999;
+    cursor: not-allowed;
+    opacity: 0.6;
+  }
+  
+  
+  /* ===========================
+     MODAL
+     =========================== */
+  
+  .modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    backdrop-filter: blur(8px);
+    animation: fadeIn 0.3s ease-out;
+  }
+  
+  .modal-exito {
+    background: linear-gradient(135deg, #1a0033, #2d0066);
+    border: 2px solid #d163f2;
+    border-radius: 20px;
+    padding: 40px 30px;
+    text-align: center;
+    max-width: 400px;
+    width: 90%;
+    box-shadow: 0 0 40px rgba(209, 99, 242, 0.6);
+    animation: modalPop 0.4s ease-out;
+  }
+  
+  .modal-btn-aceptar {
+    background: #d163f2;
+    color: white;
+    border: none;
+    padding: 14px 40px;
+    border-radius: 12px;
+    font-size: 18px;
+    cursor: pointer;
+  }
+  
+  
+  /* ===========================
+     ANIMACIONES
+     =========================== */
+  
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(25px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  
+  @keyframes modalPop {
+    from { transform: scale(0.7); opacity: 0; }
+    to   { transform: scale(1); opacity: 1; }
+  }
+  
