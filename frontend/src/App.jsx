@@ -22,7 +22,10 @@ import CrearCursoAdmin from "./pages/CrearCursosAdmin";
 import PruebaConocimiento from "./pages/PruebaConocimiento";
 import GestionarPruebas from "./pages/GestionarPruebas";
 import EditarPrueba from "./pages/EditarPrueba";
-import TomarPrueba from "./components/TomarPrueba"; // 👈 NUEVO COMPONENTE
+import TomarPrueba from "./components/TomarPrueba";
+import CursosUsuario from "./pages/CursosUsuario";
+import CursoVista from "./pages/CursoVista";
+
 
 function App() {
   const [currentPage, setCurrentPage] = useState("home");
@@ -37,7 +40,7 @@ function App() {
       try {
         const usuarioData = JSON.parse(usuarioGuardado);
         setUsuario(usuarioData);
-        
+
         // Si ya está logueado, determinar a dónde debe ir
         determinarPaginaInicial(usuarioData);
       } catch (error) {
@@ -87,7 +90,7 @@ function App() {
     try {
       const response = await fetch(`http://localhost:4000/api/pruebas/verificar-estado/${userData._id}`);
       const result = await response.json();
-      
+
       if (result.success) {
         // Actualizar usuario con información más reciente
         const usuarioActualizado = {
@@ -101,10 +104,10 @@ function App() {
             habilidad: result.habilidadActual
           }
         };
-        
+
         setUsuario(usuarioActualizado);
         localStorage.setItem("usuario", JSON.stringify(usuarioActualizado));
-        
+
         determinarPaginaInicial(usuarioActualizado);
       } else {
         determinarPaginaInicial(userData);
@@ -129,7 +132,7 @@ function App() {
   const handlePruebaCompletada = () => {
     // Después de completar prueba, ir al dashboard
     setCurrentPage("dashboard");
-    
+
     // Actualizar usuario localmente
     if (usuario) {
       const usuarioActualizado = {
@@ -147,10 +150,10 @@ function App() {
   // Mostrar loading mientras verifica el estado
   if (cargando) {
     return (
-      <div style={{ 
-        display: 'flex', 
-        justifyContent: 'center', 
-        alignItems: 'center', 
+      <div style={{
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
         height: '100vh',
         fontSize: '18px',
         color: '#666'
@@ -222,6 +225,16 @@ function App() {
         <CursosPrincipal
           currentPage={currentPage}
           onNavigate={handleNavigate}
+          onLoginClick={handleLoginClick}
+        />
+      );
+
+    case "cursosusuario": // Nueva página para usuarios logueados
+      return (
+        <CursosUsuario currentPage={currentPage}
+          usuario={usuario}
+          onNavigate={handleNavigate}
+          onLogout={handleLogout}
           onLoginClick={handleLoginClick}
         />
       );
@@ -329,18 +342,28 @@ function App() {
           currentPage={currentPage}
         />
       );
+    case "curso-vista":
+      return (
+        <CursoVista
+          currentPage={currentPage}
+          usuario={usuario}
+          onNavigate={handleNavigate}
+          curso={pageParams.curso}
+        />
+      );
 
-      case "crearcursosadmin":
-        return (
-          <CrearCursoAdmin
-            usuario={usuario}
-            onNavigate={handleNavigate}   // ✔ AHORA SÍ RECIBE DATA
-            cursoEditar={pageParams}      // ✔ ENVIAMOS EL CURSO COMPLETO
-            onLogout={handleLogout}
-            currentPage={currentPage}
-          />
-        );
-      
+
+    case "crearcursosadmin":
+      return (
+        <CrearCursoAdmin
+          usuario={usuario}
+          onNavigate={handleNavigate}
+          cursoEditar={pageParams}
+          onLogout={handleLogout}
+          currentPage={currentPage}
+        />
+      );
+
 
     case "crearprueba":
       return (

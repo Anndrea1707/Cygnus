@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import logo from "../imagenes/logo.png";
-import "./NavbarPrincipal.css";
+import "../components/NavbarPrincipal.css"; // Ruta corregida
 
 export default function NavbarPrincipal({
   currentPage,
@@ -124,7 +124,10 @@ export default function NavbarPrincipal({
                 </button>
               </li>
               <li>
-                <button className="nav-btn" disabled>
+                <button
+                  className={currentPage === "cursosusuario" ? "nav-btn active" : "nav-btn"}
+                  onClick={() => onNavigate("cursosusuario")}
+                >
                   Cursos
                 </button>
               </li>
@@ -150,7 +153,6 @@ export default function NavbarPrincipal({
                   Panel
                 </button>
               </li>
-
               <li>
                 <button
                   className={currentPage === "cursosadmin" ? "nav-btn active" : "nav-btn"}
@@ -159,7 +161,6 @@ export default function NavbarPrincipal({
                   Cursos
                 </button>
               </li>
-
               <li>
                 <button
                   className={currentPage === "adminusuarios" ? "nav-btn active" : "nav-btn"}
@@ -168,7 +169,6 @@ export default function NavbarPrincipal({
                   Usuarios
                 </button>
               </li>
-
               <li>
                 <button
                   className={currentPage === "usuarios" ? "nav-btn active" : "nav-btn"}
@@ -177,7 +177,6 @@ export default function NavbarPrincipal({
                   Avatares
                 </button>
               </li>
-
               <li>
                 <button
                   className={currentPage === "bibliotecaadmin" ? "nav-btn active" : "nav-btn"}
@@ -209,7 +208,9 @@ export default function NavbarPrincipal({
             {menuAbierto && (
               <div className="user-menu">
                 <button
-                  onClick={() => onNavigate(rol === "admin" ? "adminperfil" : "perfil")}
+                  onClick={() =>
+                    onNavigate(rol === "admin" ? "adminperfil" : "perfil")
+                  }
                 >
                   Ver perfil
                 </button>
