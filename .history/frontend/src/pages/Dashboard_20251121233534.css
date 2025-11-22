@@ -69,13 +69,13 @@
 }
 
 .dashboard-header h2 {
-  color: var(--color-dorad-ligh);
+  color: var(--color-dorad-lig);
   font-size: 2.5rem;
   margin-bottom: 1rem;
 }
 
 .dashboard-header p {
-  color: #d9e4ed;
+  color: #6c757d;
   font-size: 1.1rem;
   max-width: 600px;
   margin: 0 auto;
@@ -92,13 +92,13 @@
 }
 
 .section-header h3 {
-  color: #c3d0de;
+  color: #2c3e50;
   font-size: 2rem;
   margin-bottom: 0.5rem;
 }
 
 .section-header p {
-  color: #d1dde8;
+  color: #6c757d;
 }
 
 /* Grid de cursos con progreso */
@@ -152,7 +152,7 @@
 }
 
 .curso-titulo {
-  color: var(--color-dorad-ligh);
+  color: #2c3e50;
   font-size: 1.3rem;
   margin-bottom: 0.5rem;
   font-weight: 600;

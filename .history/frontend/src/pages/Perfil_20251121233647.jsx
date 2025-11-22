@@ -174,6 +174,24 @@ function Perfil({ usuario, onLogout, onNavigate }) {
               <p className="perfil-email">
                 <strong>Correo:</strong> {usuarioActual?.correo}
               </p>
+
+              {/* Estadísticas de progreso */}
+              <div className="estadisticas-perfil">
+                <div className="stat-item">
+                  <span className="stat-number">{cursosConProgreso.length}</span>
+                  <span className="stat-label">Cursos</span>
+                </div>
+                <div className="stat-item">
+                  <span className="stat-number">
+                    {cursosConProgreso.filter(curso => curso.progreso?.progresoPorcentual >= 100).length}
+                  </span>
+                  <span className="stat-label">Completados</span>
+                </div>
+                <div className="stat-item">
+                  <span className="stat-number">{calcularProgresoGeneral()}%</span>
+                  <span className="stat-label">Progreso</span>
+                </div>
+              </div>
             </div>
 
             <div className="perfil-actions">
