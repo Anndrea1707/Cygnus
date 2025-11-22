@@ -1,0 +1,416 @@
+/* === DASHBOARD BASE === */
+.dashboard-background {
+  width: 100vw;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #1d175a 0%, #a44bbe 80%);
+  color: var(--color-light);
+  display: flex;
+  flex-direction: column;
+  font-family: 'Outfit', sans-serif;
+}
+
+/* === CONTENIDO CENTRAL === */
+.dashboard-content {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 2rem;
+}
+
+.dashboard-content h2 {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+  color: var(--color-light);
+}
+
+.dashboard-content p {
+  font-size: 1.1rem;
+  max-width: 500px;
+  color: #e0d8f0;
+  line-height: 1.6;
+}
+
+.btn-ayuda-flotante {
+  position: fixed;
+  bottom: 28px;
+  right: 28px;
+  width: 62px;
+  height: 62px;
+  border-radius: 50%;
+  background: var(--color-primary);
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.45);
+  z-index: 9999;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.btn-ayuda-flotante img {
+  width: 33px;
+  height: 33px;
+}
+
+/* Dashboard.css - Agregar estas clases */
+
+.dashboard-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.dashboard-header {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.dashboard-header h2 {
+  color: #2c3e50;
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+}
+
+.dashboard-header p {
+  color: #6c757d;
+  font-size: 1.1rem;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+/* Sección de cursos con progreso */
+.cursos-progreso-section {
+  margin-bottom: 3rem;
+}
+
+.section-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.section-header h3 {
+  color: #2c3e50;
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+}
+
+.section-header p {
+  color: #6c757d;
+}
+
+/* Grid de cursos con progreso */
+.grid-cursos-progreso {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+/* Tarjeta de curso con progreso */
+.tarjeta-curso-progreso {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.tarjeta-curso-progreso:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.curso-imagen-container {
+  position: relative;
+  height: 200px;
+  overflow: hidden;
+}
+
+.curso-imagen {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.curso-progreso-badge {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-weight: bold;
+  font-size: 0.9rem;
+}
+
+.curso-contenido {
+  padding: 1.5rem;
+}
+
+.curso-titulo {
+  color: #2c3e50;
+  font-size: 1.3rem;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+}
+
+.curso-descripcion {
+  color: #6c757d;
+  font-size: 0.9rem;
+  margin-bottom: 1rem;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.curso-info {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.curso-nivel, .curso-modulos {
+  background: #f8f9fa;
+  padding: 0.3rem 0.8rem;
+  border-radius: 15px;
+  font-size: 0.8rem;
+  color: #495057;
+}
+
+.curso-nivel {
+  background: #e3f2fd;
+  color: #1976d2;
+}
+
+/* Barra de progreso */
+.progreso-container {
+  margin-bottom: 1rem;
+}
+
+.progreso-bar {
+  width: 100%;
+  height: 8px;
+  background: #e9ecef;
+  border-radius: 10px;
+  overflow: hidden;
+  margin-bottom: 0.5rem;
+}
+
+.progreso-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #4CAF50, #45a049);
+  border-radius: 10px;
+  transition: width 0.3s ease;
+}
+
+.progreso-texto {
+  font-size: 0.8rem;
+  color: #6c757d;
+  font-weight: 500;
+}
+
+/* Detalles del progreso */
+.progreso-detalles {
+  margin-bottom: 1.5rem;
+}
+
+.progreso-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+  font-size: 0.85rem;
+}
+
+.progreso-label {
+  color: #6c757d;
+}
+
+.progreso-valor {
+  color: #2c3e50;
+  font-weight: 500;
+}
+
+.progreso-item.completado .progreso-label {
+  color: #28a745;
+}
+
+.progreso-item.completado .progreso-valor {
+  color: #28a745;
+  font-weight: 600;
+}
+
+/* Botones */
+.btn-continuar-curso {
+  width: 100%;
+  padding: 12px 20px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-continuar-curso:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.btn-empezar-cursos {
+  padding: 12px 24px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-empezar-cursos:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.btn-ver-todos {
+  padding: 10px 20px;
+  background: transparent;
+  color: #667eea;
+  border: 2px solid #667eea;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-ver-todos:hover {
+  background: #667eea;
+  color: white;
+}
+
+/* Estados vacíos */
+.sin-cursos-progreso {
+  text-align: center;
+  padding: 3rem;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.sin-cursos-icono {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+}
+
+.sin-cursos-progreso h4 {
+  color: #2c3e50;
+  margin-bottom: 0.5rem;
+}
+
+.sin-cursos-progreso p {
+  color: #6c757d;
+  margin-bottom: 1.5rem;
+}
+
+.cargando-cursos {
+  text-align: center;
+  padding: 3rem;
+}
+
+.spinner {
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #667eea;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: spin 1s linear infinite;
+  margin: 0 auto 1rem;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Estadísticas rápidas */
+.estadisticas-rapidas {
+  margin-bottom: 3rem;
+}
+
+.estadisticas-rapidas h3 {
+  text-align: center;
+  color: #2c3e50;
+  margin-bottom: 2rem;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.5rem;
+}
+
+.stat-card {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  transition: transform 0.3s ease;
+}
+
+.stat-card:hover {
+  transform: translateY(-2px);
+}
+
+.stat-icon {
+  font-size: 2rem;
+}
+
+.stat-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.stat-number {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #2c3e50;
+}
+
+.stat-label {
+  font-size: 0.9rem;
+  color: #6c757d;
+}
+
+.ver-todos-cursos {
+  text-align: center;
+  margin-top: 2rem;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .dashboard-content {
+    padding: 1rem;
+  }
+  
+  .grid-cursos-progreso {
+    grid-template-columns: 1fr;
+  }
+  
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .dashboard-header h2 {
+    font-size: 2rem;
+  }
+}
