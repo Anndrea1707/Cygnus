@@ -105,7 +105,7 @@ function App() {
     }
 
     try {
-      const response = await fetch(`http://localhost:4000/api/pruebas/verificar-estado/${userData._id}`);
+const response = await fetch(`http://localhost:4000/api/pruebas/verificar-estado/${userData._id}`);
       const result = await response.json();
 
       if (result.success) {

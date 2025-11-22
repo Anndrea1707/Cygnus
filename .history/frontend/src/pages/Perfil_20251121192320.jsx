@@ -29,7 +29,6 @@ function Perfil({ usuario, onLogout, onNavigate }) {
     obtenerProgreso();
   }, [usuarioActual]);
 
-
   useEffect(() => {
     // Actualizar estado si cambia el usuario en localStorage
     const usuarioLS = JSON.parse(localStorage.getItem("usuario"));
@@ -56,6 +55,22 @@ function Perfil({ usuario, onLogout, onNavigate }) {
   const nombreUsuario =
     usuarioActual?.apodo || usuarioActual?.nombre_completo || "Usuario";
 
+  {
+    progresoSemanal.length > 0 ? (
+      progresoSemanal.map((item, i) => (
+        <div key={i} className="barra-dia">
+          <div className="barra" style={{ height: `${item.horas * 20}px` }}>
+          </div>
+          <span className="dia-texto">{item.dia}</span>
+          <span className="horas-texto">{item.horas}h</span>
+        </div>
+      ))
+    ) : (
+    <p style={{ textAlign: "center", marginTop: "10px", color: "#888" }}>
+      No hay sesiones registradas esta semana.
+    </p>
+  )
+  }
 
   const cursosEnDesarrollo = [
     {
@@ -69,27 +84,6 @@ function Perfil({ usuario, onLogout, onNavigate }) {
       progreso: 80,
     },
   ];
-
-  // Formato de fechas "Vie 21/Nov"
-  const formatearDia = (fechaStr) => {
-    const fecha = new Date(fechaStr);
-    const dias = ["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"];
-    const meses = ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"];
-
-    return `${dias[fecha.getDay()]} ${fecha.getDate()}/${meses[fecha.getMonth()]}`;
-  };
-
-  // Obtener rango de fechas para mostrar arriba del título
-  const obtenerRangoSemana = () => {
-    const hoy = new Date();
-    const hace7 = new Date();
-    hace7.setDate(hoy.getDate() - 6);
-
-    return {
-      inicio: formatearDia(hace7.toISOString().split("T")[0]),
-      fin: formatearDia(hoy.toISOString().split("T")[0]),
-    };
-  };
 
   return (
     <>
@@ -155,67 +149,13 @@ function Perfil({ usuario, onLogout, onNavigate }) {
           {/* GRÁFICA DE PROGRESO */}
           <section className="perfil-section grafica-card">
             <h2>📈 Progreso Semanal</h2>
-
-            {/* Rango de fechas */}
-            <p style={{ textAlign: "center", marginBottom: "15px", color: "#e9d7ff" }}>
-              {obtenerRangoSemana().inicio} - {obtenerRangoSemana().fin}
-            </p>
-
-            <div style={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "flex-end",
-              height: "260px",
-              padding: "10px 20px",
-              borderLeft: "2px solid #e5d36c66",
-              position: "relative",
-            }}>
-
-              {/* Eje Y (horas) */}
-              <div style={{
-                position: "absolute",
-                left: "0",
-                top: "0",
-                bottom: "20px",
-                display: "flex",
-                flexDirection: "column",
-                justifyContent: "space-between",
-                paddingLeft: "5px",
-                fontSize: "0.8rem",
-                color: "#f3cdff"
-              }}>
-                {[10, 8, 6, 4, 2, 0].map((h, i) => (
-                  <span key={i}>{h}h</span>
-                ))}
-              </div>
-
-              {/* Barras de días */}
-              <div className="grafica-semanal" style={{ marginLeft: "30px", width: "100%" }}>
-                {progresoSemanal.length > 0 ? (
-                  progresoSemanal.map((item, i) => (
-                    <div key={i} className="barra-dia">
-                      <div
-                        className="barra"
-                        style={{
-                          height: `${(item.duracion_horas || 0) * 20}px`,
-                        }}
-                      ></div>
-
-                      <span className="dia-texto">
-                        {formatearDia(item.fecha)}
-                      </span>
-
-                      <span className="horas-texto">
-                        {(item.duracion_horas || 0).toFixed(1)}h
-                      </span>
-                    </div>
-                  ))
-                ) : (
-                  <p style={{ textAlign: "center", marginTop: "10px", color: "#ccc" }}>
-                    No hay sesiones esta semana.
-                  </p>
-                )}
-              </div>
+            <div className="grafica-semanal">
+              {progresoSemanal.map((item, i) => (
+                <div key={i} className="barra-dia">
+                  <div className="barra" style={{ height: `${item.valor}%` }}></div>
+                  <span className="dia-texto">{item.dia}</span>
+                </div>
+              ))}
             </div>
           </section>
 

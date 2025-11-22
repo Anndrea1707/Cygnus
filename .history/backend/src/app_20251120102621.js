@@ -22,7 +22,8 @@ app.use("/api/adminusuarios", require("./pages/AdminUsuarios"));
 app.use("/api/usuarios", require("./pages/UsuariosRoutes"));
 app.use("/api/cursos", require("./pages/Cursos"));
 app.use("/api/pruebas", require("./pages/PruebaConocimiento"));
-app.use("/api/sesiones", require("./pages/SesionUsuarioRoutes"));
+
+
 
 
 // Conexión a MongoDB

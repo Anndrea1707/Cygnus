@@ -167,7 +167,7 @@ function Perfil({ usuario, onLogout, onNavigate }) {
               alignItems: "flex-end",
               height: "260px",
               padding: "10px 20px",
-              borderLeft: "2px solid #e5d36c66",
+              borderLeft: "2px solid #e5d36c55",
               position: "relative",
             }}>
 

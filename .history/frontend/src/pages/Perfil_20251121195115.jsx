@@ -167,7 +167,7 @@ function Perfil({ usuario, onLogout, onNavigate }) {
               alignItems: "flex-end",
               height: "260px",
               padding: "10px 20px",
-              borderLeft: "2px solid #e5d36c66",
+              borderLeft: "2px solid #c77dff55",
               position: "relative",
             }}>
 
@@ -208,6 +208,7 @@ function Perfil({ usuario, onLogout, onNavigate }) {
                       <span className="horas-texto">
                         {(item.duracion_horas || 0).toFixed(1)}h
                       </span>
+
                     </div>
                   ))
                 ) : (

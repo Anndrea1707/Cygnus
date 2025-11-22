@@ -36,15 +36,16 @@ const usuarioSchema = new mongoose.Schema(
       completada: { type: Boolean, default: false },
       fecha_realizacion: { type: Date, default: null },
       puntuacion: { type: Number, default: 0 },
-      habilidad: { type: Number, min: 1, max: 5, default: 1 }
+      habilidad: { type: Number, min: 1, max: 5, default: 1 } 
       // NOTA: Se eliminó categoria_evaluada
     },
 
     creado_en: { type: Date, default: Date.now },
 
     // ⭐ Registro básico para seguimiento de sesiones
-    ultima_sesion_inicio: { type: Date, default: null },
-    ultima_sesion_cierre: { type: Date, default: null },
+ultima_sesion_inicio: { type: Date, default: null },
+ultima_sesion_cierre: { type: Date, default: null },
+
   },
   { collection: "usuarios" }
 );

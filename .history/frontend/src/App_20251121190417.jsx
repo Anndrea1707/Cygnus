@@ -104,8 +104,9 @@ function App() {
       console.error("Error registrando inicio de sesión:", error);
     }
 
+
     try {
-      const response = await fetch(`http://localhost:4000/api/pruebas/verificar-estado/${userData._id}`);
+      const response = await fetch('http://localhost:4000/api/pruebas/verificar-estado/${userData._id}');
       const result = await response.json();
 
       if (result.success) {
@@ -133,20 +134,7 @@ function App() {
     }
   };
 
-  const handleLogout = async () => {
-    if (usuario?._id) {
-      try {
-        // ⭐ Registrar CIERRE DE SESIÓN
-        await fetch("http://localhost:4000/api/sesiones/cierre", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ usuarioId: usuario._id }),
-        });
-      } catch (error) {
-        console.error("Error registrando cierre de sesión:", error);
-      }
-    }
-
+  const handleLogout = () => {
     localStorage.removeItem("usuario");
     setUsuario(null);
     setCurrentPage("home");

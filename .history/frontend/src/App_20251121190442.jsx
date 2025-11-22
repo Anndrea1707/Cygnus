@@ -105,7 +105,7 @@ function App() {
     }
 
     try {
-      const response = await fetch(`http://localhost:4000/api/pruebas/verificar-estado/${userData._id}`);
+      const response = await fetch('http://localhost:4000/api/pruebas/verificar-estado/${userData._id}');
       const result = await response.json();
 
       if (result.success) {
@@ -134,23 +134,24 @@ function App() {
   };
 
   const handleLogout = async () => {
-    if (usuario?._id) {
-      try {
-        // ⭐ Registrar CIERRE DE SESIÓN
-        await fetch("http://localhost:4000/api/sesiones/cierre", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ usuarioId: usuario._id }),
-        });
-      } catch (error) {
-        console.error("Error registrando cierre de sesión:", error);
-      }
+  if (usuario?._id) {
+    try {
+      // ⭐ Registrar CIERRE DE SESIÓN
+      await fetch("http://localhost:4000/api/sesiones/cierre", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ usuarioId: usuario._id }),
+      });
+    } catch (error) {
+      console.error("Error registrando cierre de sesión:", error);
     }
+  }
 
-    localStorage.removeItem("usuario");
-    setUsuario(null);
-    setCurrentPage("home");
-  };
+  localStorage.removeItem("usuario");
+  setUsuario(null);
+  setCurrentPage("home");
+};
+
 
   const handleEncuestaCompletada = () => {
     setCurrentPage("prueba-conocimiento");

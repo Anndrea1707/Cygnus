@@ -19,7 +19,7 @@ function Perfil({ usuario, onLogout, onNavigate }) {
         const data = await resp.json();
 
         if (data.success) {
-          setProgresoSemanal(data.progresoSemanal);
+          setProgresoSemanal(data.sesiones); // 👉 CORREGIDO
         }
       } catch (error) {
         console.error("Error obteniendo progreso semanal:", error);
@@ -153,71 +153,72 @@ function Perfil({ usuario, onLogout, onNavigate }) {
           </section>
 
           {/* GRÁFICA DE PROGRESO */}
-          <section className="perfil-section grafica-card">
-            <h2>📈 Progreso Semanal</h2>
+<section className="perfil-section grafica-card">
+  <h2>📈 Progreso Semanal</h2>
 
-            {/* Rango de fechas */}
-            <p style={{ textAlign: "center", marginBottom: "15px", color: "#e9d7ff" }}>
-              {obtenerRangoSemana().inicio} - {obtenerRangoSemana().fin}
-            </p>
+  {/* Rango de fechas */}
+  <p style={{ textAlign: "center", marginBottom: "15px", color: "#e9d7ff" }}>
+    {obtenerRangoSemana().inicio} - {obtenerRangoSemana().fin}
+  </p>
 
-            <div style={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "flex-end",
-              height: "260px",
-              padding: "10px 20px",
-              borderLeft: "2px solid #e5d36c66",
-              position: "relative",
-            }}>
+  <div style={{
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "flex-end",
+    height: "260px",
+    padding: "10px 20px",
+    borderLeft: "2px solid #c77dff55",
+    position: "relative",
+  }}>
 
-              {/* Eje Y (horas) */}
-              <div style={{
-                position: "absolute",
-                left: "0",
-                top: "0",
-                bottom: "20px",
-                display: "flex",
-                flexDirection: "column",
-                justifyContent: "space-between",
-                paddingLeft: "5px",
-                fontSize: "0.8rem",
-                color: "#f3cdff"
-              }}>
-                {[10, 8, 6, 4, 2, 0].map((h, i) => (
-                  <span key={i}>{h}h</span>
-                ))}
-              </div>
+    {/* Eje Y (horas) */}
+    <div style={{
+      position: "absolute",
+      left: "0",
+      top: "0",
+      bottom: "20px",
+      display: "flex",
+      flexDirection: "column",
+      justifyContent: "space-between",
+      paddingLeft: "5px",
+      fontSize: "0.8rem",
+      color: "#f3cdff"
+    }}>
+      {[10,8,6,4,2,0].map((h, i) => (
+        <span key={i}>{h}h</span>
+      ))}
+    </div>
 
-              {/* Barras de días */}
-              <div className="grafica-semanal" style={{ marginLeft: "30px", width: "100%" }}>
-                {progresoSemanal.length > 0 ? (
-                  progresoSemanal.map((item, i) => (
-                    <div key={i} className="barra-dia">
-                      <div
-                        className="barra"
-                        style={{
-                          height: `${(item.duracion_horas || 0) * 20}px`,
-                        }}
-                      ></div>
+    {/* Barras de días */}
+    <div className="grafica-semanal" style={{ marginLeft: "30px", width: "100%" }}>
+      {progresoSemanal.length > 0 ? (
+        progresoSemanal.map((item, i) => (
+          <div key={i} className="barra-dia">
+            <div
+              className="barra"
+              style={{
+                height: `${(item.total_horas || item.duracion_horas) * 20}px`,
+              }}
+            ></div>
 
-                      <span className="dia-texto">
-                        {formatearDia(item.fecha)}
-                      </span>
+            <span className="dia-texto">
+              {formatearDia(item.fecha)}
+            </span>
 
-                      <span className="horas-texto">
-                        {(item.duracion_horas || 0).toFixed(1)}h
-                      </span>
-                    </div>
-                  ))
-                ) : (
-                  <p style={{ textAlign: "center", marginTop: "10px", color: "#ccc" }}>
-                    No hay sesiones esta semana.
-                  </p>
-                )}
-              </div>
-            </div>
-          </section>
+            <span className="horas-texto" style={{ color: "#e5c7ff", fontSize: "0.8rem" }}>
+              {(item.total_horas || item.duracion_horas).toFixed(1)}h
+            </span>
+          </div>
+        ))
+      ) : (
+        <p style={{ textAlign: "center", marginTop: "10px", color: "#ccc" }}>
+          No hay sesiones esta semana.
+        </p>
+      )}
+    </div>
+  </div>
+</section>
+
 
           {/* MEDALLAS Y TROFEOS */}
           <section className="perfil-section">

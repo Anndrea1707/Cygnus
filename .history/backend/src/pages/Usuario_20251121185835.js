@@ -45,6 +45,7 @@ const usuarioSchema = new mongoose.Schema(
     // ⭐ Registro básico para seguimiento de sesiones
     ultima_sesion_inicio: { type: Date, default: null },
     ultima_sesion_cierre: { type: Date, default: null },
+
   },
   { collection: "usuarios" }
 );

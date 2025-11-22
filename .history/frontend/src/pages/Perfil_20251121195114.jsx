@@ -167,7 +167,7 @@ function Perfil({ usuario, onLogout, onNavigate }) {
               alignItems: "flex-end",
               height: "260px",
               padding: "10px 20px",
-              borderLeft: "2px solid #e5d36c66",
+              borderLeft: "2px solid #c77dff55",
               position: "relative",
             }}>
 
@@ -195,19 +195,20 @@ function Perfil({ usuario, onLogout, onNavigate }) {
                   progresoSemanal.map((item, i) => (
                     <div key={i} className="barra-dia">
                       <div
-                        className="barra"
-                        style={{
-                          height: `${(item.duracion_horas || 0) * 20}px`,
-                        }}
-                      ></div>
+  className="barra"
+  style={{
+    height: `${(item.duracion_horas || 0) * 20}px`,
+  }}
+></div>
 
-                      <span className="dia-texto">
-                        {formatearDia(item.fecha)}
-                      </span>
+<span className="dia-texto">
+  { formatearDia(item.fecha) }
+</span>
 
-                      <span className="horas-texto">
-                        {(item.duracion_horas || 0).toFixed(1)}h
-                      </span>
+<span className="horas-texto">
+  { (item.duracion_horas || 0).toFixed(1) }h
+</span>
+
                     </div>
                   ))
                 ) : (

@@ -19,7 +19,7 @@ function Perfil({ usuario, onLogout, onNavigate }) {
         const data = await resp.json();
 
         if (data.success) {
-          setProgresoSemanal(data.progresoSemanal);
+          setProgresoSemanal(data.sesiones); // 👉 CORREGIDO
         }
       } catch (error) {
         console.error("Error obteniendo progreso semanal:", error);
@@ -130,28 +130,6 @@ function Perfil({ usuario, onLogout, onNavigate }) {
             </div>
           </div>
 
-          {/* CURSOS EN DESARROLLO */}
-          <section className="perfil-section">
-            <h2>📚 Cursos en desarrollo</h2>
-            <div className="cursos-grid">
-              {cursosEnDesarrollo.map((curso, i) => (
-                <div key={i} className="curso-card">
-                  <h3>{curso.nombre}</h3>
-                  <p>{curso.descripcion}</p>
-                  <div className="progreso-barra">
-                    <div
-                      className="progreso-fill"
-                      style={{ width: `${curso.progreso}%` }}
-                    ></div>
-                  </div>
-                  <span className="progreso-texto">
-                    Progreso: {curso.progreso}%
-                  </span>
-                </div>
-              ))}
-            </div>
-          </section>
-
           {/* GRÁFICA DE PROGRESO */}
           <section className="perfil-section grafica-card">
             <h2>📈 Progreso Semanal</h2>
@@ -167,7 +145,7 @@ function Perfil({ usuario, onLogout, onNavigate }) {
               alignItems: "flex-end",
               height: "260px",
               padding: "10px 20px",
-              borderLeft: "2px solid #e5d36c66",
+              borderLeft: "2px solid #c77dff55",
               position: "relative",
             }}>
 
@@ -197,7 +175,7 @@ function Perfil({ usuario, onLogout, onNavigate }) {
                       <div
                         className="barra"
                         style={{
-                          height: `${(item.duracion_horas || 0) * 20}px`,
+                          height: `${(item.total_horas || item.duracion_horas) * 20}px`,
                         }}
                       ></div>
 
@@ -205,8 +183,8 @@ function Perfil({ usuario, onLogout, onNavigate }) {
                         {formatearDia(item.fecha)}
                       </span>
 
-                      <span className="horas-texto">
-                        {(item.duracion_horas || 0).toFixed(1)}h
+                      <span className="horas-texto" style={{ color: "#e5c7ff", fontSize: "0.8rem" }}>
+                        {(item.total_horas || item.duracion_horas).toFixed(1)}h
                       </span>
                     </div>
                   ))
@@ -216,6 +194,34 @@ function Perfil({ usuario, onLogout, onNavigate }) {
                   </p>
                 )}
               </div>
+            </div>
+          </section>
+
+          {/* GRÁFICA DE PROGRESO */}
+          <section className="perfil-section grafica-card">
+            <h2>📈 Progreso Semanal</h2>
+
+            <div className="grafica-semanal">
+              {progresoSemanal.length > 0 ? (
+                progresoSemanal.map((item, i) => (
+                  <div key={i} className="barra-dia">
+                    <div
+                      className="barra"
+                      style={{ height: `${item.duracion_horas * 20}px` }}
+                    ></div>
+
+                    <span className="dia-texto">
+                      {item.fecha.slice(5)} {/* muestra MM-DD */}
+                    </span>
+
+                    <span className="horas-texto">{item.duracion_horas}h</span>
+                  </div>
+                ))
+              ) : (
+                <p style={{ textAlign: "center", marginTop: "10px", color: "#888" }}>
+                  No hay sesiones registradas esta semana.
+                </p>
+              )}
             </div>
           </section>
 
