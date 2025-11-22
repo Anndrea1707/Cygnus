@@ -14,18 +14,15 @@ function Login({ onBackToHome, onRegisterClick, onLoginSuccess }) {
   const [contrasena, setContrasena] = useState("");
   const [loading, setLoading] = useState(false);
 
+  // Modal SOLO para errores (dejado así para avisos importantes)
   const [mostrarModal, setMostrarModal] = useState(false);
   const [modalMensaje, setModalMensaje] = useState("");
   const [modalTitulo, setModalTitulo] = useState("");
   const [modalIcono, setModalIcono] = useState("🚀");
 
+  // Ya NO se usa para inicio exitoso → queda solo para errores
   const cerrarModal = () => {
     setMostrarModal(false);
-
-    if (onLoginSuccess && window.__loginUsuario) {
-      onLoginSuccess(window.__loginUsuario);
-      window.__loginUsuario = null;
-    }
   };
 
   const handleLogin = async (e) => {
@@ -53,19 +50,18 @@ function Login({ onBackToHome, onRegisterClick, onLoginSuccess }) {
       if (response.ok) {
         const usuario = data.usuario || {};
 
-        // 🟣 Mostrar apodo → si no, nombre_completo
-        const nombreVisible =
-          usuario.apodo?.trim() ||
-          usuario.nombre_completo?.trim() ||
-          "Usuario";
-
+        // ⛔⛔⛔ DESACTIVADO: Modal de bienvenida
+        /*
         setModalIcono("🚀");
         setModalTitulo(`¡Bienvenido ${nombreVisible}!`);
         setModalMensaje("Inicio de sesión exitoso.");
         setMostrarModal(true);
-
         window.__loginUsuario = data.usuario;
+        */
 
+        // ⭐ Redirección inmediata sin modal
+        onLoginSuccess(usuario);
+        return;
       } else {
         setModalIcono("❌");
         setModalTitulo("No hemos podido iniciar tu sesión");
@@ -150,7 +146,7 @@ function Login({ onBackToHome, onRegisterClick, onLoginSuccess }) {
         </div>
       </div>
 
-      {/* 🟣 MODAL */}
+      {/* 🟣 MODAL SOLO PARA ERRORES */}
       {mostrarModal && (
         <div className="modal-overlay-login">
           <div className="modal-login">
