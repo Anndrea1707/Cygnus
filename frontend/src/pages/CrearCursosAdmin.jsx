@@ -53,7 +53,7 @@ const CrearCursosAdmin = ({ onNavigate, cursoEditar }) => {
     const [nuevaPregunta, setNuevaPregunta] = useState({
         interrogante: "",
         opciones: ["", "", "", ""],
-        opcionCorrecta: "",
+        opcionCorrecta: null, // ⭐ CAMBIO: null en lugar de string vacío
         dificultad: "1"
     });
 
@@ -338,7 +338,7 @@ const CrearCursosAdmin = ({ onNavigate, cursoEditar }) => {
         setNuevaPregunta({
             interrogante: "",
             opciones: ["", "", "", ""],
-            opcionCorrecta: "",
+            opcionCorrecta: null, // ⭐ CAMBIO: null en lugar de string vacío
             dificultad: "1"
         });
         setModalPregunta({ 
@@ -357,11 +357,17 @@ const CrearCursosAdmin = ({ onNavigate, cursoEditar }) => {
         } else {
             pregunta = evaluacionFinal.preguntas[preguntaIndex];
         }
+        
+        // ⭐ CORRECCIÓN: Asegurar que opcionCorrecta sea número
+        const opcionCorrecta = typeof pregunta.opcionCorrecta === 'string' 
+            ? parseInt(pregunta.opcionCorrecta) 
+            : pregunta.opcionCorrecta;
+
         setNuevaPregunta({
             interrogante: pregunta.interrogante || "",
             opciones: [...pregunta.opciones],
-            opcionCorrecta: pregunta.opcionCorrecta || "",
-            dificultad: pregunta.dificultad || "1"
+            opcionCorrecta: opcionCorrecta, // ⭐ Ahora es número (0, 1, 2, 3)
+            dificultad: pregunta.dificultad?.toString() || "1"
         });
         setModalPregunta({ 
             abierto: true, 
@@ -380,30 +386,38 @@ const CrearCursosAdmin = ({ onNavigate, cursoEditar }) => {
             setMostrarModal(true);
             return;
         }
-        if (nuevaPregunta.opcionCorrecta === "") {
+        if (nuevaPregunta.opcionCorrecta === null || nuevaPregunta.opcionCorrecta === undefined) {
             setModalIcono("❌");
             setModalTitulo("Seleccione correcta");
             setModalMensaje("Selecciona la opción correcta de la pregunta.");
             setMostrarModal(true);
             return;
         }
+
+        // ⭐ CORRECCIÓN: Asegurar que opcionCorrecta sea número
+        const preguntaParaGuardar = {
+            ...nuevaPregunta,
+            opcionCorrecta: nuevaPregunta.opcionCorrecta, // Ya es número (0, 1, 2, 3)
+            dificultad: parseInt(nuevaPregunta.dificultad)
+        };
+
         if (modalPregunta.tipo === 'modulo') {
             const modulosActualizados = [...modulos];
             if (modalPregunta.modo === 'crear') {
-                modulosActualizados[modalPregunta.moduloIndex].evaluacion.preguntas.push({ ...nuevaPregunta });
+                modulosActualizados[modalPregunta.moduloIndex].evaluacion.preguntas.push(preguntaParaGuardar);
             } else {
-                modulosActualizados[modalPregunta.moduloIndex].evaluacion.preguntas[modalPregunta.preguntaIndex] = { ...nuevaPregunta };
+                modulosActualizados[modalPregunta.moduloIndex].evaluacion.preguntas[modalPregunta.preguntaIndex] = preguntaParaGuardar;
             }
             setModulos(modulosActualizados);
         } else {
             if (modalPregunta.modo === 'crear') {
                 setEvaluacionFinal(prev => ({
                     ...prev,
-                    preguntas: [...prev.preguntas, { ...nuevaPregunta }]
+                    preguntas: [...prev.preguntas, preguntaParaGuardar]
                 }));
             } else {
                 const nuevasPreguntas = [...evaluacionFinal.preguntas];
-                nuevasPreguntas[modalPregunta.preguntaIndex] = { ...nuevaPregunta };
+                nuevasPreguntas[modalPregunta.preguntaIndex] = preguntaParaGuardar;
                 setEvaluacionFinal(prev => ({
                     ...prev,
                     preguntas: nuevasPreguntas
@@ -417,6 +431,14 @@ const CrearCursosAdmin = ({ onNavigate, cursoEditar }) => {
         const nuevasOpciones = [...nuevaPregunta.opciones];
         nuevasOpciones[index] = value;
         setNuevaPregunta(prev => ({ ...prev, opciones: nuevasOpciones }));
+    };
+
+    // ⭐ CORRECCIÓN: Función para manejar selección de opción correcta
+    const manejarOpcionCorrectaCambio = (index) => {
+        setNuevaPregunta(prev => ({ 
+            ...prev, 
+            opcionCorrecta: index // ⭐ Ahora es número (0, 1, 2, 3)
+        }));
     };
 
     const crearCurso = async () => {
@@ -1075,8 +1097,8 @@ const CrearCursosAdmin = ({ onNavigate, cursoEditar }) => {
                                         <input
                                             type="radio"
                                             name="opcionCorrecta"
-                                            checked={nuevaPregunta.opcionCorrecta === index.toString()}
-                                            onChange={() => setNuevaPregunta({...nuevaPregunta, opcionCorrecta: index.toString()})}
+                                            checked={nuevaPregunta.opcionCorrecta === index} // ⭐ CAMBIO: comparación con número
+                                            onChange={() => manejarOpcionCorrectaCambio(index)} // ⭐ CAMBIO: nueva función
                                         />
                                         <label>Correcta</label>
                                     </div>

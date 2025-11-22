@@ -39,7 +39,14 @@ const usuarioSchema = new mongoose.Schema(
       habilidad: { type: Number, min: 0, max: 5, default: 1 }
       // NOTA: Se eliminó categoria_evaluada
     },
-
+    // ⭐ NUEVO CAMPO: Habilidad Nueva - No se promedia, se actualiza directamente
+    habilidad_nueva: { 
+      type: Number, 
+      min: 0, 
+      max: 5, 
+      default: 0 
+    },
+    
     creado_en: { type: Date, default: Date.now },
 
     // ⭐ Registro básico para seguimiento de sesiones

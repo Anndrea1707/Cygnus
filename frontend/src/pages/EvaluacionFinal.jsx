@@ -62,7 +62,12 @@ export default function EvaluacionFinal({ curso, evaluacion, onNavigate, onEvalu
 
         let correctas = 0;
         respuestas.forEach((r, i) => {
-            if (r === preguntas[i].correcta) correctas++;
+            // ⭐ CORRECCIÓN: Usar opcionCorrecta y asegurar que sea número
+            const opcionCorrecta = typeof preguntas[i].opcionCorrecta === 'string' 
+                ? parseInt(preguntas[i].opcionCorrecta) 
+                : preguntas[i].opcionCorrecta;
+            
+            if (r === opcionCorrecta) correctas++;
         });
 
         const puntajeCalculado = (correctas / preguntas.length) * 100;
@@ -103,6 +108,7 @@ export default function EvaluacionFinal({ curso, evaluacion, onNavigate, onEvalu
                 const resultCompletado = await responseCompletado.json();
                 if (resultCompletado.success) {
                     console.log("✅ Curso marcado como completado:", resultCompletado);
+                    setCertificadoGenerado(true);
                 }
             }
 
@@ -147,13 +153,25 @@ export default function EvaluacionFinal({ curso, evaluacion, onNavigate, onEvalu
                         </div>
                         <div className="estadistica">
                             <span className="estadistica-valor">
-                                {respuestas.filter((resp, index) => resp === preguntas[index].correcta).length}
+                                {respuestas.filter((resp, index) => {
+                                    // ⭐ CORRECCIÓN: Usar opcionCorrecta y asegurar que sea número
+                                    const opcionCorrecta = typeof preguntas[index].opcionCorrecta === 'string' 
+                                        ? parseInt(preguntas[index].opcionCorrecta) 
+                                        : preguntas[index].opcionCorrecta;
+                                    return resp === opcionCorrecta;
+                                }).length}
                             </span>
                             <span className="estadistica-label">Correctas</span>
                         </div>
                         <div className="estadistica">
                             <span className="estadistica-valor">
-                                {respuestas.filter((resp, index) => resp !== preguntas[index].correcta).length}
+                                {respuestas.filter((resp, index) => {
+                                    // ⭐ CORRECCIÓN: Usar opcionCorrecta y asegurar que sea número
+                                    const opcionCorrecta = typeof preguntas[index].opcionCorrecta === 'string' 
+                                        ? parseInt(preguntas[index].opcionCorrecta) 
+                                        : preguntas[index].opcionCorrecta;
+                                    return resp !== opcionCorrecta;
+                                }).length}
                             </span>
                             <span className="estadistica-label">Incorrectas</span>
                         </div>

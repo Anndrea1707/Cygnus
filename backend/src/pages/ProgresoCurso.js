@@ -9,50 +9,75 @@ const progresoCursoSchema = new mongoose.Schema({
     },
 
     cursoId: {
-        type: String, // tus cursos tienen id generado por frontend
+        type: String,
         required: true
     },
 
-    // En qué módulo va actualmente
+    // ⭐ MEJORADO: Progreso detallado por módulo
     moduloActual: {
         type: Number,
         default: 0
     },
 
-    // En qué contenido del módulo va
     contenidoActual: {
         type: Number,
         default: 0
     },
 
-    // Lista de módulos completados
-    modulosCompletados: {
-        type: [Number],
-        default: []
-    },
+    // ⭐ NUEVO: Módulos completados con detalles
+    modulosCompletados: [{
+        moduloIndex: { type: Number, required: true },
+        completado: { type: Boolean, default: false },
+        fechaCompletado: { type: Date, default: null },
+        notaEvaluacion: { type: Number, default: 0 }
+    }],
 
-    // Si la evaluación final está completada
+    // ⭐ NUEVO: Contenidos vistos por módulo
+    contenidosVistos: [{
+        moduloIndex: { type: Number, required: true },
+        contenidoIndex: { type: Number, required: true },
+        visto: { type: Boolean, default: false },
+        fechaVisto: { type: Date, default: null }
+    }],
+
     evaluacionFinalCompletada: {
         type: Boolean,
         default: false
     },
 
-    // Progreso porcentual total
     progresoPorcentual: {
         type: Number,
         default: 0
     },
 
-    // NOTA: habilidadNueva (0-5) que viene de cada evaluación
-    habilidadNueva: {
+    // ⭐ ELIMINADO: habilidadNueva
+
+    ultimaActualizacion: {
+        type: Date,
+        default: Date.now
+    },
+
+    cursoCompletado: {
+        type: Boolean,
+        default: false
+    },
+
+    fechaCompletado: {
+        type: Date,
+        default: null
+    },
+
+    // ⭐ NUEVO: Para controlar si puede hacer evaluación final
+    modulosParaEvaluacionFinal: {
         type: Number,
         default: 0
     },
 
-    // Última actualización
-    ultimaActualizacion: {
-        type: Date,
-        default: Date.now
+    // ⭐ NUEVO: Estado del curso
+    estado: {
+        type: String,
+        enum: ["en_progreso", "completado", "abandonado"],
+        default: "en_progreso"
     }
 });
 
