@@ -764,3 +764,12 @@ body {
     padding: 40px;
     padding-top: 80px;
 }
+.modulo-bloqueado {
+    opacity: 0.5;
+    pointer-events: none;
+  }
+  
+  .modulo-bloqueado .modulo-titulo::after {
+    content: " 🔒";
+  }
+  

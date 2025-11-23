@@ -77,17 +77,26 @@ export default function CursoVista({ onNavigate, curso }) {
         console.log("📊 Respuesta del progreso:", data);
 
         if (data.success && data.progreso) {
+          // ✔ Sí existe progreso real en DB
           setProgresoCurso(data.progreso);
           console.log("✅ Progreso cargado:", data.progreso);
 
-          // ✅ Verificar si el curso está completado al 100%
           if (data.progreso.progresoPorcentual >= 100 || data.progreso.cursoCompletado) {
             setMostrarModalCompletado(true);
           }
         } else {
-          console.log("ℹ️ No hay progreso para este curso");
-          setProgresoCurso(null);
+          // ❗ No existe progreso → asignar progreso inicial por defecto
+          console.log("ℹ️ No hay progreso guardado, asignando progreso inicial");
+
+          setProgresoCurso({
+            moduloActual: 0,
+            contenidoActual: 0,
+            modulosCompletados: [],
+            progresoPorcentual: 0,
+            cursoCompletado: false
+          });
         }
+
       } catch (error) {
         console.error("❌ Error cargando progreso:", error);
         setProgresoCurso(null);
@@ -107,11 +116,16 @@ export default function CursoVista({ onNavigate, curso }) {
   const expandirTodos = () => {
     if (!cursoActual?.modulos) return;
 
-    const todosExpandidos = {};
+    const expandidos = {};
+
     cursoActual.modulos.forEach((_, index) => {
-      todosExpandidos[index] = true;
+      // Solo expandir módulos NO bloqueados
+      if (!moduloBloqueado(index)) {
+        expandidos[index] = true;
+      }
     });
-    setModulosExpandidos(todosExpandidos);
+
+    setModulosExpandidos(expandidos);
   };
 
   const colapsarTodos = () => {
@@ -155,6 +169,23 @@ export default function CursoVista({ onNavigate, curso }) {
       moduloIndex: moduloInicio,
       contenidoIndex: contenidoInicio
     });
+  };
+
+  const moduloBloqueado = (moduloIndex) => {
+    if (!progresoCurso) return false; // sin progreso → nada bloqueado
+
+    const actual = progresoCurso.moduloActual;
+    const completados = progresoCurso.modulosCompletados || [];
+
+    // Módulo actual y anteriores → SIEMPRE permitidos
+    if (moduloIndex <= actual) return false;
+
+    // Siguiente módulo solo permitido si el actual está completado
+    const actualCompletado = completados.includes(actual);
+    if (moduloIndex === actual + 1 && actualCompletado) return false;
+
+    // Todos los demás → bloqueados
+    return true;
   };
 
   // Función para reiniciar progreso
@@ -389,8 +420,15 @@ export default function CursoVista({ onNavigate, curso }) {
             {cursoActual.modulos && cursoActual.modulos.map((modulo, moduloIndex) => (
               <div key={moduloIndex} className="modulo-seccion">
                 <div
-                  className={`modulo-header ${modulosExpandidos[moduloIndex] ? 'expandido' : ''}`}
-                  onClick={() => toggleModulo(moduloIndex)}
+                  className={`modulo-header 
+    ${modulosExpandidos[moduloIndex] ? 'expandido' : ''} 
+    ${moduloBloqueado(moduloIndex) ? 'modulo-bloqueado' : ''}`
+                  }
+                  onClick={() => {
+                    if (!moduloBloqueado(moduloIndex)) {
+                      toggleModulo(moduloIndex);
+                    }
+                  }}
                 >
                   <div className="modulo-info-principal">
                     <div className="modulo-numero">
