@@ -3,6 +3,8 @@ import "./Dashboard.css";
 import NavbarPrincipal from "../components/NavbarPrincipal";
 import Footer from "../components/Footer";
 import SoportePanel from "../components/SoportePanel";
+import { recomendarCursos } from "../helpers/recomendaciones";
+
 
 function Dashboard({ usuario, onLogout, onNavigate }) {
   const [mostrarSoporte, setMostrarSoporte] = useState(false);
@@ -11,6 +13,7 @@ function Dashboard({ usuario, onLogout, onNavigate }) {
   const [todosLosCursos, setTodosLosCursos] = useState([]);
 
   const nombreUsuario = usuario?.apodo || usuario?.nombre_completo || "Usuario";
+  const [recomendaciones, setRecomendaciones] = useState(null);
 
   // Cargar todos los cursos y el progreso del usuario
   useEffect(() => {
@@ -19,22 +22,26 @@ function Dashboard({ usuario, onLogout, onNavigate }) {
 
       try {
         setLoading(true);
-        
+
         // 1. Cargar todos los cursos
         const responseCursos = await fetch("http://localhost:4000/api/cursos");
         const cursosData = await responseCursos.json();
         setTodosLosCursos(cursosData);
 
+        // Generar recomendaciones basadas en habilidad
+        const rec = recomendarCursos(cursosData, usuario);
+        setRecomendaciones(rec);
+
         // 2. Para cada curso, verificar si hay progreso
         const cursosConProgresoArray = [];
-        
+
         for (const curso of cursosData) {
           try {
             const responseProgreso = await fetch(
               `http://localhost:4000/api/progreso/curso/${usuario._id}/${curso._id}`
             );
             const progresoData = await responseProgreso.json();
-            
+
             if (progresoData.success && progresoData.progreso) {
               cursosConProgresoArray.push({
                 ...curso,
@@ -66,6 +73,32 @@ function Dashboard({ usuario, onLogout, onNavigate }) {
   const verTodosLosCursos = () => {
     onNavigate("cursosusuario");
   };
+  const TarjetaCursoRecomendado = ({ curso }) => (
+    <div className="tarjeta-curso-progreso">
+      <div className="curso-imagen-container">
+        <img src={curso.imagen} alt={curso.nombre} className="curso-imagen" />
+      </div>
+
+      <div className="curso-contenido">
+        <h3 className="curso-titulo">{curso.nombre}</h3>
+        <p className="curso-descripcion">{curso.descripcion}</p>
+
+        <div className="curso-info">
+          <span className="curso-nivel">{curso.nivel}</span>
+          <span className="curso-modulos">
+            {curso.modulos?.length || 0} módulos
+          </span>
+        </div>
+
+        <button
+          className="btn-continuar-curso"
+          onClick={() => onNavigate("curso-vista", { curso })}
+        >
+          🚀 Ver Curso
+        </button>
+      </div>
+    </div>
+  );
 
   // Componente de tarjeta de curso con progreso
   const TarjetaCursoProgreso = ({ curso }) => (
@@ -76,11 +109,11 @@ function Dashboard({ usuario, onLogout, onNavigate }) {
           {Math.round(curso.progreso.progresoPorcentual)}%
         </div>
       </div>
-      
+
       <div className="curso-contenido">
         <h3 className="curso-titulo">{curso.nombre}</h3>
         <p className="curso-descripcion">{curso.descripcion}</p>
-        
+
         <div className="curso-info">
           <span className="curso-nivel">{curso.nivel}</span>
           <span className="curso-modulos">
@@ -91,7 +124,7 @@ function Dashboard({ usuario, onLogout, onNavigate }) {
         {/* Barra de progreso */}
         <div className="progreso-container">
           <div className="progreso-bar">
-            <div 
+            <div
               className="progreso-fill"
               style={{ width: `${curso.progreso.progresoPorcentual}%` }}
             ></div>
@@ -109,7 +142,7 @@ function Dashboard({ usuario, onLogout, onNavigate }) {
               {curso.progreso.moduloActual + 1} de {curso.modulos?.length || 0}
             </span>
           </div>
-          
+
           {curso.progreso.modulosCompletados && curso.progreso.modulosCompletados.length > 0 && (
             <div className="progreso-item">
               <span className="progreso-label">Módulos completados:</span>
@@ -118,7 +151,7 @@ function Dashboard({ usuario, onLogout, onNavigate }) {
               </span>
             </div>
           )}
-          
+
           {curso.progreso.evaluacionFinalCompletada && (
             <div className="progreso-item completado">
               <span className="progreso-label">✅ Evaluación final:</span>
@@ -127,7 +160,7 @@ function Dashboard({ usuario, onLogout, onNavigate }) {
           )}
         </div>
 
-        <button 
+        <button
           className="btn-continuar-curso"
           onClick={() => continuarCurso(curso)}
         >
@@ -154,6 +187,39 @@ function Dashboard({ usuario, onLogout, onNavigate }) {
             herramientas y secciones de Cygnus.
           </p>
         </div>
+        {/* Sección de recomendaciones personalizadas */}
+        {recomendaciones && (
+          <section className="recomendaciones-section">
+            <div className="section-header">
+              <h3>🌟 Recomendación Personalizada</h3>
+
+              <p>
+                Tu habilidad actual es:
+                <strong> {recomendaciones.habilidadActual}</strong>
+              </p>
+
+              <p>
+                Te recomendamos cursos de nivel:
+                <strong> {recomendaciones.nivelRecomendado}</strong>
+              </p>
+
+              <p className="recomendacion-texto-extra">
+                Basado en tu habilidad, estos cursos son ideales para tu nivel de aprendizaje:
+              </p>
+            </div>
+
+            {recomendaciones.cursosRecomendados?.length > 0 ? (
+              <div className="grid-cursos-progreso">
+                {recomendaciones.cursosRecomendados.map(curso => (
+                  <TarjetaCursoRecomendado key={curso._id} curso={curso} />
+                ))}
+              </div>
+            ) : (
+              <p>No encontramos cursos compatibles con tu habilidad actual.</p>
+            )}
+          </section>
+        )}
+
 
         {/* Sección de cursos con progreso */}
         <section className="cursos-progreso-section">
@@ -178,7 +244,7 @@ function Dashboard({ usuario, onLogout, onNavigate }) {
               <div className="sin-cursos-icono">📚</div>
               <h4>Aún no tienes cursos en progreso</h4>
               <p>¡Comienza tu primer curso y empieza tu journey de aprendizaje!</p>
-              <button 
+              <button
                 className="btn-empezar-cursos"
                 onClick={verTodosLosCursos}
               >
@@ -190,7 +256,7 @@ function Dashboard({ usuario, onLogout, onNavigate }) {
           {/* Botón para ver todos los cursos */}
           {cursosConProgreso.length > 0 && (
             <div className="ver-todos-cursos">
-              <button 
+              <button
                 className="btn-ver-todos"
                 onClick={verTodosLosCursos}
               >
@@ -212,7 +278,7 @@ function Dashboard({ usuario, onLogout, onNavigate }) {
                   <span className="stat-label">Cursos activos</span>
                 </div>
               </div>
-              
+
               <div className="stat-card">
                 <div className="stat-icon">✅</div>
                 <div className="stat-info">
@@ -222,26 +288,26 @@ function Dashboard({ usuario, onLogout, onNavigate }) {
                   <span className="stat-label">Cursos completados</span>
                 </div>
               </div>
-              
+
               <div className="stat-card">
                 <div className="stat-icon">🎯</div>
                 <div className="stat-info">
                   <span className="stat-number">
                     {Math.round(
-                      cursosConProgreso.reduce((acc, curso) => acc + curso.progreso.progresoPorcentual, 0) / 
+                      cursosConProgreso.reduce((acc, curso) => acc + curso.progreso.progresoPorcentual, 0) /
                       Math.max(cursosConProgreso.length, 1)
                     )}%
                   </span>
                   <span className="stat-label">Progreso promedio</span>
                 </div>
               </div>
-              
+
               <div className="stat-card">
                 <div className="stat-icon">⚡</div>
                 <div className="stat-info">
                   <span className="stat-number">
-                    {cursosConProgreso.filter(curso => 
-                      curso.progreso.progresoPorcentual > 0 && 
+                    {cursosConProgreso.filter(curso =>
+                      curso.progreso.progresoPorcentual > 0 &&
                       curso.progreso.progresoPorcentual < 100
                     ).length}
                   </span>
