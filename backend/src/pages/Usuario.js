@@ -30,6 +30,7 @@ const usuarioSchema = new mongoose.Schema(
       tiempo_area: { type: Number, default: null },  // Años de experiencia
       tasa_olvido: { type: Number, default: null },  // Decimal 0-1
     },
+    nivel_recordacion: { type: Number, default: null },
 
     // ⭐ PRUEBA DE CONOCIMIENTO
     prueba_conocimiento: {
