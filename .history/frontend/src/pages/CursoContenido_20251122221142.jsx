@@ -581,7 +581,10 @@ export default function CursoContenido({ curso, moduloIndex = 0, contenidoIndex 
                     <div className="progreso-bar">
                         <div
                             className="progreso-fill"
-                            style={{ width: `${calcularProgreso()}%` }}
+                            style={{
+                                width: `${((moduloActual * modulo.contenido.length + contenidoActual + 1) /
+                                    (curso.modulos.reduce((total, mod) => total + mod.contenido.length, 0)) * 100)}%`
+                            }}
                         ></div>
                     </div>
                 </div>

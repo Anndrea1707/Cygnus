@@ -1,20 +1,19 @@
 import React, { useState, useEffect } from "react";
 import "./CursoContenido.css";
 
-export default function CursoContenido({ curso, moduloIndex = 0, contenidoIndex = 0, onNavigate, onFinalizarCurso }) {
+export default function CursoContenido({ curso, onNavigate, onFinalizarCurso }) {
     const [moduloActual, setModuloActual] = useState(0);
     const [contenidoActual, setContenidoActual] = useState(0);
     const [mostrarConfirmacionEvaluacion, setMostrarConfirmacionEvaluacion] = useState(false);
     const [tipoEvaluacion, setTipoEvaluacion] = useState(null); // 'modulo' o 'final'
-
     useEffect(() => {
-        if (typeof moduloIndex === "number") {
-            setModuloActual(moduloIndex);
-        }
-        if (typeof contenidoIndex === "number") {
-            setContenidoActual(contenidoIndex);
-        }
-    }, [moduloIndex, contenidoIndex]);
+    if (typeof moduloIndex === "number") {
+        setModuloActual(moduloIndex);
+    }
+    if (typeof contenidoIndex === "number") {
+        setContenidoActual(contenidoIndex);
+    }
+}, [moduloIndex, contenidoIndex]);
 
 
     // Obtener el contenido actual
@@ -141,7 +140,6 @@ export default function CursoContenido({ curso, moduloIndex = 0, contenidoIndex 
     // CORREGIR handleSiguiente - agregar async
     const handleSiguiente = async () => {
         await guardarProgreso(); // Guardar progreso actual antes de avanzar
-        await guardarProgreso(moduloActual, contenidoActual);
 
         // Si es el último contenido del módulo y hay evaluación
         if (esUltimoContenido && hayEvaluacionModulo) {
@@ -177,14 +175,16 @@ export default function CursoContenido({ curso, moduloIndex = 0, contenidoIndex 
     };
 
     // Actualizar handleAnterior y handleSiguiente para usar la nueva función
-    const handleAnterior = () => {
+    const handleAnterior = async () => {
         if (contenidoActual === 0 && moduloActual > 0) {
             const moduloAnterior = moduloActual - 1;
             const ultimoContenido = curso.modulos[moduloAnterior].contenido.length - 1;
 
+            await guardarProgreso(moduloAnterior, ultimoContenido);
             setModuloActual(moduloAnterior);
             setContenidoActual(ultimoContenido);
         } else if (contenidoActual > 0) {
+            await guardarProgreso(moduloActual, contenidoActual - 1);
             setContenidoActual(prev => prev - 1);
         }
     };
@@ -224,24 +224,6 @@ export default function CursoContenido({ curso, moduloIndex = 0, contenidoIndex 
                 onFinalizarCurso();
             }
         }
-    };
-
-    const calcularProgreso = () => {
-        let contenidosPrevios = 0;
-
-        // Sumar contenidos de módulos anteriores
-        for (let i = 0; i < moduloActual; i++) {
-            contenidosPrevios += curso.modulos[i].contenido.length;
-        }
-
-        const vistos = contenidosPrevios + contenidoActual + 1;
-
-        const total = curso.modulos.reduce(
-            (acc, m) => acc + m.contenido.length,
-            0
-        );
-
-        return (vistos / total) * 100;
     };
 
     // Función mejorada para extraer ID de YouTube
@@ -581,7 +563,10 @@ export default function CursoContenido({ curso, moduloIndex = 0, contenidoIndex 
                     <div className="progreso-bar">
                         <div
                             className="progreso-fill"
-                            style={{ width: `${calcularProgreso()}%` }}
+                            style={{
+                                width: `${((moduloActual * modulo.contenido.length + contenidoActual + 1) /
+                                    (curso.modulos.reduce((total, mod) => total + mod.contenido.length, 0)) * 100)}%`
+                            }}
                         ></div>
                     </div>
                 </div>

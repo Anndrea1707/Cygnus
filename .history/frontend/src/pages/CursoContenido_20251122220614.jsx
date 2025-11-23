@@ -226,24 +226,6 @@ export default function CursoContenido({ curso, moduloIndex = 0, contenidoIndex 
         }
     };
 
-    const calcularProgreso = () => {
-        let contenidosPrevios = 0;
-
-        // Sumar contenidos de módulos anteriores
-        for (let i = 0; i < moduloActual; i++) {
-            contenidosPrevios += curso.modulos[i].contenido.length;
-        }
-
-        const vistos = contenidosPrevios + contenidoActual + 1;
-
-        const total = curso.modulos.reduce(
-            (acc, m) => acc + m.contenido.length,
-            0
-        );
-
-        return (vistos / total) * 100;
-    };
-
     // Función mejorada para extraer ID de YouTube
     const extraerYouTubeId = (url) => {
         if (!url) return null;
@@ -581,7 +563,10 @@ export default function CursoContenido({ curso, moduloIndex = 0, contenidoIndex 
                     <div className="progreso-bar">
                         <div
                             className="progreso-fill"
-                            style={{ width: `${calcularProgreso()}%` }}
+                            style={{
+                                width: `${((moduloActual * modulo.contenido.length + contenidoActual + 1) /
+                                    (curso.modulos.reduce((total, mod) => total + mod.contenido.length, 0)) * 100)}%`
+                            }}
                         ></div>
                     </div>
                 </div>

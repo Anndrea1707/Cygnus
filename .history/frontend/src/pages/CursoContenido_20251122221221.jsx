@@ -580,9 +580,10 @@ export default function CursoContenido({ curso, moduloIndex = 0, contenidoIndex 
                     </div>
                     <div className="progreso-bar">
                         <div
-                            className="progreso-fill"
-                            style={{ width: `${calcularProgreso()}%` }}
-                        ></div>
+    className="progreso-fill"
+    style={{ width: `${calcularProgreso()}%` }}
+></div>
+
                     </div>
                 </div>
 
