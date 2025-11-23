@@ -15,25 +15,19 @@ export default function CursoContenido({ curso, onNavigate, onFinalizarCurso }) 
     const hayEvaluacionModulo = modulo?.evaluacion && modulo.evaluacion.preguntas?.length > 0;
     const hayEvaluacionFinal = curso?.evaluacionFinal && curso.evaluacionFinal.preguntas?.length > 0;
 
-    // Función corregida para determinar el texto del botón
-    const obtenerTextoSiguiente = () => {
-        if (esUltimoContenido) {
-            if (esUltimoModulo) {
-                if (hayEvaluacionFinal) {
-                    return "Presentar evaluación final";
-                } else {
-                    return "Finalizar curso";
-                }
-            } else {
-                if (hayEvaluacionModulo) {
-                    return "Evaluación del módulo";
-                } else {
-                    return "Siguiente módulo";
-                }
-            }
-        } else {
-            return "Siguiente";
-        }
+    const calcularProgreso = () => {
+        const totalContenidos = curso.modulos.reduce(
+            (total, m) => total + m.contenido.length,
+            0
+        );
+
+        const contenidosAntes = curso.modulos
+            .slice(0, moduloActual)
+            .reduce((total, m) => total + m.contenido.length, 0);
+
+        const posicionActual = contenidosAntes + contenidoActual + 1;
+
+        return (posicionActual / totalContenidos) * 100;
     };
 
     const guardarProgreso = async (modulo = moduloActual, contenido = contenidoActual) => {
@@ -68,6 +62,27 @@ export default function CursoContenido({ curso, onNavigate, onFinalizarCurso }) 
             // No mostrar alerta para no interrumpir la experiencia
         }
     };
+    
+    // Determinar el texto del botón siguiente
+    const obtenerTextoSiguiente = () => {
+        if (esUltimoContenido) {
+            if (esUltimoModulo) {
+                if (hayEvaluacionFinal) {
+                    return "Evaluación final";
+                } else {
+                    return "Finalizar curso";
+                }
+            } else {
+                if (hayEvaluacionModulo) {
+                    return "Evaluación del módulo";
+                } else {
+                    return "Siguiente módulo";
+                }
+            }
+        } else {
+            return "Siguiente";
+        }
+    };
 
     // Ocultar navbar y footer
     useEffect(() => {
@@ -92,46 +107,21 @@ export default function CursoContenido({ curso, onNavigate, onFinalizarCurso }) 
                 `http://localhost:4000/api/progreso/puede-evaluacion-final/${usuarioLS._id}/${cursoId}/${curso.modulos.length}`
             );
 
-            if (!response.ok) {
-                throw new Error('Error en la verificación');
-            }
-
             const data = await response.json();
 
             if (data.success && data.puedeHacerEvaluacion) {
                 setTipoEvaluacion('final');
                 setMostrarConfirmacionEvaluacion(true);
             } else {
-                // Si no puede hacer evaluación final, mostrar mensaje y continuar
-                console.log("No puede hacer evaluación final:", data);
-                // Avanzar al siguiente módulo o finalizar
-                if (esUltimoModulo) {
-                    if (onFinalizarCurso) {
-                        onFinalizarCurso();
-                    }
-                } else {
-                    setModuloActual(prev => prev + 1);
-                    setContenidoActual(0);
-                }
+                alert(`No puedes hacer la evaluación final aún. Completa todos los módulos primero. (${data.modulosCompletados}/${data.totalModulos} módulos completados)`);
             }
         } catch (error) {
             console.error("Error verificando evaluación final:", error);
-            // En caso de error, continuar normalmente
-            if (esUltimoModulo) {
-                if (onFinalizarCurso) {
-                    onFinalizarCurso();
-                }
-            } else {
-                setModuloActual(prev => prev + 1);
-                setContenidoActual(0);
-            }
         }
     };
 
-    // CORREGIR handleSiguiente - agregar async
-    const handleSiguiente = async () => {
-        await guardarProgreso(); // Guardar progreso actual antes de avanzar
-
+    const handleSiguiente = () => {
+        guardarProgreso(); // Guardar progreso actual antes de avanzar
         // Si es el último contenido del módulo y hay evaluación
         if (esUltimoContenido && hayEvaluacionModulo) {
             setTipoEvaluacion('modulo');
@@ -141,8 +131,7 @@ export default function CursoContenido({ curso, onNavigate, onFinalizarCurso }) 
 
         // Si es el último contenido del último módulo y hay evaluación final
         if (esUltimoContenido && esUltimoModulo && hayEvaluacionFinal) {
-            setTipoEvaluacion('final');
-            setMostrarConfirmacionEvaluacion(true);
+            await verificarEvaluacionFinal(); // ✅ Verificar antes de mostrar modal
             return;
         }
 
@@ -166,16 +155,16 @@ export default function CursoContenido({ curso, onNavigate, onFinalizarCurso }) 
     };
 
     // Actualizar handleAnterior y handleSiguiente para usar la nueva función
-    const handleAnterior = async () => {
+    const handleAnterior = () => {
         if (contenidoActual === 0 && moduloActual > 0) {
             const moduloAnterior = moduloActual - 1;
             const ultimoContenido = curso.modulos[moduloAnterior].contenido.length - 1;
 
-            await guardarProgreso(moduloAnterior, ultimoContenido);
+            guardarProgreso(moduloAnterior, ultimoContenido);
             setModuloActual(moduloAnterior);
             setContenidoActual(ultimoContenido);
         } else if (contenidoActual > 0) {
-            await guardarProgreso(moduloActual, contenidoActual - 1);
+            guardarProgreso(moduloActual, contenidoActual - 1);
             setContenidoActual(prev => prev - 1);
         }
     };
@@ -195,6 +184,7 @@ export default function CursoContenido({ curso, onNavigate, onFinalizarCurso }) 
             });
         }
     };
+
 
     const saltarEvaluacion = () => {
         setMostrarConfirmacionEvaluacion(false);

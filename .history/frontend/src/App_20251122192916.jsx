@@ -235,6 +235,23 @@ function App() {
     setCursoProgreso(nuevoProgreso);
     localStorage.setItem("cursoProgreso", JSON.stringify(nuevoProgreso));
 
+    // ⭐ ELIMINAR la llamada a habilidad que no existe
+    // Actualizar usuario localmente
+    try {
+      const usuarioActualizado = {
+        ...usuario,
+        prueba_conocimiento: {
+          ...usuario.prueba_conocimiento,
+          habilidad: usuario.prueba_conocimiento?.habilidad || 0
+        }
+      };
+
+      setUsuario(usuarioActualizado);
+      localStorage.setItem("usuario", JSON.stringify(usuarioActualizado));
+    } catch (error) {
+      console.error("Error actualizando usuario local:", error);
+    }
+
     handleNavigate("cursosusuario");
   };
 

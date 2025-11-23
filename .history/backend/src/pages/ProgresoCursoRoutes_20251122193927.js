@@ -41,16 +41,21 @@ router.get("/curso/:usuarioId/:cursoId", async (req, res) => {
     try {
         const { usuarioId, cursoId } = req.params;
 
-        // ✅ SOLO buscar progreso existente, NO crear uno nuevo automáticamente
-        const progreso = await ProgresoCurso.findOne({ usuarioId, cursoId });
+        let progreso = await ProgresoCurso.findOne({ usuarioId, cursoId });
 
-        // Si no existe progreso, devolver null en lugar de crear uno
+        // Si no existe progreso, crear uno nuevo
         if (!progreso) {
-            return res.json({ 
-                success: true, 
-                progreso: null,
-                mensaje: "No hay progreso para este curso"
+            progreso = new ProgresoCurso({
+                usuarioId,
+                cursoId,
+                moduloActual: 0,
+                contenidoActual: 0,
+                modulosCompletados: [],
+                contenidosVistos: [],
+                progresoPorcentual: 0,
+                estado: "en_progreso"
             });
+            await progreso.save();
         }
 
         res.json({ success: true, progreso });

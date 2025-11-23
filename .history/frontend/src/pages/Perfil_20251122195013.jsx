@@ -350,7 +350,7 @@ function Perfil({ usuario, onLogout, onNavigate }) {
           <section className="perfil-section">
             <h2>🥇 Medallas</h2>
             <p className="texto-explicacion">
-              Las medallas se obtienen por puntos ⭐
+              Las medallas se obtienen por **puntos** ⭐
             </p>
 
             <div className="medallas-grid">
@@ -369,7 +369,7 @@ function Perfil({ usuario, onLogout, onNavigate }) {
           <section className="perfil-section">
             <h2>🏆 Trofeos</h2>
             <p className="texto-explicacion">
-              Los trofeos se ganan al completar cursos🎓
+              Los trofeos se ganan al **completar cursos* 🎓
             </p>
 
             <div className="medallas-grid">

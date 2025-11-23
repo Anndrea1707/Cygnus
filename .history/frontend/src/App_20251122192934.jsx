@@ -223,20 +223,20 @@ function App() {
 
     // Guardar progreso local (curso completado)
     const nuevoProgreso = {
-      ...cursoProgreso,
-      [curso.id]: {
-        ...cursoProgreso[curso.id],
-        evaluacionFinalCompletada: true,
-        fechaEvaluacionFinal: new Date().toISOString(),
-        completado: true
-      }
+        ...cursoProgreso,
+        [curso.id]: {
+            ...cursoProgreso[curso.id],
+            evaluacionFinalCompletada: true,
+            fechaEvaluacionFinal: new Date().toISOString(),
+            completado: true
+        }
     };
 
     setCursoProgreso(nuevoProgreso);
     localStorage.setItem("cursoProgreso", JSON.stringify(nuevoProgreso));
 
     handleNavigate("cursosusuario");
-  };
+};
 
   if (cargando) {
     return (

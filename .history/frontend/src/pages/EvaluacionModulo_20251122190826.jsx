@@ -182,14 +182,11 @@ export default function EvaluacionModulo({ curso, modulo, moduloIndex, onNavigat
                                 🏠 Volver al curso
                             </button>
                             <button
-                                className="btn-continuar"
-                                onClick={manejarContinuar}
-                            >
-                                {moduloIndex === curso.modulos.length - 1 ?
-                                    '🎓 Ir a evaluación final' :
-                                    '🚀 Continuar al siguiente módulo'
-                                }
-                            </button>
+    className="btn-continuar"
+    onClick={manejarContinuar}
+>
+    🚀 {moduloIndex === curso.modulos.length - 1 ? 'Continuar al curso' : 'Continuar al siguiente módulo'}
+</button>
                         </div>
                     </div>
                 </div>

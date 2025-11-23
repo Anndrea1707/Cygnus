@@ -202,7 +202,7 @@ export default function EvaluacionFinal({ curso, evaluacion, onNavigate, onEvalu
                         </button>
                         <button
                             className="btn-continuar"
-                            onClick={manejarFinalizarCurso}
+                            onClick={() => onEvaluacionCompletada()}
                         >
                             🏠 Volver a cursos
                         </button>

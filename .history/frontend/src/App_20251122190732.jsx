@@ -174,28 +174,56 @@ function App() {
   // En handleEvaluacionModuloCompletada, corregir:
   const handleEvaluacionModuloCompletada = async (moduloIndexCompletado) => {
     const { curso } = pageParams;
+    const siguienteModuloIndex = moduloIndexCompletado + 1;
 
-    console.log("📝 Evaluación completada del módulo:", moduloIndexCompletado);
-    console.log("📊 Total de módulos del curso:", curso.modulos.length);
+    // ⭐ Actualizar progreso local
+    const nuevoProgreso = {
+      ...cursoProgreso,
+      [curso.id]: {
+        ...cursoProgreso[curso.id],
+        moduloActual: siguienteModuloIndex,
+        contenidoActual: 0,
+        modulosCompletados: [
+          ...(cursoProgreso[curso.id]?.modulosCompletados || []),
+          moduloIndexCompletado
+        ]
+      }
+    };
 
-    // Verificar si es el último módulo
-    const esUltimoModulo = moduloIndexCompletado === curso.modulos.length - 1;
+    setCursoProgreso(nuevoProgreso);
+    localStorage.setItem("cursoProgreso", JSON.stringify(nuevoProgreso));
 
-    if (esUltimoModulo) {
-      console.log("🎯 Último módulo completado, navegando a evaluación final");
-      // Si es el último módulo, ir a evaluación final
-      handleNavigate("evaluacion-final", {
-        curso,
-        evaluacion: curso.evaluacionFinal
-      });
-    } else {
-      console.log("➡️ Módulo intermedio completado, navegando al siguiente módulo");
-      // Si no es el último módulo, ir al siguiente módulo
-      const siguienteModuloIndex = moduloIndexCompletado + 1;
+    // ⭐ ELIMINAR la llamada a habilidad que no existe
+    // En su lugar, actualizar desde el usuario actual
+    try {
+      const usuarioActualizado = {
+        ...usuario,
+        prueba_conocimiento: {
+          ...usuario.prueba_conocimiento,
+          // Mantener la habilidad actual o usar un valor por defecto
+          habilidad: usuario.prueba_conocimiento?.habilidad || 0
+        }
+      };
+
+      setUsuario(usuarioActualizado);
+      localStorage.setItem("usuario", JSON.stringify(usuarioActualizado));
+    } catch (error) {
+      console.error("Error actualizando usuario local:", error);
+    }
+
+    // Navegar al siguiente módulo o evaluación final
+    if (siguienteModuloIndex < curso.modulos.length) {
       handleNavigate("curso-contenido", {
         curso,
         moduloIndex: siguienteModuloIndex,
         contenidoIndex: 0
+      });
+    } else {
+      // Último módulo completado, volver al contenido del último módulo
+      handleNavigate("curso-contenido", {
+        curso,
+        moduloIndex: moduloIndexCompletado,
+        contenidoIndex: curso.modulos[moduloIndexCompletado].contenido.length - 1
       });
     }
   };
@@ -234,6 +262,23 @@ function App() {
 
     setCursoProgreso(nuevoProgreso);
     localStorage.setItem("cursoProgreso", JSON.stringify(nuevoProgreso));
+
+    // ⭐ ELIMINAR la llamada a habilidad que no existe
+    // Actualizar usuario localmente
+    try {
+      const usuarioActualizado = {
+        ...usuario,
+        prueba_conocimiento: {
+          ...usuario.prueba_conocimiento,
+          habilidad: usuario.prueba_conocimiento?.habilidad || 0
+        }
+      };
+
+      setUsuario(usuarioActualizado);
+      localStorage.setItem("usuario", JSON.stringify(usuarioActualizado));
+    } catch (error) {
+      console.error("Error actualizando usuario local:", error);
+    }
 
     handleNavigate("cursosusuario");
   };

@@ -131,7 +131,7 @@ export default function CursoContenido({ curso, onNavigate, onFinalizarCurso }) 
     // CORREGIR handleSiguiente - agregar async
     const handleSiguiente = async () => {
         await guardarProgreso(); // Guardar progreso actual antes de avanzar
-
+        
         // Si es el último contenido del módulo y hay evaluación
         if (esUltimoContenido && hayEvaluacionModulo) {
             setTipoEvaluacion('modulo');

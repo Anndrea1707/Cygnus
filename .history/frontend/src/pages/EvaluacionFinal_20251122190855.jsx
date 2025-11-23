@@ -63,10 +63,10 @@ export default function EvaluacionFinal({ curso, evaluacion, onNavigate, onEvalu
         let correctas = 0;
         respuestas.forEach((r, i) => {
             // ⭐ CORRECCIÓN: Usar opcionCorrecta y asegurar que sea número
-            const opcionCorrecta = typeof preguntas[i].opcionCorrecta === 'string'
-                ? parseInt(preguntas[i].opcionCorrecta)
+            const opcionCorrecta = typeof preguntas[i].opcionCorrecta === 'string' 
+                ? parseInt(preguntas[i].opcionCorrecta) 
                 : preguntas[i].opcionCorrecta;
-
+            
             if (r === opcionCorrecta) correctas++;
         });
 
@@ -125,9 +125,7 @@ export default function EvaluacionFinal({ curso, evaluacion, onNavigate, onEvalu
     };
 
     const manejarFinalizarCurso = () => {
-        if (onEvaluacionCompletada) {
-            onEvaluacionCompletada();
-        }
+        onEvaluacionCompletada(); // <-- viene desde App.jsx
     };
 
     const pregunta = preguntas[preguntaActual];
@@ -157,8 +155,8 @@ export default function EvaluacionFinal({ curso, evaluacion, onNavigate, onEvalu
                             <span className="estadistica-valor">
                                 {respuestas.filter((resp, index) => {
                                     // ⭐ CORRECCIÓN: Usar opcionCorrecta y asegurar que sea número
-                                    const opcionCorrecta = typeof preguntas[index].opcionCorrecta === 'string'
-                                        ? parseInt(preguntas[index].opcionCorrecta)
+                                    const opcionCorrecta = typeof preguntas[index].opcionCorrecta === 'string' 
+                                        ? parseInt(preguntas[index].opcionCorrecta) 
                                         : preguntas[index].opcionCorrecta;
                                     return resp === opcionCorrecta;
                                 }).length}
@@ -169,8 +167,8 @@ export default function EvaluacionFinal({ curso, evaluacion, onNavigate, onEvalu
                             <span className="estadistica-valor">
                                 {respuestas.filter((resp, index) => {
                                     // ⭐ CORRECCIÓN: Usar opcionCorrecta y asegurar que sea número
-                                    const opcionCorrecta = typeof preguntas[index].opcionCorrecta === 'string'
-                                        ? parseInt(preguntas[index].opcionCorrecta)
+                                    const opcionCorrecta = typeof preguntas[index].opcionCorrecta === 'string' 
+                                        ? parseInt(preguntas[index].opcionCorrecta) 
                                         : preguntas[index].opcionCorrecta;
                                     return resp !== opcionCorrecta;
                                 }).length}
@@ -202,7 +200,7 @@ export default function EvaluacionFinal({ curso, evaluacion, onNavigate, onEvalu
                         </button>
                         <button
                             className="btn-continuar"
-                            onClick={manejarFinalizarCurso}
+                            onClick={() => onEvaluacionCompletada()}
                         >
                             🏠 Volver a cursos
                         </button>

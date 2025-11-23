@@ -201,11 +201,11 @@ export default function EvaluacionFinal({ curso, evaluacion, onNavigate, onEvalu
                             📝 Revisar respuestas
                         </button>
                         <button
-                            className="btn-continuar"
-                            onClick={manejarFinalizarCurso}
-                        >
-                            🏠 Volver a cursos
-                        </button>
+    className="btn-continuar"
+    onClick={manejarFinalizarCurso}
+>
+    🏠 Volver a cursos
+</button>
                     </div>
                 </div>
             </div>

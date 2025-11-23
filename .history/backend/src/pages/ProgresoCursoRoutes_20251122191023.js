@@ -41,16 +41,21 @@ router.get("/curso/:usuarioId/:cursoId", async (req, res) => {
     try {
         const { usuarioId, cursoId } = req.params;
 
-        // ✅ SOLO buscar progreso existente, NO crear uno nuevo automáticamente
-        const progreso = await ProgresoCurso.findOne({ usuarioId, cursoId });
+        let progreso = await ProgresoCurso.findOne({ usuarioId, cursoId });
 
-        // Si no existe progreso, devolver null en lugar de crear uno
+        // Si no existe progreso, crear uno nuevo
         if (!progreso) {
-            return res.json({ 
-                success: true, 
-                progreso: null,
-                mensaje: "No hay progreso para este curso"
+            progreso = new ProgresoCurso({
+                usuarioId,
+                cursoId,
+                moduloActual: 0,
+                contenidoActual: 0,
+                modulosCompletados: [],
+                contenidosVistos: [],
+                progresoPorcentual: 0,
+                estado: "en_progreso"
             });
+            await progreso.save();
         }
 
         res.json({ success: true, progreso });
@@ -61,17 +66,15 @@ router.get("/curso/:usuarioId/:cursoId", async (req, res) => {
 });
 
 /* ============================================================
-   📌 2. GUARDAR PROGRESO DE CONTENIDO VISTO - MEJORADO
+   📌 2. GUARDAR PROGRESO DE CONTENIDO VISTO - NUEVO
    ============================================================ */
 router.post("/contenido-visto", async (req, res) => {
     try {
         const { usuarioId, cursoId, moduloIndex, contenidoIndex } = req.body;
 
-        // ✅ BUSCAR Y ACTUALIZAR progreso existente en lugar de crear uno nuevo
         let progreso = await ProgresoCurso.findOne({ usuarioId, cursoId });
 
         if (!progreso) {
-            // Solo crear nuevo si no existe
             progreso = new ProgresoCurso({
                 usuarioId,
                 cursoId,
@@ -80,13 +83,13 @@ router.post("/contenido-visto", async (req, res) => {
                 modulosCompletados: [],
                 contenidosVistos: []
             });
-        } else {
-            // ✅ ACTUALIZAR progreso existente
-            progreso.moduloActual = moduloIndex;
-            progreso.contenidoActual = contenidoIndex;
         }
 
-        // Marcar contenido como visto (evitar duplicados)
+        // Actualizar módulo y contenido actual
+        progreso.moduloActual = moduloIndex;
+        progreso.contenidoActual = contenidoIndex;
+
+        // Marcar contenido como visto
         const contenidoVistoIndex = progreso.contenidosVistos.findIndex(
             c => c.moduloIndex === moduloIndex && c.contenidoIndex === contenidoIndex
         );

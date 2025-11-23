@@ -66,10 +66,10 @@ export default function EvaluacionModulo({ curso, modulo, moduloIndex, onNavigat
         let correctas = 0;
         respuestas.forEach((r, i) => {
             // ⭐ CORRECCIÓN: Usar opcionCorrecta y asegurar que sea número
-            const opcionCorrecta = typeof preguntas[i].opcionCorrecta === 'string'
-                ? parseInt(preguntas[i].opcionCorrecta)
+            const opcionCorrecta = typeof preguntas[i].opcionCorrecta === 'string' 
+                ? parseInt(preguntas[i].opcionCorrecta) 
                 : preguntas[i].opcionCorrecta;
-
+            
             if (r === opcionCorrecta) correctas++;
         });
 
@@ -108,10 +108,10 @@ export default function EvaluacionModulo({ curso, modulo, moduloIndex, onNavigat
 
     // Función para manejar continuar
     const manejarContinuar = () => {
-        if (onEvaluacionCompletada) {
-            onEvaluacionCompletada(moduloIndex);
-        }
-    };
+    if (onEvaluacionCompletada) {
+        onEvaluacionCompletada(moduloIndex);
+    }
+};
 
     const irAEvaluacionFinal = () => {
         setMostrarModalFinal(false);
@@ -152,8 +152,8 @@ export default function EvaluacionModulo({ curso, modulo, moduloIndex, onNavigat
                                 <span className="estadistica-valor">
                                     {respuestas.filter((resp, index) => {
                                         // ⭐ CORRECCIÓN: Usar opcionCorrecta y asegurar que sea número
-                                        const opcionCorrecta = typeof preguntas[index].opcionCorrecta === 'string'
-                                            ? parseInt(preguntas[index].opcionCorrecta)
+                                        const opcionCorrecta = typeof preguntas[index].opcionCorrecta === 'string' 
+                                            ? parseInt(preguntas[index].opcionCorrecta) 
                                             : preguntas[index].opcionCorrecta;
                                         return resp === opcionCorrecta;
                                     }).length}
@@ -164,8 +164,8 @@ export default function EvaluacionModulo({ curso, modulo, moduloIndex, onNavigat
                                 <span className="estadistica-valor">
                                     {respuestas.filter((resp, index) => {
                                         // ⭐ CORRECCIÓN: Usar opcionCorrecta y asegurar que sea número
-                                        const opcionCorrecta = typeof preguntas[index].opcionCorrecta === 'string'
-                                            ? parseInt(preguntas[index].opcionCorrecta)
+                                        const opcionCorrecta = typeof preguntas[index].opcionCorrecta === 'string' 
+                                            ? parseInt(preguntas[index].opcionCorrecta) 
                                             : preguntas[index].opcionCorrecta;
                                         return resp !== opcionCorrecta;
                                     }).length}
@@ -185,10 +185,7 @@ export default function EvaluacionModulo({ curso, modulo, moduloIndex, onNavigat
                                 className="btn-continuar"
                                 onClick={manejarContinuar}
                             >
-                                {moduloIndex === curso.modulos.length - 1 ?
-                                    '🎓 Ir a evaluación final' :
-                                    '🚀 Continuar al siguiente módulo'
-                                }
+                                🚀 {moduloIndex === curso.modulos.length - 1 ? 'Ir a evaluación final' : 'Continuar al siguiente módulo'}
                             </button>
                         </div>
                     </div>

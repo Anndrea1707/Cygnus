@@ -10,7 +10,7 @@ function calcularProgreso(progreso, totalModulos, totalContenidosPorModulo) {
     if (totalModulos === 0) return 0;
 
     let progresoTotal = 0;
-
+    
     // Progreso por módulos completados
     const modulosCompletados = progreso.modulosCompletados.filter(m => m.completado).length;
     progresoTotal += (modulosCompletados / totalModulos) * 70; // 70% por módulos completados
@@ -41,16 +41,21 @@ router.get("/curso/:usuarioId/:cursoId", async (req, res) => {
     try {
         const { usuarioId, cursoId } = req.params;
 
-        // ✅ SOLO buscar progreso existente, NO crear uno nuevo automáticamente
-        const progreso = await ProgresoCurso.findOne({ usuarioId, cursoId });
+        let progreso = await ProgresoCurso.findOne({ usuarioId, cursoId });
 
-        // Si no existe progreso, devolver null en lugar de crear uno
+        // Si no existe progreso, crear uno nuevo
         if (!progreso) {
-            return res.json({ 
-                success: true, 
-                progreso: null,
-                mensaje: "No hay progreso para este curso"
+            progreso = new ProgresoCurso({
+                usuarioId,
+                cursoId,
+                moduloActual: 0,
+                contenidoActual: 0,
+                modulosCompletados: [],
+                contenidosVistos: [],
+                progresoPorcentual: 0,
+                estado: "en_progreso"
             });
+            await progreso.save();
         }
 
         res.json({ success: true, progreso });
@@ -61,17 +66,15 @@ router.get("/curso/:usuarioId/:cursoId", async (req, res) => {
 });
 
 /* ============================================================
-   📌 2. GUARDAR PROGRESO DE CONTENIDO VISTO - MEJORADO
+   📌 2. GUARDAR PROGRESO DE CONTENIDO VISTO - NUEVO
    ============================================================ */
 router.post("/contenido-visto", async (req, res) => {
     try {
         const { usuarioId, cursoId, moduloIndex, contenidoIndex } = req.body;
 
-        // ✅ BUSCAR Y ACTUALIZAR progreso existente en lugar de crear uno nuevo
         let progreso = await ProgresoCurso.findOne({ usuarioId, cursoId });
-
+        
         if (!progreso) {
-            // Solo crear nuevo si no existe
             progreso = new ProgresoCurso({
                 usuarioId,
                 cursoId,
@@ -80,13 +83,13 @@ router.post("/contenido-visto", async (req, res) => {
                 modulosCompletados: [],
                 contenidosVistos: []
             });
-        } else {
-            // ✅ ACTUALIZAR progreso existente
-            progreso.moduloActual = moduloIndex;
-            progreso.contenidoActual = contenidoIndex;
         }
 
-        // Marcar contenido como visto (evitar duplicados)
+        // Actualizar módulo y contenido actual
+        progreso.moduloActual = moduloIndex;
+        progreso.contenidoActual = contenidoIndex;
+
+        // Marcar contenido como visto
         const contenidoVistoIndex = progreso.contenidosVistos.findIndex(
             c => c.moduloIndex === moduloIndex && c.contenidoIndex === contenidoIndex
         );
@@ -106,8 +109,8 @@ router.post("/contenido-visto", async (req, res) => {
         progreso.ultimaActualizacion = new Date();
         await progreso.save();
 
-        res.json({
-            success: true,
+        res.json({ 
+            success: true, 
             progreso,
             mensaje: "Progreso guardado correctamente"
         });
@@ -126,7 +129,7 @@ router.post("/actualizar-progreso", async (req, res) => {
         const { usuarioId, cursoId, moduloActual, contenidoActual, totalModulos, totalContenidosPorModulo } = req.body;
 
         let progreso = await ProgresoCurso.findOne({ usuarioId, cursoId });
-
+        
         if (!progreso) {
             progreso = new ProgresoCurso({ usuarioId, cursoId });
         }
@@ -137,7 +140,7 @@ router.post("/actualizar-progreso", async (req, res) => {
 
         // Calcular progreso porcentual
         progreso.progresoPorcentual = calcularProgreso(progreso, totalModulos, totalContenidosPorModulo);
-
+        
         progreso.ultimaActualizacion = new Date();
         await progreso.save();
 
@@ -157,14 +160,14 @@ router.post("/completar-modulo", async (req, res) => {
         const { usuarioId, cursoId, moduloIndex, nota } = req.body;
 
         let progreso = await ProgresoCurso.findOne({ usuarioId, cursoId });
-
+        
         if (!progreso) {
             progreso = new ProgresoCurso({ usuarioId, cursoId });
         }
 
         // Marcar módulo como completado
         const moduloCompletadoIndex = progreso.modulosCompletados.findIndex(m => m.moduloIndex === moduloIndex);
-
+        
         if (moduloCompletadoIndex === -1) {
             progreso.modulosCompletados.push({
                 moduloIndex,
@@ -186,8 +189,8 @@ router.post("/completar-modulo", async (req, res) => {
         progreso.ultimaActualizacion = new Date();
         await progreso.save();
 
-        res.json({
-            success: true,
+        res.json({ 
+            success: true, 
             progreso,
             siguienteModulo,
             mensaje: `Módulo ${moduloIndex + 1} completado. Avanzando al módulo ${siguienteModulo + 1}`
@@ -210,7 +213,7 @@ router.post("/evaluacion", async (req, res) => {
         const responseCompletar = await ProgresoCurso.findOneAndUpdate(
             { usuarioId, cursoId },
             {
-                $addToSet: {
+                $addToSet: { 
                     modulosCompletados: {
                         moduloIndex,
                         completado: true,
@@ -251,10 +254,10 @@ router.get("/puede-evaluacion-final/:usuarioId/:cursoId/:totalModulos", async (r
         const { usuarioId, cursoId, totalModulos } = req.params;
 
         const progreso = await ProgresoCurso.findOne({ usuarioId, cursoId });
-
+        
         if (!progreso) {
-            return res.json({
-                success: true,
+            return res.json({ 
+                success: true, 
                 puedeHacerEvaluacion: false,
                 motivo: "No hay progreso registrado para este curso"
             });
@@ -383,8 +386,8 @@ router.post("/completar-curso", async (req, res) => {
             { new: true }
         );
 
-        res.json({
-            success: true,
+        res.json({ 
+            success: true, 
             progreso,
             mensaje: "Curso marcado como completado"
         });
@@ -418,8 +421,8 @@ router.post("/reiniciar", async (req, res) => {
             { new: true }
         );
 
-        res.json({
-            success: true,
+        res.json({ 
+            success: true, 
             progreso,
             mensaje: "Progreso reiniciado correctamente"
         });
@@ -435,13 +438,13 @@ router.post("/reiniciar", async (req, res) => {
 router.get("/habilidad/:usuarioId", async (req, res) => {
     try {
         const { usuarioId } = req.params;
-
+        
         const usuario = await Usuario.findById(usuarioId);
-
+        
         if (!usuario) {
-            return res.status(404).json({
-                success: false,
-                error: "Usuario no encontrado"
+            return res.status(404).json({ 
+                success: false, 
+                error: "Usuario no encontrado" 
             });
         }
 
