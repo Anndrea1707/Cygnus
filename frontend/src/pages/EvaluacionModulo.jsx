@@ -134,10 +134,14 @@ export default function EvaluacionModulo({ curso, modulo, moduloIndex, onNavigat
     // En EvaluacionModulo.jsx - modificar la función irAEvaluacionFinal
     const irAEvaluacionFinal = () => {
         setMostrarModalFinal(false);
-        // En lugar de navegar directamente, volver al curso vista
-        // para que el modal de CursoVista maneje la confirmación
-        onNavigate("curso-vista", { curso });
+    
+        // Navegar directamente a EvaluacionFinal
+        onNavigate("evaluacion-final", {
+            curso,
+            evaluacion: curso.evaluacionFinal
+        });
     };
+    
 
     const volverAlCurso = () => {
         setMostrarModalFinal(false);
