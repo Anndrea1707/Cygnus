@@ -255,19 +255,18 @@ function App() {
 
   switch (currentPage) {
     case "dashboard":
-      // ✅ Obtener usuario actualizado desde localStorage
-      const usuarioActualizado = JSON.parse(localStorage.getItem("usuario"));
-      const usuarioParaDashboard = usuarioActualizado || usuario;
-
-      return (
-        <Dashboard
-          usuario={usuarioParaDashboard}  // ⬅️ Usar usuario actualizado
-          onLogout={handleLogout}
-          onNavigate={handleNavigate}
-          currentPage={currentPage}
-        />
-      );
-      
+  // ✅ Obtener usuario actualizado desde localStorage
+  const usuarioActualizado = JSON.parse(localStorage.getItem("usuario"));
+  const usuarioParaDashboard = usuarioActualizado || usuario;
+  
+  return (
+    <Dashboard
+      usuario={usuarioParaDashboard}  // ⬅️ Usar usuario actualizado
+      onLogout={handleLogout}
+      onNavigate={handleNavigate}
+      currentPage={currentPage}
+    />
+  );
     case "perfil":
       return (
         <Perfil

@@ -45,8 +45,8 @@ async function calcularNuevaHabilidad(usuarioId, cursoNivel, nota, tipo = "modul
         const usuario = await Usuario.findById(usuarioId);
         if (!usuario) return null;
 
-        const habilidadActual = usuario.habilidad_nueva > 0
-            ? usuario.habilidad_nueva
+        const habilidadActual = usuario.habilidad_nueva > 0 
+            ? usuario.habilidad_nueva 
             : (usuario.prueba_conocimiento?.habilidad || 1);
 
         let nuevaHabilidad = habilidadActual;
@@ -81,13 +81,13 @@ async function calcularNuevaHabilidad(usuarioId, cursoNivel, nota, tipo = "modul
         }
 
         nuevaHabilidad = Math.min(5, Math.max(1, habilidadActual + cambio));
-
+        
         // Solo actualizar si hay cambio significativo
         if (Math.abs(cambio) >= 0.1) {
             await Usuario.findByIdAndUpdate(usuarioId, {
                 habilidad_nueva: Math.round(nuevaHabilidad * 10) / 10
             });
-
+            
             const direccion = cambio > 0 ? "↑" : "↓";
             console.log(`🎯 Habilidad ${direccion}: ${habilidadActual} → ${nuevaHabilidad} (Nota: ${nota}, Curso: ${cursoNivel})`);
             return nuevaHabilidad;
@@ -250,14 +250,14 @@ router.post("/completar-modulo", async (req, res) => {
             progreso.contenidoActual = (curso.modulos[progreso.moduloActual].contenido?.length || 1) - 1;
         }
 
-        // ✅ ACTUALIZAR HABILIDAD_NUEVA CON LÓGICA MEJORADA (ANTES de guardar)
-        const nuevaHabilidad = await calcularNuevaHabilidad(usuarioId, curso.nivel, nota, "modulo");
-        
         // Recalcular progreso
         progreso.progresoPorcentual = calcularProgreso(progreso, curso);
         progreso.ultimaActualizacion = new Date();
-
+        
         await progreso.save();
+
+        // ✅ ACTUALIZAR HABILIDAD_NUEVA CON LÓGICA MEJORADA
+        const nuevaHabilidad = await calcularNuevaHabilidad(usuarioId, curso.nivel, nota, "modulo");
 
         res.json({
             success: true,
@@ -477,8 +477,8 @@ router.get("/habilidad/:usuarioId", async (req, res) => {
         }
 
         // ✅ LÓGICA CORRECTA: usar habilidad_nueva si es > 0, sino habilidad de prueba
-        const habilidad = usuario.habilidad_nueva > 0
-            ? usuario.habilidad_nueva
+        const habilidad = usuario.habilidad_nueva > 0 
+            ? usuario.habilidad_nueva 
             : (usuario.prueba_conocimiento?.habilidad || 0);
 
         res.json({
@@ -506,7 +506,7 @@ router.put("/actualizar-habilidad", async (req, res) => {
 
         const usuario = await Usuario.findByIdAndUpdate(
             usuarioId,
-            {
+            { 
                 habilidad_nueva: Math.min(5, Math.max(0, nuevaHabilidad))
             },
             { new: true }

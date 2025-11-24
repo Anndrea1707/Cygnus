@@ -11,22 +11,15 @@ function TomarPrueba({ usuario, onPruebaCompletada }) {
     const [resultado, setResultado] = useState(null);
 
     useEffect(() => {
-        // ✅ Verificar si el usuario ya completó la prueba
-        if (usuario?.prueba_conocimiento?.completada) {
-            onPruebaCompletada();
-            return;
-        }
-        
-        cargarPrueba();
-    }, [usuario, onPruebaCompletada]);
-
+  // ✅ Verificar si el usuario ya completó la prueba
+  if (usuario?.prueba_conocimiento?.completada) {
+    onPruebaCompletada();
+    return;
+  }
+  
+  cargarPrueba();
+}, [usuario, onPruebaCompletada]);
     const cargarPrueba = async () => {
-        // ✅ No cargar si ya completó la prueba
-        if (usuario?.prueba_conocimiento?.completada) {
-            onPruebaCompletada();
-            return;
-        }
-
         try {
             setCargando(true);
             setError("");

@@ -1,15 +1,18 @@
 // helpers/recomendaciones.js
+
+export function obtenerNivelRecomendado(habilidad) {
+  if (habilidad >= 1 && habilidad <= 2.5) return "básico";
+  if (habilidad >= 2.6 && habilidad <= 3.8) return "intermedio";
+  if (habilidad >= 3.9 && habilidad <= 5) return "avanzado";
+  return null;
+}
+
+// helpers/recomendaciones.js
 export function recomendarCursos(cursos, usuario) {
   // ✅ Aplicar la regla de habilidad_nueva vs habilidad
   const habilidadActual = usuario.habilidad_nueva > 0 
     ? usuario.habilidad_nueva 
     : (usuario.prueba_conocimiento?.habilidad || 1);
-
-  console.log("🔍 Habilidad calculada:", {
-    habilidad_nueva: usuario.habilidad_nueva,
-    habilidad_prueba: usuario.prueba_conocimiento?.habilidad,
-    habilidad_actual: habilidadActual
-  });
 
   // Determinar nivel recomendado basado en habilidad
   let nivelRecomendado;

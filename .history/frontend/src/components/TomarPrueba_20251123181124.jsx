@@ -16,17 +16,11 @@ function TomarPrueba({ usuario, onPruebaCompletada }) {
             onPruebaCompletada();
             return;
         }
-        
+
         cargarPrueba();
     }, [usuario, onPruebaCompletada]);
-
+    
     const cargarPrueba = async () => {
-        // ✅ No cargar si ya completó la prueba
-        if (usuario?.prueba_conocimiento?.completada) {
-            onPruebaCompletada();
-            return;
-        }
-
         try {
             setCargando(true);
             setError("");

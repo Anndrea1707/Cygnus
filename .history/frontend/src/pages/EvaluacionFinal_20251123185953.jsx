@@ -62,6 +62,7 @@ export default function EvaluacionFinal({ curso, evaluacion, onNavigate, onEvalu
 
         let correctas = 0;
         respuestas.forEach((r, i) => {
+            // ⭐ CORRECCIÓN: Usar opcionCorrecta y asegurar que sea número
             const opcionCorrecta = typeof preguntas[i].opcionCorrecta === 'string'
                 ? parseInt(preguntas[i].opcionCorrecta)
                 : preguntas[i].opcionCorrecta;
@@ -70,7 +71,7 @@ export default function EvaluacionFinal({ curso, evaluacion, onNavigate, onEvalu
         });
 
         const puntajeCalculado = (correctas / preguntas.length) * 100;
-        const notaFinal = puntajeCalculado;
+        const notaFinal = puntajeCalculado; // ⬅️ Cambiar esto también
 
         setPuntaje(puntajeCalculado);
 
@@ -93,17 +94,6 @@ export default function EvaluacionFinal({ curso, evaluacion, onNavigate, onEvalu
 
             if (resultEvaluacion.success) {
                 console.log("✅ Evaluación final guardada:", resultEvaluacion);
-
-                // ✅ ACTUALIZAR LOCALSTORAGE CON LA NUEVA HABILIDAD
-                const usuarioActual = JSON.parse(localStorage.getItem("usuario"));
-                if (usuarioActual && resultEvaluacion.habilidad_nueva) {
-                    const usuarioActualizado = {
-                        ...usuarioActual,
-                        habilidad_nueva: resultEvaluacion.habilidad_nueva
-                    };
-                    localStorage.setItem("usuario", JSON.stringify(usuarioActualizado));
-                    console.log("🔄 localStorage actualizado con habilidad_nueva:", resultEvaluacion.habilidad_nueva);
-                }
 
                 // 2. Marcar curso como completado
                 const responseCompletado = await fetch("http://localhost:4000/api/progreso/completar-curso", {

@@ -74,7 +74,7 @@ export default function EvaluacionModulo({ curso, modulo, moduloIndex, onNavigat
         });
 
         const puntajeCalculado = (correctas / preguntas.length) * 100;
-        const notaFinal = puntajeCalculado; // ⬅️ Enviar el porcentaje directamente (0-100)
+const notaFinal = puntajeCalculado; // ⬅️ Enviar el porcentaje directamente (0-100)
 
         setPuntaje(puntajeCalculado);
 
@@ -97,15 +97,6 @@ export default function EvaluacionModulo({ curso, modulo, moduloIndex, onNavigat
             const result = await response.json();
             if (result.success) {
                 console.log("✅ Evaluación guardada:", result);
-
-                // ✅ ACTUALIZAR LOCALSTORAGE CON LA NUEVA HABILIDAD
-                const usuarioActual = JSON.parse(localStorage.getItem("usuario"));
-                const usuarioActualizado = {
-                    ...usuarioActual,
-                    habilidad_nueva: result.habilidad_nueva
-                };
-                localStorage.setItem("usuario", JSON.stringify(usuarioActualizado));
-                console.log("🔄 localStorage actualizado con habilidad_nueva:", result.habilidad_nueva);
             }
 
         } catch (error) {

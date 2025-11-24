@@ -58,76 +58,76 @@ export default function EvaluacionFinal({ curso, evaluacion, onNavigate, onEvalu
     };
 
     const finalizarEvaluacion = async () => {
-        if (!curso || !evaluacion || preguntas.length === 0) return;
+    if (!curso || !evaluacion || preguntas.length === 0) return;
 
-        let correctas = 0;
-        respuestas.forEach((r, i) => {
-            const opcionCorrecta = typeof preguntas[i].opcionCorrecta === 'string'
-                ? parseInt(preguntas[i].opcionCorrecta)
-                : preguntas[i].opcionCorrecta;
+    let correctas = 0;
+    respuestas.forEach((r, i) => {
+        const opcionCorrecta = typeof preguntas[i].opcionCorrecta === 'string'
+            ? parseInt(preguntas[i].opcionCorrecta)
+            : preguntas[i].opcionCorrecta;
 
-            if (r === opcionCorrecta) correctas++;
+        if (r === opcionCorrecta) correctas++;
+    });
+
+    const puntajeCalculado = (correctas / preguntas.length) * 100;
+    const notaFinal = puntajeCalculado;
+
+    setPuntaje(puntajeCalculado);
+
+    try {
+        const usuario = JSON.parse(localStorage.getItem("usuario"));
+        const cursoId = curso._id || curso.id;
+
+        // 1. Registrar evaluación final
+        const responseEvaluacion = await fetch("http://localhost:4000/api/progreso/evaluacion-final", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                usuarioId: usuario._id,
+                cursoId: cursoId,
+                notaFinal: notaFinal
+            })
         });
 
-        const puntajeCalculado = (correctas / preguntas.length) * 100;
-        const notaFinal = puntajeCalculado;
+        const resultEvaluacion = await responseEvaluacion.json();
 
-        setPuntaje(puntajeCalculado);
+        if (resultEvaluacion.success) {
+            console.log("✅ Evaluación final guardada:", resultEvaluacion);
+            
+            // ✅ ACTUALIZAR LOCALSTORAGE CON LA NUEVA HABILIDAD
+            const usuarioActual = JSON.parse(localStorage.getItem("usuario"));
+            if (usuarioActual && resultEvaluacion.habilidad_nueva) {
+                const usuarioActualizado = {
+                    ...usuarioActual,
+                    habilidad_nueva: resultEvaluacion.habilidad_nueva
+                };
+                localStorage.setItem("usuario", JSON.stringify(usuarioActualizado));
+                console.log("🔄 localStorage actualizado con habilidad_nueva:", resultEvaluacion.habilidad_nueva);
+            }
 
-        try {
-            const usuario = JSON.parse(localStorage.getItem("usuario"));
-            const cursoId = curso._id || curso.id;
-
-            // 1. Registrar evaluación final
-            const responseEvaluacion = await fetch("http://localhost:4000/api/progreso/evaluacion-final", {
+            // 2. Marcar curso como completado
+            const responseCompletado = await fetch("http://localhost:4000/api/progreso/completar-curso", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
                     usuarioId: usuario._id,
-                    cursoId: cursoId,
-                    notaFinal: notaFinal
+                    cursoId: cursoId
                 })
             });
 
-            const resultEvaluacion = await responseEvaluacion.json();
-
-            if (resultEvaluacion.success) {
-                console.log("✅ Evaluación final guardada:", resultEvaluacion);
-
-                // ✅ ACTUALIZAR LOCALSTORAGE CON LA NUEVA HABILIDAD
-                const usuarioActual = JSON.parse(localStorage.getItem("usuario"));
-                if (usuarioActual && resultEvaluacion.habilidad_nueva) {
-                    const usuarioActualizado = {
-                        ...usuarioActual,
-                        habilidad_nueva: resultEvaluacion.habilidad_nueva
-                    };
-                    localStorage.setItem("usuario", JSON.stringify(usuarioActualizado));
-                    console.log("🔄 localStorage actualizado con habilidad_nueva:", resultEvaluacion.habilidad_nueva);
-                }
-
-                // 2. Marcar curso como completado
-                const responseCompletado = await fetch("http://localhost:4000/api/progreso/completar-curso", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                        usuarioId: usuario._id,
-                        cursoId: cursoId
-                    })
-                });
-
-                const resultCompletado = await responseCompletado.json();
-                if (resultCompletado.success) {
-                    console.log("✅ Curso marcado como completado:", resultCompletado);
-                    setCertificadoGenerado(true);
-                }
+            const resultCompletado = await responseCompletado.json();
+            if (resultCompletado.success) {
+                console.log("✅ Curso marcado como completado:", resultCompletado);
+                setCertificadoGenerado(true);
             }
-
-        } catch (error) {
-            console.error("Error registrando evaluación final:", error);
         }
 
-        setEvaluacionCompletada(true);
-    };
+    } catch (error) {
+        console.error("Error registrando evaluación final:", error);
+    }
+
+    setEvaluacionCompletada(true);
+};
 
     const descargarCertificado = () => {
         // Aquí iría la lógica para generar y descargar el certificado

@@ -250,14 +250,14 @@ router.post("/completar-modulo", async (req, res) => {
             progreso.contenidoActual = (curso.modulos[progreso.moduloActual].contenido?.length || 1) - 1;
         }
 
-        // ✅ ACTUALIZAR HABILIDAD_NUEVA CON LÓGICA MEJORADA (ANTES de guardar)
-        const nuevaHabilidad = await calcularNuevaHabilidad(usuarioId, curso.nivel, nota, "modulo");
-        
         // Recalcular progreso
         progreso.progresoPorcentual = calcularProgreso(progreso, curso);
         progreso.ultimaActualizacion = new Date();
 
         await progreso.save();
+
+        // ✅ ACTUALIZAR HABILIDAD_NUEVA CON LÓGICA MEJORADA
+        const nuevaHabilidad = await calcularNuevaHabilidad(usuarioId, curso.nivel, nota, "modulo");
 
         res.json({
             success: true,

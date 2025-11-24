@@ -38,58 +38,65 @@ function calcularProgreso(progreso, curso) {
 }
 
 /* ============================================================
-   🔹 UTIL: Calcular nueva habilidad MEJORADO CON DESAUMENTOS
+   🔹 UTIL: Calcular nueva habilidad MEJORADO
    ============================================================ */
 async function calcularNuevaHabilidad(usuarioId, cursoNivel, nota, tipo = "modulo") {
     try {
         const usuario = await Usuario.findById(usuarioId);
         if (!usuario) return null;
 
-        const habilidadActual = usuario.habilidad_nueva > 0
-            ? usuario.habilidad_nueva
+        // Obtener habilidad actual
+        const habilidadActual = usuario.habilidad_nueva > 0 
+            ? usuario.habilidad_nueva 
             : (usuario.prueba_conocimiento?.habilidad || 1);
 
         let nuevaHabilidad = habilidadActual;
-        let cambio = 0;
+        let aumento = 0;
 
-        // LÓGICA DE AUMENTO
+        // Lógica de aumento basada en desempeño y nivel del curso
         if (nota >= 90) {
-            if (cursoNivel === "avanzado" && habilidadActual < 5) cambio = 0.5;
-            else if (cursoNivel === "intermedio" && habilidadActual < 4) cambio = 0.4;
-            else if (cursoNivel === "básico" && habilidadActual < 3) cambio = 0.3;
+            // Excelente desempeño
+            if (cursoNivel === "avanzado" && habilidadActual < 5) {
+                aumento = 0.5;
+            } else if (cursoNivel === "intermedio" && habilidadActual < 4) {
+                aumento = 0.4;
+            } else if (cursoNivel === "básico" && habilidadActual < 3) {
+                aumento = 0.3;
+            }
         } else if (nota >= 80) {
-            if (cursoNivel === "avanzado" && habilidadActual < 5) cambio = 0.3;
-            else if (cursoNivel === "intermedio" && habilidadActual < 4) cambio = 0.2;
-            else if (cursoNivel === "básico" && habilidadActual < 3) cambio = 0.15;
+            // Buen desempeño
+            if (cursoNivel === "avanzado" && habilidadActual < 5) {
+                aumento = 0.3;
+            } else if (cursoNivel === "intermedio" && habilidadActual < 4) {
+                aumento = 0.2;
+            } else if (cursoNivel === "básico" && habilidadActual < 3) {
+                aumento = 0.15;
+            }
         } else if (nota >= 70) {
-            if (cursoNivel === "avanzado" && habilidadActual < 5) cambio = 0.2;
-            else if (cursoNivel === "intermedio" && habilidadActual < 4) cambio = 0.1;
-        }
-
-        // ✅ NUEVA LÓGICA: DESAUMENTO SOLO EN CASOS GRAVES
-        if (nota < 60) {
-            if (tipo === "evaluacion_final") {
-                cambio = -0.5; // Fuerte reducción por reprobar final
-            } else if (cursoNivel === "avanzado" && habilidadActual > 3) {
-                cambio = -0.3; // Reducción por fallar en avanzado
+            // Desempeño aceptable
+            if (cursoNivel === "avanzado" && habilidadActual < 5) {
+                aumento = 0.2;
+            } else if (cursoNivel === "intermedio" && habilidadActual < 4) {
+                aumento = 0.1;
+            } else if (cursoNivel === "básico" && habilidadActual < 3) {
+                aumento = 0.05;
             }
         }
 
-        // Bonus por evaluación final (solo si aprueba)
+        // Bonus por evaluación final
         if (tipo === "evaluacion_final" && nota >= 80) {
-            cambio += 0.2;
+            aumento += 0.2; // Bonus adicional por completar curso
         }
 
-        nuevaHabilidad = Math.min(5, Math.max(1, habilidadActual + cambio));
-
-        // Solo actualizar si hay cambio significativo
-        if (Math.abs(cambio) >= 0.1) {
+        nuevaHabilidad = Math.min(5, habilidadActual + aumento);
+        
+        // Solo actualizar si hay cambio significativo (mínimo 0.1 de aumento)
+        if (nuevaHabilidad - habilidadActual >= 0.1) {
             await Usuario.findByIdAndUpdate(usuarioId, {
-                habilidad_nueva: Math.round(nuevaHabilidad * 10) / 10
+                habilidad_nueva: Math.round(nuevaHabilidad * 10) / 10 // Redondear a 1 decimal
             });
-
-            const direccion = cambio > 0 ? "↑" : "↓";
-            console.log(`🎯 Habilidad ${direccion}: ${habilidadActual} → ${nuevaHabilidad} (Nota: ${nota}, Curso: ${cursoNivel})`);
+            
+            console.log(`🎯 Habilidad actualizada: ${habilidadActual} → ${nuevaHabilidad} (Nota: ${nota}, Curso: ${cursoNivel})`);
             return nuevaHabilidad;
         }
 
@@ -250,14 +257,14 @@ router.post("/completar-modulo", async (req, res) => {
             progreso.contenidoActual = (curso.modulos[progreso.moduloActual].contenido?.length || 1) - 1;
         }
 
-        // ✅ ACTUALIZAR HABILIDAD_NUEVA CON LÓGICA MEJORADA (ANTES de guardar)
-        const nuevaHabilidad = await calcularNuevaHabilidad(usuarioId, curso.nivel, nota, "modulo");
-        
         // Recalcular progreso
         progreso.progresoPorcentual = calcularProgreso(progreso, curso);
         progreso.ultimaActualizacion = new Date();
-
+        
         await progreso.save();
+
+        // ✅ ACTUALIZAR HABILIDAD_NUEVA CON LÓGICA MEJORADA
+        const nuevaHabilidad = await calcularNuevaHabilidad(usuarioId, curso.nivel, nota, "modulo");
 
         res.json({
             success: true,
@@ -477,8 +484,8 @@ router.get("/habilidad/:usuarioId", async (req, res) => {
         }
 
         // ✅ LÓGICA CORRECTA: usar habilidad_nueva si es > 0, sino habilidad de prueba
-        const habilidad = usuario.habilidad_nueva > 0
-            ? usuario.habilidad_nueva
+        const habilidad = usuario.habilidad_nueva > 0 
+            ? usuario.habilidad_nueva 
             : (usuario.prueba_conocimiento?.habilidad || 0);
 
         res.json({
@@ -506,7 +513,7 @@ router.put("/actualizar-habilidad", async (req, res) => {
 
         const usuario = await Usuario.findByIdAndUpdate(
             usuarioId,
-            {
+            { 
                 habilidad_nueva: Math.min(5, Math.max(0, nuevaHabilidad))
             },
             { new: true }

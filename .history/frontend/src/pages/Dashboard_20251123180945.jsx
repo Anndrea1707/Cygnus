@@ -1,18 +1,11 @@
-import React, { useState, useEffect } from "react";
-import "./Dashboard.css";
-import NavbarPrincipal from "../components/NavbarPrincipal";
-import Footer from "../components/Footer";
-import SoportePanel from "../components/SoportePanel";
-import { recomendarCursos } from "../helpers/recomendaciones";
-
 function Dashboard({ usuario, onLogout, onNavigate }) {
   const [mostrarSoporte, setMostrarSoporte] = useState(false);
   const [cursosConProgreso, setCursosConProgreso] = useState([]);
   const [loading, setLoading] = useState(true);
   const [todosLosCursos, setTodosLosCursos] = useState([]);
-  const [recomendaciones, setRecomendaciones] = useState(null);
 
   const nombreUsuario = usuario?.apodo || usuario?.nombre_completo || "Usuario";
+  const [recomendaciones, setRecomendaciones] = useState(null);
 
   // ✅ VERIFICAR SI EL USUARIO DEBE COMPLETAR ENCUESTA O PRUEBA
   useEffect(() => {
@@ -34,8 +27,7 @@ function Dashboard({ usuario, onLogout, onNavigate }) {
   // Cargar todos los cursos y el progreso del usuario
   useEffect(() => {
     const cargarDatos = async () => {
-      // ✅ Agregar esta validación al inicio
-      if (!usuario?._id || !usuario.prueba_conocimiento?.completada) return;
+      if (!usuario?._id) return;
 
       try {
         setLoading(true);
@@ -90,7 +82,6 @@ function Dashboard({ usuario, onLogout, onNavigate }) {
   const verTodosLosCursos = () => {
     onNavigate("cursosusuario");
   };
-
   const TarjetaCursoRecomendado = ({ curso }) => (
     <div className="tarjeta-curso-progreso">
       <div className="curso-imagen-container">
@@ -205,7 +196,6 @@ function Dashboard({ usuario, onLogout, onNavigate }) {
             herramientas y secciones de Cygnus.
           </p>
         </div>
-
         {/* Sección de recomendaciones personalizadas */}
         {recomendaciones && (
           <section className="recomendaciones-section">
@@ -238,6 +228,7 @@ function Dashboard({ usuario, onLogout, onNavigate }) {
             )}
           </section>
         )}
+
 
         {/* Sección de cursos con progreso */}
         <section className="cursos-progreso-section">
