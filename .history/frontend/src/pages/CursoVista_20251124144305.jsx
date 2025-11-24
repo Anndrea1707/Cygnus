@@ -187,6 +187,7 @@ export default function CursoVista({ onNavigate, curso }) {
   };
 
   // Función para manejar el inicio/continuación del curso
+  // CursoVista.jsx - Modificar la función handleEmpezarCurso
   const handleEmpezarCurso = () => {
     if (!usuario) {
       onNavigate("login");
@@ -244,6 +245,66 @@ export default function CursoVista({ onNavigate, curso }) {
     });
   };
 
+  // ⭐ NUEVO: Modal para evaluación final
+  const ModalEvaluacionFinal = () => (
+    <div className="modal-overlay">
+      <div className="modal-confirmacion">
+        <div className="modal-header">
+          <h2>🎓 Evaluación Final del Curso</h2>
+        </div>
+
+        <div className="modal-body">
+          <div className="evaluacion-icono">📝</div>
+          <p>
+            Estás a punto de comenzar la evaluación final del curso{" "}
+            <strong>{cursoActual?.nombre}</strong>.
+          </p>
+
+          <div className="evaluacion-info">
+            <div className="info-item">
+              <span>📝 Preguntas:</span>
+              <span>{cursoActual?.evaluacionFinal?.preguntas?.length || 0}</span>
+            </div>
+            <div className="info-item">
+              <span>⏱️ Duración estimada:</span>
+              <span>{(cursoActual?.evaluacionFinal?.preguntas?.length || 0) * 2} minutos</span>
+            </div>
+            <div className="info-item">
+              <span>🎯 Puntuación mínima:</span>
+              <span>70% para aprobar</span>
+            </div>
+          </div>
+
+          <div className="recomendaciones">
+            <h4>📋 Recomendaciones:</h4>
+            <ul>
+              <li>• Asegúrate de estar en un lugar tranquilo</li>
+              <li>• Evita cerrar la ventana durante la evaluación</li>
+              <li>• Lee cuidadosamente cada pregunta</li>
+              <li>• Revisa tus respuestas antes de finalizar</li>
+            </ul>
+          </div>
+        </div>
+
+        <div className="modal-actions">
+          <button
+            className="btn-comenzar"
+            onClick={handleIniciarEvaluacionFinal}
+          >
+            🚀 Comenzar evaluación
+          </button>
+
+          <button
+            className="btn-secundario"
+            onClick={() => setMostrarModalEvaluacionFinal(false)}
+          >
+            Cancelar
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+
   // móduloBloqueado: lógica segura que usa el array de objetos modulosCompletados
   const moduloBloqueado = (moduloIndex) => {
     if (!progresoCurso) return false; // sin progreso → nada bloqueado
@@ -284,34 +345,6 @@ export default function CursoVista({ onNavigate, curso }) {
       alert("Error de conexión al cargar los resultados");
     } finally {
       setCargandoNotas(false);
-    }
-  };
-
-  // Función para reiniciar progreso
-  const reiniciarProgreso = async () => {
-    try {
-      const response = await fetch("http://localhost:4000/api/progreso/reiniciar", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          usuarioId: usuario._id,
-          cursoId: cursoActual._id || cursoActual.id
-        })
-      });
-
-      const data = await response.json();
-      if (data.success) {
-        // normalizar si viene modulosCompletados
-        const progresoNormalizado = {
-          ...data.progreso,
-          modulosCompletados: normalizarModulosCompletados(data.progreso?.modulosCompletados || [])
-        };
-        setProgresoCurso(progresoNormalizado);
-        setMostrarModalCompletado(false);
-        console.log("✅ Progreso reiniciado:", progresoNormalizado);
-      }
-    } catch (error) {
-      console.error("Error reiniciando progreso:", error);
     }
   };
 
@@ -488,67 +521,7 @@ export default function CursoVista({ onNavigate, curso }) {
     );
   };
 
-  // ⭐ MODAL PARA EVALUACIÓN FINAL
-  const ModalEvaluacionFinal = () => (
-    <div className="modal-overlay">
-      <div className="modal-confirmacion">
-        <div className="modal-header">
-          <h2>🎓 Evaluación Final del Curso</h2>
-        </div>
-
-        <div className="modal-body">
-          <div className="evaluacion-icono">📝</div>
-          <p>
-            Estás a punto de comenzar la evaluación final del curso{" "}
-            <strong>{cursoActual?.nombre}</strong>.
-          </p>
-
-          <div className="evaluacion-info">
-            <div className="info-item">
-              <span>📝 Preguntas:</span>
-              <span>{cursoActual?.evaluacionFinal?.preguntas?.length || 0}</span>
-            </div>
-            <div className="info-item">
-              <span>⏱️ Duración estimada:</span>
-              <span>{(cursoActual?.evaluacionFinal?.preguntas?.length || 0) * 2} minutos</span>
-            </div>
-            <div className="info-item">
-              <span>🎯 Puntuación mínima:</span>
-              <span>70% para aprobar</span>
-            </div>
-          </div>
-
-          <div className="recomendaciones">
-            <h4>📋 Recomendaciones:</h4>
-            <ul>
-              <li>• Asegúrate de estar en un lugar tranquilo</li>
-              <li>• Evita cerrar la ventana durante la evaluación</li>
-              <li>• Lee cuidadosamente cada pregunta</li>
-              <li>• Revisa tus respuestas antes de finalizar</li>
-            </ul>
-          </div>
-        </div>
-
-        <div className="modal-actions">
-          <button
-            className="btn-comenzar"
-            onClick={handleIniciarEvaluacionFinal}
-          >
-            🚀 Comenzar evaluación
-          </button>
-
-          <button
-            className="btn-secundario"
-            onClick={() => setMostrarModalEvaluacionFinal(false)}
-          >
-            Cancelar
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-
-  // ⭐ MODAL DE CURSO COMPLETADO ACTUALIZADO
+  // ⭐ ACTUALIZAR EL MODAL DE CURSO COMPLETADO EXISTENTE
   const ModalCursoCompletado = () => (
     <div className="modal-overlay">
       <div className="modal-confirmacion modal-completado">
@@ -603,6 +576,75 @@ export default function CursoVista({ onNavigate, curso }) {
             onClick={() => setMostrarModalCompletado(false)}
           >
             Seguir Revisando
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+
+  // Función para reiniciar progreso
+  const reiniciarProgreso = async () => {
+    try {
+      const response = await fetch("http://localhost:4000/api/progreso/reiniciar", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          usuarioId: usuario._id,
+          cursoId: cursoActual._id || cursoActual.id
+        })
+      });
+
+      const data = await response.json();
+      if (data.success) {
+        // normalizar si viene modulosCompletados
+        const progresoNormalizado = {
+          ...data.progreso,
+          modulosCompletados: normalizarModulosCompletados(data.progreso?.modulosCompletados || [])
+        };
+        setProgresoCurso(progresoNormalizado);
+        setMostrarModalCompletado(false);
+        console.log("✅ Progreso reiniciado:", progresoNormalizado);
+      }
+    } catch (error) {
+      console.error("Error reiniciando progreso:", error);
+    }
+  };
+
+  // Modal de curso completado
+  const ModalCursoCompletado = () => (
+    <div className="modal-overlay">
+      <div className="modal-confirmacion modal-completado">
+        <div className="modal-header">
+          <h2>🎉 ¡Curso Completado!</h2>
+        </div>
+        <div className="modal-body">
+          <div className="completado-icono">🏆</div>
+          <p>¡Felicidades! Has completado el curso <strong>{cursoActual?.nombre}</strong> al 100%.</p>
+          <p>¿Qué te gustaría hacer?</p>
+
+          <div className="opciones-completado">
+            <div className="opcion">
+              <h4>📚 Revisar Contenido</h4>
+              <p>Puedes volver a revisar cualquier parte del curso</p>
+            </div>
+            <div className="opcion">
+              <h4>🔄 Reiniciar Progreso</h4>
+              <p>Comenzar desde cero y volver a tomar las evaluaciones</p>
+            </div>
+          </div>
+        </div>
+        <div className="modal-actions">
+          <button
+            className="btn-secundario"
+            onClick={() => setMostrarModalCompletado(false)}
+          >
+            Seguir Revisando
+          </button>
+          <button
+            className="btn-reiniciar"
+            onClick={reiniciarProgreso}
+          >
+            🔄 Reiniciar Progreso
           </button>
         </div>
       </div>
@@ -912,7 +954,7 @@ export default function CursoVista({ onNavigate, curso }) {
       {/* ⭐ NUEVO: Modal de evaluación final */}
       {mostrarModalEvaluacionFinal && <ModalEvaluacionFinal />}
 
-      {/* ⭐ NUEVO: Modal de detalles de notas */}
+      // ⭐ AGREGAR AL FINAL DEL JSX, DESPUÉS DE LOS OTROS MODALES
       {mostrarDetallesNotas && <ModalDetallesNotas />}
     </div>
   );

@@ -285,10 +285,12 @@ router.post("/completar-modulo", async (req, res) => {
 router.post("/evaluacion-final", async (req, res) => {
     try {
         const { usuarioId, cursoId, notaFinal } = req.body;
+        if (!usuarioId || !cursoId) return res.status(400).json({ success: false, error: "Datos incompletos" });
 
         const curso = await Curso.findById(cursoId);
         if (!curso) return res.status(404).json({ success: false, error: "Curso no encontrado" });
 
+        // ✅ CAMBIO: Usar find + save() en lugar de findOneAndUpdate para activar middleware
         let progreso = await ProgresoCurso.findOne({ usuarioId, cursoId });
 
         if (!progreso) {
@@ -300,16 +302,18 @@ router.post("/evaluacion-final", async (req, res) => {
             });
         }
 
+        // ✅ ACTUALIZAR CAMPOS MANUALMENTE (misma funcionalidad)
         progreso.evaluacionFinalCompletada = true;
-        progreso.notaEvaluacionFinal = notaFinal;   // ⭐ AQUI ESTÁ LA SOLUCIÓN ⭐
         progreso.progresoPorcentual = 100;
         progreso.cursoCompletado = true;
         progreso.fechaCompletado = new Date();
         progreso.estado = "completado";
         progreso.ultimaActualizacion = new Date();
 
+        // ✅ GUARDAR CON save() - ESTO ACTIVARÁ EL MIDDLEWARE DE RECORDACIÓN
         await progreso.save();
 
+        // ✅ ACTUALIZAR HABILIDAD_NUEVA CON LÓGICA MEJORADA (funcionalidad existente)
         const nuevaHabilidad = await calcularNuevaHabilidad(usuarioId, curso.nivel, notaFinal, "evaluacion_final");
 
         res.json({
@@ -318,7 +322,6 @@ router.post("/evaluacion-final", async (req, res) => {
             habilidad_nueva: nuevaHabilidad,
             mensaje: "¡Curso completado exitosamente!"
         });
-
     } catch (error) {
         console.log("Error en evaluacion-final:", error);
         res.status(500).json({ success: false, error: error.message });

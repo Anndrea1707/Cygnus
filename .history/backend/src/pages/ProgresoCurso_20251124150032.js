@@ -46,10 +46,9 @@ const progresoCursoSchema = new mongoose.Schema({
     },
 
     notaEvaluacionFinal: {
-        type: Number,
-        default: 0
-    },
-    
+    type: Number,
+    default: 0
+},
     progresoPorcentual: {
         type: Number,
         default: 0

@@ -187,6 +187,7 @@ export default function CursoVista({ onNavigate, curso }) {
   };
 
   // Función para manejar el inicio/continuación del curso
+  // CursoVista.jsx - Modificar la función handleEmpezarCurso
   const handleEmpezarCurso = () => {
     if (!usuario) {
       onNavigate("login");
@@ -243,6 +244,66 @@ export default function CursoVista({ onNavigate, curso }) {
       evaluacion: cursoActual.evaluacionFinal
     });
   };
+
+  // ⭐ NUEVO: Modal para evaluación final
+  const ModalEvaluacionFinal = () => (
+    <div className="modal-overlay">
+      <div className="modal-confirmacion">
+        <div className="modal-header">
+          <h2>🎓 Evaluación Final del Curso</h2>
+        </div>
+
+        <div className="modal-body">
+          <div className="evaluacion-icono">📝</div>
+          <p>
+            Estás a punto de comenzar la evaluación final del curso{" "}
+            <strong>{cursoActual?.nombre}</strong>.
+          </p>
+
+          <div className="evaluacion-info">
+            <div className="info-item">
+              <span>📝 Preguntas:</span>
+              <span>{cursoActual?.evaluacionFinal?.preguntas?.length || 0}</span>
+            </div>
+            <div className="info-item">
+              <span>⏱️ Duración estimada:</span>
+              <span>{(cursoActual?.evaluacionFinal?.preguntas?.length || 0) * 2} minutos</span>
+            </div>
+            <div className="info-item">
+              <span>🎯 Puntuación mínima:</span>
+              <span>70% para aprobar</span>
+            </div>
+          </div>
+
+          <div className="recomendaciones">
+            <h4>📋 Recomendaciones:</h4>
+            <ul>
+              <li>• Asegúrate de estar en un lugar tranquilo</li>
+              <li>• Evita cerrar la ventana durante la evaluación</li>
+              <li>• Lee cuidadosamente cada pregunta</li>
+              <li>• Revisa tus respuestas antes de finalizar</li>
+            </ul>
+          </div>
+        </div>
+
+        <div className="modal-actions">
+          <button
+            className="btn-comenzar"
+            onClick={handleIniciarEvaluacionFinal}
+          >
+            🚀 Comenzar evaluación
+          </button>
+
+          <button
+            className="btn-secundario"
+            onClick={() => setMostrarModalEvaluacionFinal(false)}
+          >
+            Cancelar
+          </button>
+        </div>
+      </div>
+    </div>
+  );
 
   // móduloBloqueado: lógica segura que usa el array de objetos modulosCompletados
   const moduloBloqueado = (moduloIndex) => {
@@ -315,240 +376,7 @@ export default function CursoVista({ onNavigate, curso }) {
     }
   };
 
-  // ⭐ MODAL DE DETALLES DE NOTAS
-  const ModalDetallesNotas = () => {
-    if (!notasDetalladas) return null;
-
-    const { notas, cursoInfo } = notasDetalladas;
-
-    const calcularPromedioModulos = () => {
-      const modulosConNota = notas.modulos.filter(mod => mod.tieneEvaluacion && typeof mod.notaEvaluacion === 'number');
-      if (modulosConNota.length === 0) return 0;
-
-      const suma = modulosConNota.reduce((acc, mod) => acc + mod.notaEvaluacion, 0);
-      return (suma / modulosConNota.length).toFixed(1);
-    };
-
-    const formatearFecha = (fecha) => {
-      if (!fecha) return 'No disponible';
-      return new Date(fecha).toLocaleDateString('es-ES', {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric'
-      });
-    };
-
-    return (
-      <div className="modal-overlay">
-        <div className="modal-confirmacion modal-detalles-notas">
-          <div className="modal-header">
-            <h2>📊 Resultados Detallados del Curso</h2>
-            <button
-              className="btn-cerrar-modal"
-              onClick={() => setMostrarDetallesNotas(false)}
-            >
-              ×
-            </button>
-          </div>
-
-          <div className="modal-body">
-            {/* Información general del curso */}
-            <div className="resumen-curso">
-              <h3>{cursoInfo?.nombre || cursoActual?.nombre}</h3>
-              <div className="curso-meta-info">
-                <span className="nivel-curso">Nivel: {cursoInfo?.nivel || cursoActual?.nivel}</span>
-                <span className="fecha-completado">
-                  Completado: {formatearFecha(notas.fechaCompletado)}
-                </span>
-              </div>
-            </div>
-
-            {/* Progreso General */}
-            <div className="progreso-general">
-              <h4>📈 Progreso General</h4>
-              <div className="progreso-container">
-                <div className="progreso-bar grande">
-                  <div
-                    className="progreso-fill"
-                    style={{ width: `${notas.progresoGeneral || 100}%` }}
-                  ></div>
-                </div>
-                <span className="progreso-texto">{notas.progresoGeneral || 100}%</span>
-              </div>
-            </div>
-
-            {/* Notas de módulos */}
-            <div className="seccion-notas">
-              <h4>📚 Evaluaciones por Módulo</h4>
-              <div className="lista-modulos">
-                {notas.modulos.map((modulo, index) => (
-                  <div key={index} className="item-modulo">
-                    <div className="modulo-info">
-                      <div className="modulo-header">
-                        <span className="modulo-indice">M{modulo.moduloIndex + 1}</span>
-                        <span className="modulo-nombre">{modulo.nombre}</span>
-                      </div>
-                      {modulo.tieneEvaluacion ? (
-                        <span className={`nota ${modulo.notaEvaluacion >= 70 ? 'aprobado' : 'reprobado'}`}>
-                          {modulo.notaEvaluacion.toFixed(1)}%
-                        </span>
-                      ) : (
-                        <span className="nota sin-evaluacion">Sin evaluación</span>
-                      )}
-                    </div>
-
-                    {modulo.tieneEvaluacion && (
-                      <div className="progreso-nota">
-                        <div
-                          className={`barra-progreso ${modulo.notaEvaluacion >= 70 ? 'aprobado' : 'reprobado'}`}
-                          style={{ width: `${modulo.notaEvaluacion}%` }}
-                        ></div>
-                      </div>
-                    )}
-
-                    {modulo.fechaCompletado && (
-                      <div className="fecha-modulo">
-                        Completado: {formatearFecha(modulo.fechaCompletado)}
-                      </div>
-                    )}
-                  </div>
-                ))}
-              </div>
-
-              {/* Promedio de módulos */}
-              {notas.modulos.some(mod => mod.tieneEvaluacion) && (
-                <div className="promedio-modulos">
-                  <span>Promedio de evaluaciones de módulos:</span>
-                  <span className="promedio">{calcularPromedioModulos()}%</span>
-                </div>
-              )}
-            </div>
-
-            {/* Evaluación final */}
-            {notas.evaluacionFinal.completada && (
-              <div className="seccion-notas evaluacion-final">
-                <h4>🎓 Evaluación Final</h4>
-                <div className="nota-final">
-                  <div className="nota-info">
-                    <span>Calificación final del curso:</span>
-                    <span className={`nota final ${notas.evaluacionFinal.nota >= 70 ? 'aprobado' : 'reprobado'}`}>
-                      {notas.evaluacionFinal.nota.toFixed(1)}%
-                    </span>
-                  </div>
-                  <div className="progreso-nota">
-                    <div
-                      className={`barra-progreso ${notas.evaluacionFinal.nota >= 70 ? 'aprobado' : 'reprobado'}`}
-                      style={{ width: `${notas.evaluacionFinal.nota}%` }}
-                    ></div>
-                  </div>
-                  <div className="estado-final">
-                    {notas.evaluacionFinal.nota >= 70 ? (
-                      <span className="estado aprobado">✅ ¡Curso Aprobado!</span>
-                    ) : (
-                      <span className="estado reprobado">❌ Curso Reprobado</span>
-                    )}
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* Resumen general */}
-            <div className="resumen-general">
-              <div className="estadistica">
-                <span className="estadistica-valor">
-                  {notas.modulos.filter(m => m.completado).length}
-                </span>
-                <span className="estadistica-label">Módulos completados</span>
-              </div>
-              <div className="estadistica">
-                <span className="estadistica-valor">
-                  {notas.modulos.filter(m => m.tieneEvaluacion).length}
-                </span>
-                <span className="estadistica-label">Evaluaciones presentadas</span>
-              </div>
-              <div className="estadistica">
-                <span className="estadistica-valor">
-                  {notas.modulos.filter(m => m.tieneEvaluacion && m.notaEvaluacion >= 70).length}
-                </span>
-                <span className="estadistica-label">Evaluaciones aprobadas</span>
-              </div>
-            </div>
-          </div>
-
-          <div className="modal-actions">
-            <button
-              className="btn-primario"
-              onClick={() => setMostrarDetallesNotas(false)}
-            >
-              Cerrar
-            </button>
-          </div>
-        </div>
-      </div>
-    );
-  };
-
-  // ⭐ MODAL PARA EVALUACIÓN FINAL
-  const ModalEvaluacionFinal = () => (
-    <div className="modal-overlay">
-      <div className="modal-confirmacion">
-        <div className="modal-header">
-          <h2>🎓 Evaluación Final del Curso</h2>
-        </div>
-
-        <div className="modal-body">
-          <div className="evaluacion-icono">📝</div>
-          <p>
-            Estás a punto de comenzar la evaluación final del curso{" "}
-            <strong>{cursoActual?.nombre}</strong>.
-          </p>
-
-          <div className="evaluacion-info">
-            <div className="info-item">
-              <span>📝 Preguntas:</span>
-              <span>{cursoActual?.evaluacionFinal?.preguntas?.length || 0}</span>
-            </div>
-            <div className="info-item">
-              <span>⏱️ Duración estimada:</span>
-              <span>{(cursoActual?.evaluacionFinal?.preguntas?.length || 0) * 2} minutos</span>
-            </div>
-            <div className="info-item">
-              <span>🎯 Puntuación mínima:</span>
-              <span>70% para aprobar</span>
-            </div>
-          </div>
-
-          <div className="recomendaciones">
-            <h4>📋 Recomendaciones:</h4>
-            <ul>
-              <li>• Asegúrate de estar en un lugar tranquilo</li>
-              <li>• Evita cerrar la ventana durante la evaluación</li>
-              <li>• Lee cuidadosamente cada pregunta</li>
-              <li>• Revisa tus respuestas antes de finalizar</li>
-            </ul>
-          </div>
-        </div>
-
-        <div className="modal-actions">
-          <button
-            className="btn-comenzar"
-            onClick={handleIniciarEvaluacionFinal}
-          >
-            🚀 Comenzar evaluación
-          </button>
-
-          <button
-            className="btn-secundario"
-            onClick={() => setMostrarModalEvaluacionFinal(false)}
-          >
-            Cancelar
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-
-  // ⭐ MODAL DE CURSO COMPLETADO ACTUALIZADO
+  // Modal de curso completado
   const ModalCursoCompletado = () => (
     <div className="modal-overlay">
       <div className="modal-confirmacion modal-completado">
@@ -561,39 +389,13 @@ export default function CursoVista({ onNavigate, curso }) {
           <p>¿Qué te gustaría hacer?</p>
 
           <div className="opciones-completado">
-            <div
-              className="opcion"
-              onClick={cargarNotasDetalladas}
-              disabled={cargandoNotas}
-            >
-              <div className="opcion-icono">📊</div>
-              <div className="opcion-contenido">
-                <h4>Ver Resultados Detallados</h4>
-                <p>Revisa tus calificaciones por módulo y evaluación final</p>
-                {cargandoNotas && <div className="cargando-mini">Cargando...</div>}
-              </div>
+            <div className="opcion">
+              <h4>📚 Revisar Contenido</h4>
+              <p>Puedes volver a revisar cualquier parte del curso</p>
             </div>
-
-            <div
-              className="opcion"
-              onClick={() => setMostrarModalCompletado(false)}
-            >
-              <div className="opcion-icono">📚</div>
-              <div className="opcion-contenido">
-                <h4>Revisar Contenido</h4>
-                <p>Puedes volver a revisar cualquier parte del curso</p>
-              </div>
-            </div>
-
-            <div
-              className="opcion"
-              onClick={reiniciarProgreso}
-            >
-              <div className="opcion-icono">🔄</div>
-              <div className="opcion-contenido">
-                <h4>Reiniciar Progreso</h4>
-                <p>Comenzar desde cero y volver a tomar las evaluaciones</p>
-              </div>
+            <div className="opcion">
+              <h4>🔄 Reiniciar Progreso</h4>
+              <p>Comenzar desde cero y volver a tomar las evaluaciones</p>
             </div>
           </div>
         </div>
@@ -603,6 +405,12 @@ export default function CursoVista({ onNavigate, curso }) {
             onClick={() => setMostrarModalCompletado(false)}
           >
             Seguir Revisando
+          </button>
+          <button
+            className="btn-reiniciar"
+            onClick={reiniciarProgreso}
+          >
+            🔄 Reiniciar Progreso
           </button>
         </div>
       </div>
@@ -911,9 +719,6 @@ export default function CursoVista({ onNavigate, curso }) {
 
       {/* ⭐ NUEVO: Modal de evaluación final */}
       {mostrarModalEvaluacionFinal && <ModalEvaluacionFinal />}
-
-      {/* ⭐ NUEVO: Modal de detalles de notas */}
-      {mostrarDetallesNotas && <ModalDetallesNotas />}
     </div>
   );
 }

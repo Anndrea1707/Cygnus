@@ -282,6 +282,7 @@ router.post("/completar-modulo", async (req, res) => {
 /* ============================================================
    📌 4. REGISTRAR EVALUACIÓN FINAL - MEJORADO (CON save() PARA ACTIVAR MIDDLEWARE)
    ============================================================ */
+// REGISTRAR EVALUACIÓN FINAL
 router.post("/evaluacion-final", async (req, res) => {
     try {
         const { usuarioId, cursoId, notaFinal } = req.body;

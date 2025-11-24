@@ -804,390 +804,392 @@
 
 /* CursoVista.css - Agregar estos estilos */
 .modal-detalles-notas {
-  max-width: 700px;
-  max-height: 85vh;
-  overflow-y: auto;
+    max-width: 700px;
+    max-height: 85vh;
+    overflow-y: auto;
 }
 
 .btn-cerrar-modal {
-  background: none;
-  border: none;
-  font-size: 1.5rem;
-  cursor: pointer;
-  color: #666;
-  padding: 5px;
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: #666;
+    padding: 5px;
 }
 
 .btn-cerrar-modal:hover {
-  color: #333;
-  background: #f5f5f5;
-  border-radius: 50%;
+    color: #333;
+    background: #f5f5f5;
+    border-radius: 50%;
 }
 
 .resumen-curso {
-  text-align: center;
-  margin-bottom: 25px;
-  padding-bottom: 20px;
-  border-bottom: 2px solid #e0e0e0;
+    text-align: center;
+    margin-bottom: 25px;
+    padding-bottom: 20px;
+    border-bottom: 2px solid #e0e0e0;
 }
 
 .resumen-curso h3 {
-  margin: 0 0 10px 0;
-  color: #333;
-  font-size: 1.4rem;
+    margin: 0 0 10px 0;
+    color: #333;
+    font-size: 1.4rem;
 }
 
 .curso-meta-info {
-  display: flex;
-  justify-content: center;
-  gap: 20px;
-  flex-wrap: wrap;
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    flex-wrap: wrap;
 }
 
-.nivel-curso, .fecha-completado {
-  background: #e3f2fd;
-  padding: 6px 12px;
-  border-radius: 15px;
-  font-size: 0.85rem;
-  color: #1976d2;
-  font-weight: 500;
+.nivel-curso,
+.fecha-completado {
+    background: #e3f2fd;
+    padding: 6px 12px;
+    border-radius: 15px;
+    font-size: 0.85rem;
+    color: #1976d2;
+    font-weight: 500;
 }
 
 .progreso-general {
-  margin-bottom: 25px;
+    margin-bottom: 25px;
 }
 
 .progreso-general h4 {
-  margin-bottom: 10px;
-  color: #333;
+    margin-bottom: 10px;
+    color: #333;
 }
 
 .progreso-container {
-  display: flex;
-  align-items: center;
-  gap: 15px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
 }
 
 .progreso-bar.grande {
-  flex: 1;
-  height: 12px;
-  background: #e0e0e0;
-  border-radius: 6px;
-  overflow: hidden;
+    flex: 1;
+    height: 12px;
+    background: #e0e0e0;
+    border-radius: 6px;
+    overflow: hidden;
 }
 
 .progreso-bar.grande .progreso-fill {
-  height: 100%;
-  background: linear-gradient(90deg, #4CAF50, #45a049);
-  transition: width 0.5s ease;
+    height: 100%;
+    background: linear-gradient(90deg, #4CAF50, #45a049);
+    transition: width 0.5s ease;
 }
 
 .progreso-texto {
-  font-weight: bold;
-  color: #333;
-  min-width: 50px;
+    font-weight: bold;
+    color: #333;
+    min-width: 50px;
 }
 
 .seccion-notas {
-  margin-bottom: 30px;
+    margin-bottom: 30px;
 }
 
 .seccion-notas h4 {
-  margin: 0 0 15px 0;
-  color: #333;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding-bottom: 8px;
-  border-bottom: 1px solid #eee;
+    margin: 0 0 15px 0;
+    color: #333;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #eee;
 }
 
 .lista-modulos {
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
 }
 
 .item-modulo {
-  padding: 15px;
-  border: 1px solid #e0e0e0;
-  border-radius: 10px;
-  background: #fafafa;
-  transition: all 0.3s ease;
+    padding: 15px;
+    border: 1px solid #e0e0e0;
+    border-radius: 10px;
+    background: #fafafa;
+    transition: all 0.3s ease;
 }
 
 .item-modulo:hover {
-  border-color: #007bff;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    border-color: #007bff;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .modulo-info {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 10px;
 }
 
 .modulo-header {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex: 1;
 }
 
 .modulo-indice {
-  background: #007bff;
-  color: white;
-  padding: 4px 8px;
-  border-radius: 4px;
-  font-size: 0.8rem;
-  font-weight: bold;
-  min-width: 30px;
-  text-align: center;
+    background: #007bff;
+    color: white;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    font-weight: bold;
+    min-width: 30px;
+    text-align: center;
 }
 
 .modulo-nombre {
-  font-weight: 500;
-  color: #333;
-  flex: 1;
+    font-weight: 500;
+    color: #333;
+    flex: 1;
 }
 
 .nota {
-  font-weight: bold;
-  padding: 6px 12px;
-  border-radius: 6px;
-  font-size: 0.95rem;
-  min-width: 70px;
-  text-align: center;
+    font-weight: bold;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 0.95rem;
+    min-width: 70px;
+    text-align: center;
 }
 
 .nota.aprobado {
-  background: #d4edda;
-  color: #155724;
-  border: 1px solid #c3e6cb;
+    background: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
 }
 
 .nota.reprobado {
-  background: #f8d7da;
-  color: #721c24;
-  border: 1px solid #f5c6cb;
+    background: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
 }
 
 .nota.sin-evaluacion {
-  background: #e2e3e5;
-  color: #383d41;
-  border: 1px solid #d6d8db;
+    background: #e2e3e5;
+    color: #383d41;
+    border: 1px solid #d6d8db;
 }
 
 .nota.final {
-  font-size: 1.1rem;
-  padding: 8px 16px;
+    font-size: 1.1rem;
+    padding: 8px 16px;
 }
 
 .progreso-nota {
-  height: 8px;
-  background: #e0e0e0;
-  border-radius: 4px;
-  overflow: hidden;
-  margin: 8px 0;
+    height: 8px;
+    background: #e0e0e0;
+    border-radius: 4px;
+    overflow: hidden;
+    margin: 8px 0;
 }
 
 .barra-progreso {
-  height: 100%;
-  transition: width 0.3s ease;
+    height: 100%;
+    transition: width 0.3s ease;
 }
 
 .barra-progreso.aprobado {
-  background: linear-gradient(90deg, #4CAF50, #45a049);
+    background: linear-gradient(90deg, #4CAF50, #45a049);
 }
 
 .barra-progreso.reprobado {
-  background: linear-gradient(90deg, #f44336, #d32f2f);
+    background: linear-gradient(90deg, #f44336, #d32f2f);
 }
 
 .fecha-modulo {
-  font-size: 0.8rem;
-  color: #666;
-  text-align: right;
+    font-size: 0.8rem;
+    color: #666;
+    text-align: right;
 }
 
 .promedio-modulos {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 15px;
-  background: #e8f5e8;
-  border-radius: 8px;
-  margin-top: 15px;
-  font-weight: 500;
-  border: 1px solid #c8e6c9;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+    background: #e8f5e8;
+    border-radius: 8px;
+    margin-top: 15px;
+    font-weight: 500;
+    border: 1px solid #c8e6c9;
 }
 
 .promedio {
-  font-weight: bold;
-  color: #2e7d32;
-  font-size: 1.1rem;
+    font-weight: bold;
+    color: #2e7d32;
+    font-size: 1.1rem;
 }
 
 .evaluacion-final {
-  background: #fff3cd;
-  padding: 20px;
-  border-radius: 10px;
-  border: 2px solid #ffeaa7;
-  margin-top: 20px;
+    background: #fff3cd;
+    padding: 20px;
+    border-radius: 10px;
+    border: 2px solid #ffeaa7;
+    margin-top: 20px;
 }
 
 .nota-final {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
 }
 
 .nota-info {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-weight: 500;
-  font-size: 1.1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: 500;
+    font-size: 1.1rem;
 }
 
 .estado-final {
-  text-align: center;
-  margin-top: 10px;
+    text-align: center;
+    margin-top: 10px;
 }
 
 .estado {
-  font-weight: bold;
-  padding: 8px 16px;
-  border-radius: 20px;
-  font-size: 1rem;
-  display: inline-block;
+    font-weight: bold;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 1rem;
+    display: inline-block;
 }
 
 .estado.aprobado {
-  background: #d4edda;
-  color: #155724;
-  border: 2px solid #c3e6cb;
+    background: #d4edda;
+    color: #155724;
+    border: 2px solid #c3e6cb;
 }
 
 .estado.reprobado {
-  background: #f8d7da;
-  color: #721c24;
-  border: 2px solid #f5c6cb;
+    background: #f8d7da;
+    color: #721c24;
+    border: 2px solid #f5c6cb;
 }
 
 .resumen-general {
-  display: flex;
-  justify-content: space-around;
-  padding: 20px;
-  background: #f8f9fa;
-  border-radius: 10px;
-  margin-top: 25px;
-  border: 1px solid #e9ecef;
+    display: flex;
+    justify-content: space-around;
+    padding: 20px;
+    background: #f8f9fa;
+    border-radius: 10px;
+    margin-top: 25px;
+    border: 1px solid #e9ecef;
 }
 
 .estadistica {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
-  text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    text-align: center;
 }
 
 .estadistica-valor {
-  font-weight: bold;
-  font-size: 1.5rem;
-  color: #007bff;
+    font-weight: bold;
+    font-size: 1.5rem;
+    color: #007bff;
 }
 
 .estadistica-label {
-  font-size: 0.9rem;
-  color: #666;
+    font-size: 0.9rem;
+    color: #666;
 }
 
 /* Mejoras para las opciones del modal completado */
 .opciones-completado {
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
-  margin: 25px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin: 25px 0;
 }
 
 .opcion {
-  display: flex;
-  align-items: center;
-  gap: 20px;
-  padding: 20px;
-  border: 2px solid #e0e0e0;
-  border-radius: 10px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  background: white;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding: 20px;
+    border: 2px solid #e0e0e0;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background: white;
 }
 
 .opcion:hover:not([disabled]) {
-  border-color: #007bff;
-  background: #f8f9fa;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    border-color: #007bff;
+    background: var();
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .opcion[disabled] {
-  opacity: 0.6;
-  cursor: not-allowed;
+    opacity: 0.6;
+    cursor: not-allowed;
 }
 
 .opcion-icono {
-  font-size: 2rem;
-  min-width: 40px;
+    font-size: 2rem;
+    min-width: 40px;
 }
 
 .opcion-contenido {
-  flex: 1;
+    flex: 1;
 }
 
 .opcion-contenido h4 {
-  margin: 0 0 8px 0;
-  color: #333;
-  font-size: 1.1rem;
+    margin: 0 0 8px 0;
+    color: #333;
+    font-size: 1.1rem;
 }
 
 .opcion-contenido p {
-  margin: 0;
-  color: #666;
-  font-size: 0.9rem;
-  line-height: 1.4;
+    margin: 0;
+    color: #666;
+    font-size: 0.9rem;
+    line-height: 1.4;
 }
 
 .cargando-mini {
-  font-size: 0.8rem;
-  color: #007bff;
-  font-style: italic;
-  margin-top: 5px;
+    font-size: 0.8rem;
+    color: #007bff;
+    font-style: italic;
+    margin-top: 5px;
 }
 
 /* Responsive */
 @media (max-width: 768px) {
-  .modal-detalles-notas {
-    margin: 10px;
-    max-width: calc(100vw - 20px);
-  }
-  
-  .resumen-general {
-    flex-direction: column;
-    gap: 15px;
-  }
-  
-  .modulo-info {
-    flex-direction: column;
-    gap: 10px;
-    align-items: stretch;
-  }
-  
-  .modulo-header {
-    justify-content: space-between;
-  }
+    .modal-detalles-notas {
+        margin: 10px;
+        max-width: calc(100vw - 20px);
+    }
+
+    .resumen-general {
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .modulo-info {
+        flex-direction: column;
+        gap: 10px;
+        align-items: stretch;
+    }
+
+    .modulo-header {
+        justify-content: space-between;
+    }
 }
+
 /* 🚫 Evitar desplazamiento horizontal */
 html,
 body {
