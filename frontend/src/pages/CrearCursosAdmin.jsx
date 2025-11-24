@@ -13,16 +13,16 @@ const CrearCursosAdmin = ({ onNavigate, cursoEditar }) => {
     });
 
     const [modalModulo, setModalModulo] = useState(false);
-    const [modalContenido, setModalContenido] = useState({ 
-        abierto: false, 
-        moduloIndex: null, 
-        contenidoIndex: null, 
+    const [modalContenido, setModalContenido] = useState({
+        abierto: false,
+        moduloIndex: null,
+        contenidoIndex: null,
         modo: 'crear'
     });
     const [modalEvaluacionModulo, setModalEvaluacionModulo] = useState({ abierto: false, moduloIndex: null });
     const [modalEvaluacionFinal, setModalEvaluacionFinal] = useState(false);
-    const [modalPregunta, setModalPregunta] = useState({ 
-        abierto: false, 
+    const [modalPregunta, setModalPregunta] = useState({
+        abierto: false,
         tipo: null,
         moduloIndex: null,
         preguntaIndex: null,
@@ -35,10 +35,10 @@ const CrearCursosAdmin = ({ onNavigate, cursoEditar }) => {
         descripcion: "",
         preguntas: []
     });
-    const [nuevoModulo, setNuevoModulo] = useState({ 
-        nombre: "", 
-        descripcion: "", 
-        imagenPortada: "", 
+    const [nuevoModulo, setNuevoModulo] = useState({
+        nombre: "",
+        descripcion: "",
+        imagenPortada: "",
         cantidadContenido: "",
         contenido: [],
         evaluacion: { titulo: "", descripcion: "", preguntas: [] }
@@ -69,6 +69,15 @@ const CrearCursosAdmin = ({ onNavigate, cursoEditar }) => {
     const [modalIcono, setModalIcono] = useState("");
     const [modalCallback, setModalCallback] = useState(null);
 
+    // Función para contar preguntas por nivel
+    const contarPreguntasPorNivel = (preguntas) => {
+        const conteo = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
+        preguntas.forEach(p => {
+            conteo[p.dificultad] = (conteo[p.dificultad] || 0) + 1;
+        });
+        return conteo;
+    };
+
     const cerrarModal = () => {
         setMostrarModal(false);
         // Ejecutar callback si existe (por ejemplo navegar después de OK)
@@ -82,7 +91,7 @@ const CrearCursosAdmin = ({ onNavigate, cursoEditar }) => {
 
     useEffect(() => {
         console.log("🔍 Props recibidas - cursoEditar:", cursoEditar);
-        
+
         // Si hay cursoEditar con _id, estamos en modo edición
         if (cursoEditar && cursoEditar._id) {
             console.log("🎯 MODO EDICIÓN ACTIVADO");
@@ -91,7 +100,7 @@ const CrearCursosAdmin = ({ onNavigate, cursoEditar }) => {
             setCursoId(cursoEditar._id);
             llenarFormularioConDatos(cursoEditar);
             setCursoCargado(true);
-        } 
+        }
         // Si cursoEditar es undefined o null, es creación
         else {
             console.log("📝 MODO CREACIÓN ACTIVADO - No hay curso para editar");
@@ -104,7 +113,7 @@ const CrearCursosAdmin = ({ onNavigate, cursoEditar }) => {
 
     const llenarFormularioConDatos = (curso) => {
         console.log("🖊️ Iniciando carga de datos en formulario...");
-        
+
         if (!curso) {
             console.log("❌ Error: Curso es null o undefined");
             return;
@@ -153,7 +162,7 @@ const CrearCursosAdmin = ({ onNavigate, cursoEditar }) => {
             console.log("   - Nivel:", curso.nivel);
             console.log("   - Módulos:", curso.modulos?.length || 0);
             console.log("   - Preguntas evaluación final:", curso.evaluacionFinal?.preguntas?.length || 0);
-            
+
         } catch (error) {
             console.error("❌ Error al llenar formulario:", error);
         }
@@ -237,10 +246,10 @@ const CrearCursosAdmin = ({ onNavigate, cursoEditar }) => {
     };
 
     const abrirModalModulo = () => {
-        setNuevoModulo({ 
-            nombre: "", 
-            descripcion: "", 
-            imagenPortada: "", 
+        setNuevoModulo({
+            nombre: "",
+            descripcion: "",
+            imagenPortada: "",
             cantidadContenido: "",
             contenido: [],
             evaluacion: { titulo: "", descripcion: "", preguntas: [] }
@@ -275,11 +284,11 @@ const CrearCursosAdmin = ({ onNavigate, cursoEditar }) => {
             recursoExtra: "",
             tipoRecurso: "url"
         });
-        setModalContenido({ 
-            abierto: true, 
-            moduloIndex, 
-            contenidoIndex: null, 
-            modo: 'crear' 
+        setModalContenido({
+            abierto: true,
+            moduloIndex,
+            contenidoIndex: null,
+            modo: 'crear'
         });
     };
 
@@ -292,11 +301,11 @@ const CrearCursosAdmin = ({ onNavigate, cursoEditar }) => {
             recursoExtra: contenido.recursoExtra || "",
             tipoRecurso: contenido.recursoExtra?.startsWith('http') ? "url" : "archivo"
         });
-        setModalContenido({ 
-            abierto: true, 
-            moduloIndex, 
-            contenidoIndex, 
-            modo: 'editar' 
+        setModalContenido({
+            abierto: true,
+            moduloIndex,
+            contenidoIndex,
+            modo: 'editar'
         });
     };
 
@@ -341,10 +350,10 @@ const CrearCursosAdmin = ({ onNavigate, cursoEditar }) => {
             opcionCorrecta: null, // ⭐ CAMBIO: null en lugar de string vacío
             dificultad: "1"
         });
-        setModalPregunta({ 
-            abierto: true, 
-            tipo, 
-            moduloIndex, 
+        setModalPregunta({
+            abierto: true,
+            tipo,
+            moduloIndex,
             preguntaIndex: null,
             modo: 'crear'
         });
@@ -357,10 +366,10 @@ const CrearCursosAdmin = ({ onNavigate, cursoEditar }) => {
         } else {
             pregunta = evaluacionFinal.preguntas[preguntaIndex];
         }
-        
+
         // ⭐ CORRECCIÓN: Asegurar que opcionCorrecta sea número
-        const opcionCorrecta = typeof pregunta.opcionCorrecta === 'string' 
-            ? parseInt(pregunta.opcionCorrecta) 
+        const opcionCorrecta = typeof pregunta.opcionCorrecta === 'string'
+            ? parseInt(pregunta.opcionCorrecta)
             : pregunta.opcionCorrecta;
 
         setNuevaPregunta({
@@ -369,10 +378,10 @@ const CrearCursosAdmin = ({ onNavigate, cursoEditar }) => {
             opcionCorrecta: opcionCorrecta, // ⭐ Ahora es número (0, 1, 2, 3)
             dificultad: pregunta.dificultad?.toString() || "1"
         });
-        setModalPregunta({ 
-            abierto: true, 
-            tipo, 
-            moduloIndex, 
+        setModalPregunta({
+            abierto: true,
+            tipo,
+            moduloIndex,
             preguntaIndex,
             modo: 'editar'
         });
@@ -394,12 +403,36 @@ const CrearCursosAdmin = ({ onNavigate, cursoEditar }) => {
             return;
         }
 
+
         // ⭐ CORRECCIÓN: Asegurar que opcionCorrecta sea número
         const preguntaParaGuardar = {
             ...nuevaPregunta,
             opcionCorrecta: nuevaPregunta.opcionCorrecta, // Ya es número (0, 1, 2, 3)
             dificultad: parseInt(nuevaPregunta.dificultad)
         };
+        // Obtener preguntas actuales
+        if (modalPregunta.tipo === 'modulo') {
+            const preguntasModulo = modulos[modalPregunta.moduloIndex].evaluacion.preguntas;
+            const porNivel = contarPreguntasPorNivel(preguntasModulo);
+
+            // Validación 20 preguntas
+            if (modalPregunta.modo === 'crear' && preguntasModulo.length >= 20) {
+                setModalIcono("❌");
+                setModalTitulo("Límite alcanzado");
+                setModalMensaje("Este módulo ya tiene las 20 preguntas permitidas.");
+                setMostrarModal(true);
+                return;
+            }
+
+            // Validación 4 por dificultad
+            if (modalPregunta.modo === 'crear' && porNivel[preguntaParaGuardar.dificultad] >= 4) {
+                setModalIcono("❌");
+                setModalTitulo("Límite por dificultad");
+                setModalMensaje(`Ya hay 4 preguntas de dificultad ${preguntaParaGuardar.dificultad} en este módulo.`);
+                setMostrarModal(true);
+                return;
+            }
+        }
 
         if (modalPregunta.tipo === 'modulo') {
             const modulosActualizados = [...modulos];
@@ -435,8 +468,8 @@ const CrearCursosAdmin = ({ onNavigate, cursoEditar }) => {
 
     // ⭐ CORRECCIÓN: Función para manejar selección de opción correcta
     const manejarOpcionCorrectaCambio = (index) => {
-        setNuevaPregunta(prev => ({ 
-            ...prev, 
+        setNuevaPregunta(prev => ({
+            ...prev,
             opcionCorrecta: index // ⭐ Ahora es número (0, 1, 2, 3)
         }));
     };
@@ -495,14 +528,40 @@ const CrearCursosAdmin = ({ onNavigate, cursoEditar }) => {
             return false;
         }
         for (let modulo of modulos) {
+
+            // Validar contenido
             if (!Array.isArray(modulo.contenido) || modulo.contenido.length === 0) {
                 setModalIcono("❌");
                 setModalTitulo("Módulo sin contenido");
-                setModalMensaje(`El módulo "${modulo.nombre}" no tiene contenido.`);
+                setModalMensaje(`El módulo "${modulo.nombre}" debe tener al menos un contenido.`);
                 setMostrarModal(true);
                 return false;
             }
+
+            // Validar evaluación del módulo
+            const preguntas = modulo.evaluacion.preguntas;
+
+            if (preguntas.length !== 20) {
+                setModalIcono("❌");
+                setModalTitulo("Evaluación incompleta");
+                setModalMensaje(`El módulo "${modulo.nombre}" debe tener exactamente 20 preguntas.`);
+                setMostrarModal(true);
+                return false;
+            }
+
+            const porNivel = contarPreguntasPorNivel(preguntas);
+
+            for (let nivel = 1; nivel <= 5; nivel++) {
+                if (porNivel[nivel] !== 4) {
+                    setModalIcono("❌");
+                    setModalTitulo("Evaluación inválida");
+                    setModalMensaje(`El módulo "${modulo.nombre}" debe tener 4 preguntas de dificultad ${nivel}.`);
+                    setMostrarModal(true);
+                    return false;
+                }
+            }
         }
+
         return true;
     };
 
@@ -552,8 +611,8 @@ const CrearCursosAdmin = ({ onNavigate, cursoEditar }) => {
                     {esEdicion ? `Editar Curso: ${form.nombre}` : "Crear Nuevo Curso"}
                 </h1>
                 <p className="subtitulo">
-                    {esEdicion 
-                        ? "Modifica los campos que necesites del curso existente" 
+                    {esEdicion
+                        ? "Modifica los campos que necesites del curso existente"
                         : "Completa todos los campos para registrar un nuevo curso completo"}
                 </p>
 
@@ -625,9 +684,9 @@ const CrearCursosAdmin = ({ onNavigate, cursoEditar }) => {
                         <h2 className="titulo-seccion">Módulos del Curso</h2>
                         <span className="contador">{modulos.length}/4 módulos</span>
                     </div>
-                    
-                    <button 
-                        className="btn-agregar-modulo" 
+
+                    <button
+                        className="btn-agregar-modulo"
                         onClick={abrirModalModulo}
                         disabled={modulos.length >= 4}
                     >
@@ -639,7 +698,7 @@ const CrearCursosAdmin = ({ onNavigate, cursoEditar }) => {
                             <div key={moduloIndex} className="modulo-card">
                                 <div className="modulo-header">
                                     <h3>{modulo.nombre}</h3>
-                                    <button 
+                                    <button
                                         className="btn-eliminarB"
                                         onClick={() => eliminarModulo(moduloIndex)}
                                         title="Eliminar módulo"
@@ -648,15 +707,15 @@ const CrearCursosAdmin = ({ onNavigate, cursoEditar }) => {
                                     </button>
                                 </div>
                                 <p className="modulo-descripcion">{modulo.descripcion}</p>
-                                
+
                                 <div className="modulo-acciones">
-                                    <button 
+                                    <button
                                         className="btn-secundario"
                                         onClick={() => abrirModalContenidoCrear(moduloIndex)}
                                     >
                                         + Contenido ({modulo.contenido.length})
                                     </button>
-                                    <button 
+                                    <button
                                         className="btn-secundario"
                                         onClick={() => abrirModalEvaluacionModulo(moduloIndex)}
                                     >
@@ -671,14 +730,14 @@ const CrearCursosAdmin = ({ onNavigate, cursoEditar }) => {
                                             <div key={contenidoIndex} className="contenido-item">
                                                 <span>{contenido.titulo}</span>
                                                 <div className="acciones-contenido">
-                                                    <button 
+                                                    <button
                                                         className="btn-editar-pequeno"
                                                         onClick={() => abrirModalContenidoEditar(moduloIndex, contenidoIndex)}
                                                         title="Editar contenido"
                                                     >
                                                         ✏️
                                                     </button>
-                                                    <button 
+                                                    <button
                                                         className="btn-eliminarB-pequeno"
                                                         onClick={() => eliminarContenido(moduloIndex, contenidoIndex)}
                                                         title="Eliminar contenido"
@@ -698,14 +757,14 @@ const CrearCursosAdmin = ({ onNavigate, cursoEditar }) => {
                                             <div key={index} className="pregunta-item">
                                                 <span>Dificultad {pregunta.dificultad}: {pregunta.interrogante.substring(0, 50)}...</span>
                                                 <div className="acciones-pregunta">
-                                                    <button 
+                                                    <button
                                                         className="btn-editar-pequeno"
                                                         onClick={() => abrirModalPreguntaEditar('modulo', moduloIndex, index)}
                                                         title="Editar pregunta"
                                                     >
                                                         ✏️
                                                     </button>
-                                                    <button 
+                                                    <button
                                                         className="btn-eliminarB-pequeno"
                                                         onClick={() => eliminarPregunta('modulo', moduloIndex, index)}
                                                         title="Eliminar pregunta"
@@ -727,8 +786,8 @@ const CrearCursosAdmin = ({ onNavigate, cursoEditar }) => {
                         <h2 className="titulo-seccion">Evaluación Final del Curso</h2>
                         <span className="contador">{evaluacionFinal.preguntas.length}/20 preguntas</span>
                     </div>
-                    
-                    <button 
+
+                    <button
                         className="btn-agregar-modulo"
                         onClick={abrirModalEvaluacionFinal}
                     >
@@ -742,14 +801,14 @@ const CrearCursosAdmin = ({ onNavigate, cursoEditar }) => {
                                 <div key={index} className="pregunta-item">
                                     <span>Dificultad {pregunta.dificultad}: {pregunta.interrogante.substring(0, 50)}...</span>
                                     <div className="acciones-pregunta">
-                                        <button 
+                                        <button
                                             className="btn-editar-pequeno"
                                             onClick={() => abrirModalPreguntaEditar('final', null, index)}
                                             title="Editar pregunta"
                                         >
                                             ✏️
                                         </button>
-                                        <button 
+                                        <button
                                             className="btn-eliminarB-pequeno"
                                             onClick={() => eliminarPregunta('final', null, index)}
                                             title="Eliminar pregunta"
@@ -779,7 +838,7 @@ const CrearCursosAdmin = ({ onNavigate, cursoEditar }) => {
                                     type="text"
                                     placeholder="Nombre del módulo"
                                     value={nuevoModulo.nombre}
-                                    onChange={(e) => setNuevoModulo({...nuevoModulo, nombre: e.target.value})}
+                                    onChange={(e) => setNuevoModulo({ ...nuevoModulo, nombre: e.target.value })}
                                 />
                             </div>
                             <div className="input-group">
@@ -787,16 +846,16 @@ const CrearCursosAdmin = ({ onNavigate, cursoEditar }) => {
                                 <textarea
                                     placeholder="Descripción del módulo"
                                     value={nuevoModulo.descripcion}
-                                    onChange={(e) => setNuevoModulo({...nuevoModulo, descripcion: e.target.value})}
+                                    onChange={(e) => setNuevoModulo({ ...nuevoModulo, descripcion: e.target.value })}
                                     rows="3"
                                 />
                             </div>
                             <div className="input-group">
                                 <label>Imagen de portada</label>
-                                <input 
-                                    type="file" 
-                                    accept="image/*" 
-                                    onChange={(e) => subirImagenModulo(e, (url) => setNuevoModulo({...nuevoModulo, imagenPortada: url}))} 
+                                <input
+                                    type="file"
+                                    accept="image/*"
+                                    onChange={(e) => subirImagenModulo(e, (url) => setNuevoModulo({ ...nuevoModulo, imagenPortada: url }))}
                                 />
                             </div>
                         </div>
@@ -823,7 +882,7 @@ const CrearCursosAdmin = ({ onNavigate, cursoEditar }) => {
                                     type="text"
                                     placeholder="Título del contenido"
                                     value={nuevoContenido.titulo}
-                                    onChange={(e) => setNuevoContenido({...nuevoContenido, titulo: e.target.value})}
+                                    onChange={(e) => setNuevoContenido({ ...nuevoContenido, titulo: e.target.value })}
                                 />
                             </div>
                             <div className="input-group">
@@ -831,7 +890,7 @@ const CrearCursosAdmin = ({ onNavigate, cursoEditar }) => {
                                 <textarea
                                     placeholder="Descripción del contenido"
                                     value={nuevoContenido.descripcion}
-                                    onChange={(e) => setNuevoContenido({...nuevoContenido, descripcion: e.target.value})}
+                                    onChange={(e) => setNuevoContenido({ ...nuevoContenido, descripcion: e.target.value })}
                                     rows="3"
                                 />
                             </div>
@@ -841,7 +900,7 @@ const CrearCursosAdmin = ({ onNavigate, cursoEditar }) => {
                                     type="text"
                                     placeholder="URL del video, documento, imagen, etc."
                                     value={nuevoContenido.contenido}
-                                    onChange={(e) => setNuevoContenido({...nuevoContenido, contenido: e.target.value})}
+                                    onChange={(e) => setNuevoContenido({ ...nuevoContenido, contenido: e.target.value })}
                                 />
                             </div>
                             <div className="input-group">
@@ -854,7 +913,7 @@ const CrearCursosAdmin = ({ onNavigate, cursoEditar }) => {
                                                 name="tipoRecurso"
                                                 value="url"
                                                 checked={nuevoContenido.tipoRecurso === "url"}
-                                                onChange={(e) => setNuevoContenido({...nuevoContenido, tipoRecurso: e.target.value, recursoExtra: ""})}
+                                                onChange={(e) => setNuevoContenido({ ...nuevoContenido, tipoRecurso: e.target.value, recursoExtra: "" })}
                                             />
                                             URL
                                         </label>
@@ -864,30 +923,30 @@ const CrearCursosAdmin = ({ onNavigate, cursoEditar }) => {
                                                 name="tipoRecurso"
                                                 value="archivo"
                                                 checked={nuevoContenido.tipoRecurso === "archivo"}
-                                                onChange={(e) => setNuevoContenido({...nuevoContenido, tipoRecurso: e.target.value, recursoExtra: ""})}
+                                                onChange={(e) => setNuevoContenido({ ...nuevoContenido, tipoRecurso: e.target.value, recursoExtra: "" })}
                                             />
                                             Subir archivo
                                         </label>
                                     </div>
-                                    
+
                                     {nuevoContenido.tipoRecurso === "url" ? (
                                         <input
                                             type="text"
                                             placeholder="URL del recurso adicional"
                                             value={nuevoContenido.recursoExtra}
-                                            onChange={(e) => setNuevoContenido({...nuevoContenido, recursoExtra: e.target.value})}
+                                            onChange={(e) => setNuevoContenido({ ...nuevoContenido, recursoExtra: e.target.value })}
                                         />
                                     ) : (
                                         <input
                                             type="file"
-                                            onChange={(e) => subirRecursoExtra(e, (url) => setNuevoContenido({...nuevoContenido, recursoExtra: url}))}
+                                            onChange={(e) => subirRecursoExtra(e, (url) => setNuevoContenido({ ...nuevoContenido, recursoExtra: url }))}
                                         />
                                     )}
                                 </div>
                             </div>
                         </div>
                         <div className="modal-actions">
-                            <button className="btn-cancelar" onClick={() => setModalContenido({abierto: false, moduloIndex: null, contenidoIndex: null, modo: 'crear'})}>
+                            <button className="btn-cancelar" onClick={() => setModalContenido({ abierto: false, moduloIndex: null, contenidoIndex: null, modo: 'crear' })}>
                                 Cancelar
                             </button>
                             <button className="btn-guardar-modulo" onClick={guardarContenido}>
@@ -929,18 +988,30 @@ const CrearCursosAdmin = ({ onNavigate, cursoEditar }) => {
                                     rows="3"
                                 />
                             </div>
-                            
+
                             <div className="seccion-preguntas">
                                 <div className="seccion-header">
                                     <h4>Preguntas de la evaluación ({modulos[modalEvaluacionModulo.moduloIndex]?.evaluacion?.preguntas.length})</h4>
-                                    <button 
+                                    <div className="dificultad-stats">
+                                        {[1, 2, 3, 4, 5].map(nivel => (
+                                            <span key={nivel}>
+                                                Nivel {nivel}: {
+                                                    contarPreguntasPorNivel(
+                                                        modulos[modalEvaluacionModulo.moduloIndex].evaluacion.preguntas
+                                                    )[nivel]
+                                                }/4
+                                            </span>
+                                        ))}
+                                    </div>
+
+                                    <button
                                         className="btn-agregar-pequeno"
                                         onClick={() => abrirModalPreguntaCrear('modulo', modalEvaluacionModulo.moduloIndex)}
                                     >
                                         + Agregar Pregunta
                                     </button>
                                 </div>
-                                
+
                                 {modulos[modalEvaluacionModulo.moduloIndex]?.evaluacion?.preguntas.length === 0 ? (
                                     <p className="sin-elementos">No hay preguntas agregadas</p>
                                 ) : (
@@ -948,13 +1019,13 @@ const CrearCursosAdmin = ({ onNavigate, cursoEditar }) => {
                                         <div key={index} className="pregunta-item">
                                             <span>Dificultad {pregunta.dificultad}: {pregunta.interrogante.substring(0, 50)}...</span>
                                             <div className="acciones-pregunta">
-                                                <button 
+                                                <button
                                                     className="btn-editar-pequeno"
                                                     onClick={() => abrirModalPreguntaEditar('modulo', modalEvaluacionModulo.moduloIndex, index)}
                                                 >
                                                     ✏️
                                                 </button>
-                                                <button 
+                                                <button
                                                     className="btn-eliminarB-pequeno"
                                                     onClick={() => eliminarPregunta('modulo', modalEvaluacionModulo.moduloIndex, index)}
                                                 >
@@ -967,7 +1038,7 @@ const CrearCursosAdmin = ({ onNavigate, cursoEditar }) => {
                             </div>
                         </div>
                         <div className="modal-actions">
-                            <button className="btn-cancelar" onClick={() => setModalEvaluacionModulo({abierto: false, moduloIndex: null})}>
+                            <button className="btn-cancelar" onClick={() => setModalEvaluacionModulo({ abierto: false, moduloIndex: null })}>
                                 Cerrar
                             </button>
                         </div>
@@ -986,7 +1057,7 @@ const CrearCursosAdmin = ({ onNavigate, cursoEditar }) => {
                                     type="text"
                                     placeholder="Título de la evaluación final"
                                     value={evaluacionFinal.titulo}
-                                    onChange={(e) => setEvaluacionFinal({...evaluacionFinal, titulo: e.target.value})}
+                                    onChange={(e) => setEvaluacionFinal({ ...evaluacionFinal, titulo: e.target.value })}
                                 />
                             </div>
                             <div className="input-group">
@@ -994,15 +1065,15 @@ const CrearCursosAdmin = ({ onNavigate, cursoEditar }) => {
                                 <textarea
                                     placeholder="Descripción de la evaluación final"
                                     value={evaluacionFinal.descripcion}
-                                    onChange={(e) => setEvaluacionFinal({...evaluacionFinal, descripcion: e.target.value})}
+                                    onChange={(e) => setEvaluacionFinal({ ...evaluacionFinal, descripcion: e.target.value })}
                                     rows="3"
                                 />
                             </div>
-                            
+
                             <div className="seccion-preguntas">
                                 <div className="seccion-header">
                                     <h4>Preguntas de la evaluación final ({evaluacionFinal.preguntas.length}/20)</h4>
-                                    <button 
+                                    <button
                                         className="btn-agregar-pequeno"
                                         onClick={() => abrirModalPreguntaCrear('final')}
                                         disabled={evaluacionFinal.preguntas.length >= 20}
@@ -1010,11 +1081,11 @@ const CrearCursosAdmin = ({ onNavigate, cursoEditar }) => {
                                         + Agregar Pregunta
                                     </button>
                                 </div>
-                                
+
                                 <div className="dificultad-info">
                                     <p>Debe haber 4 preguntas por cada nivel de dificultad (1-5)</p>
                                     <div className="dificultad-stats">
-                                        {[1,2,3,4,5].map(nivel => (
+                                        {[1, 2, 3, 4, 5].map(nivel => (
                                             <span key={nivel} className={`dificultad-stat ${evaluacionFinal.preguntas.filter(p => p.dificultad == nivel).length === 4 ? 'completo' : ''}`}>
                                                 Nivel {nivel}: {evaluacionFinal.preguntas.filter(p => p.dificultad == nivel).length}/4
                                             </span>
@@ -1029,13 +1100,13 @@ const CrearCursosAdmin = ({ onNavigate, cursoEditar }) => {
                                         <div key={index} className="pregunta-item">
                                             <span>Dificultad {pregunta.dificultad}: {pregunta.interrogante.substring(0, 50)}...</span>
                                             <div className="acciones-pregunta">
-                                                <button 
+                                                <button
                                                     className="btn-editar-pequeno"
                                                     onClick={() => abrirModalPreguntaEditar('final', null, index)}
                                                 >
                                                     ✏️
                                                 </button>
-                                                <button 
+                                                <button
                                                     className="btn-eliminarB-pequeno"
                                                     onClick={() => eliminarPregunta('final', null, index)}
                                                 >
@@ -1066,23 +1137,23 @@ const CrearCursosAdmin = ({ onNavigate, cursoEditar }) => {
                                 <textarea
                                     placeholder="Escribe la pregunta aquí..."
                                     value={nuevaPregunta.interrogante}
-                                    onChange={(e) => setNuevaPregunta({...nuevaPregunta, interrogante: e.target.value})}
+                                    onChange={(e) => setNuevaPregunta({ ...nuevaPregunta, interrogante: e.target.value })}
                                     rows="3"
                                 />
                             </div>
-                            
+
                             <div className="input-group">
                                 <label>Dificultad *</label>
-                                <select 
+                                <select
                                     value={nuevaPregunta.dificultad}
-                                    onChange={(e) => setNuevaPregunta({...nuevaPregunta, dificultad: e.target.value})}
+                                    onChange={(e) => setNuevaPregunta({ ...nuevaPregunta, dificultad: e.target.value })}
                                 >
-                                    {[1,2,3,4,5].map(nivel => (
+                                    {[1, 2, 3, 4, 5].map(nivel => (
                                         <option key={nivel} value={nivel}>Nivel {nivel}</option>
                                     ))}
                                 </select>
                             </div>
-                            
+
                             <div className="opciones-pregunta">
                                 <label>Opciones de respuesta *</label>
                                 {nuevaPregunta.opciones.map((opcion, index) => (
@@ -1106,7 +1177,7 @@ const CrearCursosAdmin = ({ onNavigate, cursoEditar }) => {
                             </div>
                         </div>
                         <div className="modal-actions">
-                            <button className="btn-cancelar" onClick={() => setModalPregunta({abierto: false, tipo: null, moduloIndex: null, preguntaIndex: null, modo: 'crear'})}>
+                            <button className="btn-cancelar" onClick={() => setModalPregunta({ abierto: false, tipo: null, moduloIndex: null, preguntaIndex: null, modo: 'crear' })}>
                                 Cancelar
                             </button>
                             <button className="btn-guardar-modulo" onClick={guardarPregunta}>

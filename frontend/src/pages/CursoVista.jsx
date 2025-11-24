@@ -1,3 +1,4 @@
+// CursoVista.jsx
 import React, { useState, useEffect } from "react";
 import "./CursoVista.css";
 
@@ -7,6 +8,7 @@ export default function CursoVista({ onNavigate, curso }) {
   const [progresoCurso, setProgresoCurso] = useState(null);
   const [usuario, setUsuario] = useState(null);
   const [mostrarModalCompletado, setMostrarModalCompletado] = useState(false);
+  const [cargandoProgreso, setCargandoProgreso] = useState(false);
 
   // Obtener usuario del localStorage
   useEffect(() => {
@@ -50,6 +52,22 @@ export default function CursoVista({ onNavigate, curso }) {
     };
   }, [curso]);
 
+  // Helper: deduplicate and normalize modulosCompletados (usa moduloIndex)
+  const normalizarModulosCompletados = (modulosCompletados = []) => {
+    const map = new Map();
+    for (const m of modulosCompletados) {
+      // usar moduloIndex como clave; mantener el último registro para ese módulo
+      if (typeof m.moduloIndex !== "number") continue;
+      map.set(m.moduloIndex, {
+        moduloIndex: m.moduloIndex,
+        completado: !!m.completado,
+        fechaCompletado: m.fechaCompletado || null,
+        notaEvaluacion: typeof m.notaEvaluacion === "number" ? m.notaEvaluacion : 0
+      });
+    }
+    return Array.from(map.values()).sort((a,b) => a.moduloIndex - b.moduloIndex);
+  };
+
   // Cargar progreso cuando el usuario y curso estén disponibles
   useEffect(() => {
     const cargarProgreso = async () => {
@@ -71,35 +89,44 @@ export default function CursoVista({ onNavigate, curso }) {
       });
 
       try {
+        setCargandoProgreso(true);
         const response = await fetch(`http://localhost:4000/api/progreso/curso/${usuario._id}/${cursoId}`);
         const data = await response.json();
 
         console.log("📊 Respuesta del progreso:", data);
 
         if (data.success && data.progreso) {
-          // ✔ Sí existe progreso real en DB
-          setProgresoCurso(data.progreso);
-          console.log("✅ Progreso cargado:", data.progreso);
+          // Normalizar modulosCompletados por seguridad
+          const progresoNormalizado = {
+            ...data.progreso,
+            modulosCompletados: normalizarModulosCompletados(data.progreso.modulosCompletados || [])
+          };
 
-          if (data.progreso.progresoPorcentual >= 100 || data.progreso.cursoCompletado) {
+          setProgresoCurso(progresoNormalizado);
+          console.log("✅ Progreso cargado:", progresoNormalizado);
+
+          // Si ya está completado todo el curso → mostrar modal completado
+          if (progresoNormalizado.progresoPorcentual >= 100 || progresoNormalizado.cursoCompletado) {
             setMostrarModalCompletado(true);
           }
         } else {
-          // ❗ No existe progreso → asignar progreso inicial por defecto
+          // Si no hay progreso, inicializar objeto mínimo
           console.log("ℹ️ No hay progreso guardado, asignando progreso inicial");
-
           setProgresoCurso({
             moduloActual: 0,
             contenidoActual: 0,
             modulosCompletados: [],
             progresoPorcentual: 0,
-            cursoCompletado: false
+            cursoCompletado: false,
+            evaluacionFinalCompletada: false
           });
         }
 
       } catch (error) {
         console.error("❌ Error cargando progreso:", error);
         setProgresoCurso(null);
+      } finally {
+        setCargandoProgreso(false);
       }
     };
 
@@ -132,6 +159,24 @@ export default function CursoVista({ onNavigate, curso }) {
     setModulosExpandidos({});
   };
 
+  // Devuelve true si todos los módulos están completados (usa modulosCompletados normalizado)
+  const todosLosModulosCompletos = () => {
+    if (!cursoActual?.modulos || !progresoCurso) return false;
+    const totalModulos = cursoActual.modulos.length;
+    const completados = (progresoCurso.modulosCompletados || []).filter(m => m.completado);
+    // usar cantidad única (ya normalizamos).
+    return completados.length >= totalModulos;
+  };
+
+  // Comprueba si el usuario está en estado "solo falta evaluación final":
+  const soloFaltaEvaluacionFinal = () => {
+    if (!cursoActual || !progresoCurso) return false;
+    const tieneEvaluacionFinal = !!(cursoActual.evaluacionFinal && cursoActual.evaluacionFinal.preguntas?.length > 0);
+    if (!tieneEvaluacionFinal) return false;
+    // todos los módulos completos y la evaluación final NO completada
+    return todosLosModulosCompletos() && !progresoCurso.evaluacionFinalCompletada;
+  };
+
   // Función para manejar el inicio/continuación del curso
   const handleEmpezarCurso = () => {
     if (!usuario) {
@@ -146,9 +191,24 @@ export default function CursoVista({ onNavigate, curso }) {
       return;
     }
 
-    // Si el curso está completado, mostrar modal
+    // Si el curso está completado, mostrar modal completado
     if (progresoCurso && progresoCurso.cursoCompletado) {
       setMostrarModalCompletado(true);
+      return;
+    }
+
+    // Si sólo falta la evaluación final -> navegar al contenido final forzando evaluación final
+    if (soloFaltaEvaluacionFinal()) {
+      // posicionar en el último módulo y último contenido
+      const ultimoModuloIndex = Math.max(0, (cursoActual.modulos?.length || 1) - 1);
+      const ultimoContenidoIndex = Math.max(0, (cursoActual.modulos?.[ultimoModuloIndex]?.contenido?.length || 1) - 1);
+
+      onNavigate("curso-contenido", {
+        curso: { ...cursoActual, id: cursoId },
+        moduloIndex: ultimoModuloIndex,
+        contenidoIndex: ultimoContenidoIndex,
+        forzarEvaluacionFinal: true // FLAG para que CursoContenido abra el modal de evaluación final
+      });
       return;
     }
 
@@ -171,17 +231,18 @@ export default function CursoVista({ onNavigate, curso }) {
     });
   };
 
+  // móduloBloqueado: lógica segura que usa el array de objetos modulosCompletados
   const moduloBloqueado = (moduloIndex) => {
     if (!progresoCurso) return false; // sin progreso → nada bloqueado
 
-    const actual = progresoCurso.moduloActual;
+    const actual = typeof progresoCurso.moduloActual === "number" ? progresoCurso.moduloActual : 0;
     const completados = progresoCurso.modulosCompletados || [];
 
     // Módulo actual y anteriores → SIEMPRE permitidos
     if (moduloIndex <= actual) return false;
 
-    // Siguiente módulo solo permitido si el actual está completado
-    const actualCompletado = completados.includes(actual);
+    // Siguiente módulo solo permitido si el actual está completado (buscar por moduloIndex)
+    const actualCompletado = completados.some(m => Number(m.moduloIndex) === Number(actual) && m.completado === true);
     if (moduloIndex === actual + 1 && actualCompletado) return false;
 
     // Todos los demás → bloqueados
@@ -202,9 +263,14 @@ export default function CursoVista({ onNavigate, curso }) {
 
       const data = await response.json();
       if (data.success) {
-        setProgresoCurso(data.progreso);
+        // normalizar si viene modulosCompletados
+        const progresoNormalizado = {
+          ...data.progreso,
+          modulosCompletados: normalizarModulosCompletados(data.progreso?.modulosCompletados || [])
+        };
+        setProgresoCurso(progresoNormalizado);
         setMostrarModalCompletado(false);
-        console.log("✅ Progreso reiniciado:", data.progreso);
+        console.log("✅ Progreso reiniciado:", progresoNormalizado);
       }
     } catch (error) {
       console.error("Error reiniciando progreso:", error);
@@ -273,6 +339,9 @@ export default function CursoVista({ onNavigate, curso }) {
   const totalContenidos = cursoActual.modulos?.reduce((total, modulo) =>
     total + (modulo.contenido?.length || 0), 0
   ) || 0;
+
+  // calcular número único de módulos completados para mostrar en UI
+  const contadorModulosCompletados = (progresoCurso?.modulosCompletados || []).filter(m => m.completado).length;
 
   return (
     <div className="curso-detalle">
@@ -354,13 +423,13 @@ export default function CursoVista({ onNavigate, curso }) {
                     <div className="progreso-item">
                       <span className="progreso-label">Módulo actual:</span>
                       <span className="progreso-valor">
-                        {Math.min(progresoCurso.moduloActual + 1, cursoActual.modulos?.length)} de {cursoActual.modulos?.length}
+                        {Math.min((progresoCurso.moduloActual || 0) + 1, cursoActual.modulos?.length)} de {cursoActual.modulos?.length}
                       </span>
                     </div>
-                    {progresoCurso.modulosCompletados && progresoCurso.modulosCompletados.length > 0 && (
+                    {contadorModulosCompletados > 0 && (
                       <div className="progreso-item">
                         <span className="progreso-label">Módulos completados:</span>
-                        <span className="progreso-valor">{progresoCurso.modulosCompletados.length}</span>
+                        <span className="progreso-valor">{contadorModulosCompletados}</span>
                       </div>
                     )}
                     {progresoCurso.evaluacionFinalCompletada && (
@@ -376,11 +445,14 @@ export default function CursoVista({ onNavigate, curso }) {
               <button
                 className="btn-empezar-curso"
                 onClick={handleEmpezarCurso}
+                disabled={cargandoProgreso}
               >
                 {!usuario ? (
                   '🔐 Iniciar sesión para empezar'
-                ) : progresoCurso && progresoCurso.progresoPorcentual >= 100 ? (
+                ) : progresoCurso && progresoCurso.cursoCompletado ? (
                   '🎉 Curso Completado - Ver Detalles'
+                ) : soloFaltaEvaluacionFinal() ? (
+                  `🚨 Continuar con evaluación final`
                 ) : progresoCurso && progresoCurso.progresoPorcentual > 0 ? (
                   `🚀 Continuar curso (${Math.round(progresoCurso.progresoPorcentual)}%)`
                 ) : (

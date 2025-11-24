@@ -184,6 +184,23 @@ cursoSchema.pre("save", function (next) {
     this.actualizadoEn = Date.now();
     next();
 });
+// Método para validar la evaluación del módulo (20 preguntas, 4 por dificultad)
+moduloSchema.methods.validarEvaluacion = function () {
+    if (!this.evaluacion || !this.evaluacion.preguntas) return false;
+
+    const preguntas = this.evaluacion.preguntas;
+    if (preguntas.length !== 20) return false;
+
+    const dificultades = {1:0,2:0,3:0,4:0,5:0};
+    preguntas.forEach(p => dificultades[p.dificultad]++);
+
+    for (let i = 1; i <= 5; i++) {
+        if (dificultades[i] !== 4) return false;
+    }
+
+    return true;
+};
+
 
 // Método para validar la evaluación final (20 preguntas, 4 por dificultad)
 cursoSchema.methods.validarEvaluacionFinal = function () {

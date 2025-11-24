@@ -7,6 +7,10 @@ export default function CursoContenido({ curso, moduloIndex = 0, contenidoIndex 
     const [mostrarConfirmacionEvaluacion, setMostrarConfirmacionEvaluacion] = useState(false);
     const [tipoEvaluacion, setTipoEvaluacion] = useState(null); // 'modulo' o 'final'
 
+    // --- nuevo estado: progreso proveniente del backend ---
+    const [progresoBackend, setProgresoBackend] = useState(null);
+    const [cargandoProgresoBackend, setCargandoProgresoBackend] = useState(false);
+
     useEffect(() => {
         if (typeof moduloIndex === "number") {
             setModuloActual(moduloIndex);
@@ -16,6 +20,36 @@ export default function CursoContenido({ curso, moduloIndex = 0, contenidoIndex 
         }
     }, [moduloIndex, contenidoIndex]);
 
+    // Nuevo: traer progreso del backend
+    useEffect(() => {
+        const fetchProgresoBackend = async () => {
+            try {
+                const usuarioLS = JSON.parse(localStorage.getItem("usuario"));
+                const cursoId = curso?._id || curso?.id;
+                if (!usuarioLS || !cursoId) return;
+
+                setCargandoProgresoBackend(true);
+
+                const resp = await fetch(`http://localhost:4000/api/progreso/curso/${usuarioLS._id}/${cursoId}`);
+                if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+
+                const data = await resp.json();
+                if (data.success && data.progreso) {
+                    setProgresoBackend(data.progreso);
+                } else {
+                    setProgresoBackend(null);
+                }
+
+            } catch (error) {
+                console.error("Error obteniendo progreso backend:", error);
+                setProgresoBackend(null);
+            } finally {
+                setCargandoProgresoBackend(false);
+            }
+        };
+
+        fetchProgresoBackend();
+    }, [curso?._id, moduloActual, contenidoActual]);
 
     // Obtener el contenido actual
     const contenido = curso?.modulos?.[moduloActual]?.contenido?.[contenidoActual];
@@ -53,7 +87,6 @@ export default function CursoContenido({ curso, moduloIndex = 0, contenidoIndex 
         if (!usuarioLS || !cursoId) return;
 
         try {
-            // ✅ CORREGIDO: Usar el endpoint correcto
             const response = await fetch("http://localhost:4000/api/progreso/contenido-visto", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -75,7 +108,6 @@ export default function CursoContenido({ curso, moduloIndex = 0, contenidoIndex 
             }
         } catch (error) {
             console.error("❌ Error guardando progreso:", error);
-            // No mostrar alerta para no interrumpir la experiencia
         }
     };
 
@@ -112,9 +144,6 @@ export default function CursoContenido({ curso, moduloIndex = 0, contenidoIndex 
                 setTipoEvaluacion('final');
                 setMostrarConfirmacionEvaluacion(true);
             } else {
-                // Si no puede hacer evaluación final, mostrar mensaje y continuar
-                console.log("No puede hacer evaluación final:", data);
-                // Avanzar al siguiente módulo o finalizar
                 if (esUltimoModulo) {
                     if (onFinalizarCurso) {
                         onFinalizarCurso();
@@ -126,7 +155,7 @@ export default function CursoContenido({ curso, moduloIndex = 0, contenidoIndex 
             }
         } catch (error) {
             console.error("Error verificando evaluación final:", error);
-            // En caso de error, continuar normalmente
+
             if (esUltimoModulo) {
                 if (onFinalizarCurso) {
                     onFinalizarCurso();
@@ -138,26 +167,22 @@ export default function CursoContenido({ curso, moduloIndex = 0, contenidoIndex 
         }
     };
 
-    // CORREGIR handleSiguiente - agregar async
     const handleSiguiente = async () => {
-        await guardarProgreso(); // Guardar progreso actual antes de avanzar
+        await guardarProgreso();
         await guardarProgreso(moduloActual, contenidoActual);
 
-        // Si es el último contenido del módulo y hay evaluación
         if (esUltimoContenido && hayEvaluacionModulo) {
             setTipoEvaluacion('modulo');
             setMostrarConfirmacionEvaluacion(true);
             return;
         }
 
-        // Si es el último contenido del último módulo y hay evaluación final
         if (esUltimoContenido && esUltimoModulo && hayEvaluacionFinal) {
             setTipoEvaluacion('final');
             setMostrarConfirmacionEvaluacion(true);
             return;
         }
 
-        // Si es el último contenido del último módulo y no hay evaluación final
         if (esUltimoContenido && esUltimoModulo) {
             if (onFinalizarCurso) {
                 onFinalizarCurso();
@@ -165,18 +190,15 @@ export default function CursoContenido({ curso, moduloIndex = 0, contenidoIndex 
             return;
         }
 
-        // Si es el último contenido del módulo, pasar al siguiente módulo
         if (esUltimoContenido) {
             setModuloActual(prev => prev + 1);
             setContenidoActual(0);
             return;
         }
 
-        // Pasar al siguiente contenido del mismo módulo
         setContenidoActual(prev => prev + 1);
     };
 
-    // Actualizar handleAnterior y handleSiguiente para usar la nueva función
     const handleAnterior = () => {
         if (contenidoActual === 0 && moduloActual > 0) {
             const moduloAnterior = moduloActual - 1;
@@ -209,7 +231,6 @@ export default function CursoContenido({ curso, moduloIndex = 0, contenidoIndex 
         setMostrarConfirmacionEvaluacion(false);
 
         if (tipoEvaluacion === 'modulo') {
-            // Si se salta la evaluación del módulo, pasar al siguiente módulo
             if (esUltimoModulo) {
                 if (onFinalizarCurso) {
                     onFinalizarCurso();
@@ -219,17 +240,19 @@ export default function CursoContenido({ curso, moduloIndex = 0, contenidoIndex 
                 setContenidoActual(0);
             }
         } else {
-            // Si se salta la evaluación final, finalizar curso
             if (onFinalizarCurso) {
                 onFinalizarCurso();
             }
         }
     };
 
+    // *** NUEVA FUNCIÓN corregida: usa backend cuando exista ***
     const calcularProgreso = () => {
-        let contenidosPrevios = 0;
+        if (progresoBackend && typeof progresoBackend.progresoPorcentual === "number") {
+            return Math.min(100, Math.max(0, Math.round(progresoBackend.progresoPorcentual)));
+        }
 
-        // Sumar contenidos de módulos anteriores
+        let contenidosPrevios = 0;
         for (let i = 0; i < moduloActual; i++) {
             contenidosPrevios += curso.modulos[i].contenido.length;
         }
@@ -239,12 +262,21 @@ export default function CursoContenido({ curso, moduloIndex = 0, contenidoIndex 
         const total = curso.modulos.reduce(
             (acc, m) => acc + m.contenido.length,
             0
-        );
+        ) || 1;
 
-        return (vistos / total) * 100;
+        let porcentajeCalc = Math.round((vistos / total) * 100);
+
+        const tieneEvaluacionFinal = curso?.evaluacionFinal?.preguntas?.length > 0;
+
+        if (tieneEvaluacionFinal && porcentajeCalc >= 100) {
+            return 99;
+        }
+
+        return porcentajeCalc;
     };
 
-    // Función mejorada para extraer ID de YouTube
+    // *** resto de tu archivo (SIN CAMBIOS) ***
+
     const extraerYouTubeId = (url) => {
         if (!url) return null;
 
@@ -262,38 +294,31 @@ export default function CursoContenido({ curso, moduloIndex = 0, contenidoIndex 
         return null;
     };
 
-    // Función mejorada para determinar el tipo de contenido
     const determinarTipoContenido = (contenido) => {
         if (!contenido) return 'desconocido';
 
         const url = contenido.contenido?.toLowerCase() || '';
 
-        // YouTube
         if (url.includes('youtube.com') || url.includes('youtu.be')) {
             return 'youtube';
         }
 
-        // Vimeo
         if (url.includes('vimeo.com')) {
             return 'vimeo';
         }
 
-        // Imágenes
         if (url.match(/\.(jpg|jpeg|png|gif|webp|bmp|svg)$/)) {
             return 'imagen';
         }
 
-        // PDFs
         if (url.match(/\.(pdf)$/)) {
             return 'pdf';
         }
 
-        // Documentos
         if (url.match(/\.(doc|docx|xls|xlsx|ppt|pptx)$/)) {
             return 'documento';
         }
 
-        // URLs genéricas (se muestran en iframe)
         if (url.startsWith('http')) {
             return 'web';
         }
@@ -301,7 +326,6 @@ export default function CursoContenido({ curso, moduloIndex = 0, contenidoIndex 
         return 'desconocido';
     };
 
-    // Renderizar el contenido según el tipo
     const renderContenido = () => {
         if (!contenido || !contenido.contenido) {
             return (
@@ -466,7 +490,6 @@ export default function CursoContenido({ curso, moduloIndex = 0, contenidoIndex 
                 );
         }
 
-        // Fallback para URLs no reconocidas
         return (
             <div className="contenido-generico">
                 <div className="contenido-generico-icono">❓</div>
@@ -501,7 +524,6 @@ export default function CursoContenido({ curso, moduloIndex = 0, contenidoIndex 
 
     return (
         <div className="curso-contenido">
-            {/* Header */}
             <header className="contenido-header">
                 <button
                     className="btn-volver-curso"
@@ -516,7 +538,6 @@ export default function CursoContenido({ curso, moduloIndex = 0, contenidoIndex 
                 </div>
             </header>
 
-            {/* Contenido principal */}
             <main className="contenido-principal">
                 <div className="contenido-visualizacion">
                     {renderContenido()}
@@ -526,7 +547,6 @@ export default function CursoContenido({ curso, moduloIndex = 0, contenidoIndex 
                     <h1 className="contenido-titulo">{contenido.titulo}</h1>
                     <p className="contenido-descripcion">{contenido.descripcion}</p>
 
-                    {/* Recursos extra */}
                     {contenido.recursoExtra && (
                         <div className="recursos-extra">
                             <h3>📎 Recursos adicionales</h3>
@@ -552,7 +572,6 @@ export default function CursoContenido({ curso, moduloIndex = 0, contenidoIndex 
                         </div>
                     )}
 
-                    {/* Información del módulo */}
                     <div className="modulo-info">
                         <h4>📂 Información del módulo</h4>
                         <p><strong>Módulo:</strong> {modulo.nombre}</p>
@@ -564,7 +583,6 @@ export default function CursoContenido({ curso, moduloIndex = 0, contenidoIndex 
                 </div>
             </main>
 
-            {/* Navegación */}
             <footer className="contenido-navegacion">
                 <button
                     className="btn-anterior"
@@ -590,11 +608,10 @@ export default function CursoContenido({ curso, moduloIndex = 0, contenidoIndex 
                     className="btn-siguiente"
                     onClick={handleSiguiente}
                 >
-                    {obtenerTextoSiguiente()} {/* ✅ CORREGIDO: Usar la función aquí */}
+                    {obtenerTextoSiguiente()}
                 </button>
             </footer>
 
-            {/* Modal de confirmación para evaluación */}
             {mostrarConfirmacionEvaluacion && (
                 <div className="modal-overlay">
                     <div className="modal-confirmacion">
@@ -616,24 +633,21 @@ export default function CursoContenido({ curso, moduloIndex = 0, contenidoIndex 
                                         <strong>⏱️ Duración estimada:</strong>
                                         <span>{tipoEvaluacion === 'modulo'
                                             ? `${modulo.evaluacion.preguntas.length * 2} minutos`
-                                            : `${curso.evaluacionFinal.preguntas.length * 2} minutos`}
-                                        </span>
+                                            : `${curso.evaluacionFinal.preguntas.length * 2} minutos`}</span>
                                     </div>
 
                                     <div className="detail-item">
                                         <strong>📝 Total de preguntas:</strong>
                                         <span>{tipoEvaluacion === 'modulo'
                                             ? modulo.evaluacion.preguntas.length
-                                            : curso.evaluacionFinal.preguntas.length}
-                                        </span>
+                                            : curso.evaluacionFinal.preguntas.length}</span>
                                     </div>
 
                                     <div className="detail-item">
                                         <strong>🎯 Objetivo:</strong>
                                         <span>{tipoEvaluacion === 'modulo'
                                             ? 'Evaluar tu comprensión del módulo'
-                                            : 'Evaluar tu conocimiento general del curso'}
-                                        </span>
+                                            : 'Evaluar tu conocimiento general del curso'}</span>
                                     </div>
                                 </div>
 

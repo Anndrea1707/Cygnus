@@ -201,6 +201,39 @@ router.post("/", async (req, res) => {
         });
       }
     }
+    // VALIDAR EVALUACIONES DE MÓDULOS
+for (let i = 0; i < modulos.length; i++) {
+  const modulo = modulos[i];
+  const evaluacion = modulo.evaluacion;
+
+  if (!evaluacion || !evaluacion.preguntas) {
+    return res.status(400).json({
+      ok: false,
+      mensaje: `El módulo "${modulo.nombre}" no tiene evaluación válida`
+    });
+  }
+
+  // Debe tener exactamente 20 preguntas
+  if (evaluacion.preguntas.length !== 20) {
+    return res.status(400).json({
+      ok: false,
+      mensaje: `La evaluación del módulo "${modulo.nombre}" debe tener exactamente 20 preguntas`
+    });
+  }
+
+  const porDificultad = {1:0,2:0,3:0,4:0,5:0};
+  evaluacion.preguntas.forEach(p => porDificultad[p.dificultad]++);
+
+  for (let d = 1; d <= 5; d++) {
+    if (porDificultad[d] !== 4) {
+      return res.status(400).json({
+        ok: false,
+        mensaje: `La evaluación del módulo "${modulo.nombre}" debe tener 4 preguntas de dificultad ${d}`
+      });
+    }
+  }
+}
+
 
     // Validar evaluación final (20 preguntas, 4 por dificultad)
     if (evaluacionFinal && evaluacionFinal.preguntas) {
@@ -273,6 +306,7 @@ router.put("/:id", async (req, res) => {
       evaluacionFinal
     } = req.body;
 
+
     // Validaciones básicas (sin categoría)
     if (!nombre || !descripcion || !imagen || !horas || !nivel) {
       return res.status(400).json({
@@ -296,6 +330,38 @@ router.put("/:id", async (req, res) => {
         mensaje: "Máximo 4 módulos permitidos"
       });
     }
+    // VALIDAR EVALUACIONES DE MÓDULOS
+for (let i = 0; i < modulos.length; i++) {
+  const modulo = modulos[i];
+  const evaluacion = modulo.evaluacion;
+
+  if (!evaluacion || !evaluacion.preguntas) {
+    return res.status(400).json({
+      ok: false,
+      mensaje: `El módulo "${modulo.nombre}" no tiene evaluación válida`
+    });
+  }
+
+  // Debe tener exactamente 20 preguntas
+  if (evaluacion.preguntas.length !== 20) {
+    return res.status(400).json({
+      ok: false,
+      mensaje: `La evaluación del módulo "${modulo.nombre}" debe tener exactamente 20 preguntas`
+    });
+  }
+
+  const porDificultad = {1:0,2:0,3:0,4:0,5:0};
+  evaluacion.preguntas.forEach(p => porDificultad[p.dificultad]++);
+
+  for (let d = 1; d <= 5; d++) {
+    if (porDificultad[d] !== 4) {
+      return res.status(400).json({
+        ok: false,
+        mensaje: `La evaluación del módulo "${modulo.nombre}" debe tener 4 preguntas de dificultad ${d}`
+      });
+    }
+  }
+}
 
     // Buscar y actualizar curso
     const cursoActualizado = await Curso.findByIdAndUpdate(
