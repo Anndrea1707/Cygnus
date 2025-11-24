@@ -514,22 +514,22 @@ export default function CursoVista({ onNavigate, curso }) {
               )}
 
               <button
-                className="btn-empezar-curso"
-                onClick={handleEmpezarCurso}
-                disabled={cargandoProgreso}
-              >
-                {!usuario ? (
-                  '🔐 Iniciar sesión para empezar'
-                ) : progresoCurso && progresoCurso.cursoCompletado ? (
-                  '🎉 Curso Completado - Ver Detalles'
-                ) : soloFaltaEvaluacionFinal() ? (
-                  `🚨 Continuar con evaluación final`
-                ) : progresoCurso && progresoCurso.progresoPorcentual > 0 ? (
-                  `🚀 Continuar curso (${Math.round(progresoCurso.progresoPorcentual)}%)`
-                ) : (
-                  '🚀 Empezar curso'
-                )}
-              </button>
+  className="btn-empezar-curso"
+  onClick={handleEmpezarCurso}
+  disabled={cargandoProgreso}
+>
+  {!usuario ? (
+    '🔐 Iniciar sesión para empezar'
+  ) : progresoCurso && progresoCurso.cursoCompletado ? (
+    '🎉 Curso Completado - Ver Detalles'
+  ) : soloFaltaEvaluacionFinal() ? (
+    `🚨 Continuar con evaluación final`
+  ) : progresoCurso && progresoCurso.progresoPorcentual > 0 ? (
+    `🚀 Continuar curso (${Math.round(progresoCurso.progresoPorcentual)}%)`
+  ) : (
+    '🚀 Empezar curso'
+  )}
+</button>
             </div>
 
             {/* Información del desarrollador */}
@@ -688,9 +688,6 @@ export default function CursoVista({ onNavigate, curso }) {
 
       {/* Modal de curso completado */}
       {mostrarModalCompletado && <ModalCursoCompletado />}
-
-      {/* ⭐ NUEVO: Modal de evaluación final */}
-      {mostrarModalEvaluacionFinal && <ModalEvaluacionFinal />}
     </div>
   );
 }

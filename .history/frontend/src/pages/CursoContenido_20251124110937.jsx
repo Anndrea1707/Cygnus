@@ -17,7 +17,7 @@ export default function CursoContenido({
     const [progresoBackend, setProgresoBackend] = useState(null);
     const [cargandoProgresoBackend, setCargandoProgresoBackend] = useState(false);
 
-    /*// 🚨 Mostrar SIEMPRE el modal inmediatamente cuando se ordena desde CursoVista
+    // 🚨 Mostrar SIEMPRE el modal inmediatamente cuando se ordena desde CursoVista
     useEffect(() => {
         if (forzarEvaluacionFinal) {
             // bloquear contenido
@@ -30,7 +30,7 @@ export default function CursoContenido({
                 setMostrarConfirmacionEvaluacion(true);
             }, 100);
         }
-    }, [forzarEvaluacionFinal]);*/
+    }, [forzarEvaluacionFinal]);
 
     useEffect(() => {
         if (typeof moduloIndex === "number") {

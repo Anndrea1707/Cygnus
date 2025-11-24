@@ -9,8 +9,6 @@ export default function CursoVista({ onNavigate, curso }) {
   const [usuario, setUsuario] = useState(null);
   const [mostrarModalCompletado, setMostrarModalCompletado] = useState(false);
   const [cargandoProgreso, setCargandoProgreso] = useState(false);
-  const [mostrarModalEvaluacionFinal, setMostrarModalEvaluacionFinal] = useState(false);
-  const [tipoEvaluacionFinal, setTipoEvaluacionFinal] = useState(null);
 
   // Obtener usuario del localStorage
   useEffect(() => {
@@ -115,6 +113,7 @@ export default function CursoVista({ onNavigate, curso }) {
           ) {
             setMostrarModalCompletado(true);
           }
+
         } else {
           // Si no hay progreso, inicializar objeto mínimo
           console.log("ℹ️ No hay progreso guardado, asignando progreso inicial");
@@ -184,7 +183,6 @@ export default function CursoVista({ onNavigate, curso }) {
   };
 
   // Función para manejar el inicio/continuación del curso
-  // CursoVista.jsx - Modificar la función handleEmpezarCurso
   const handleEmpezarCurso = () => {
     if (!usuario) {
       onNavigate("login");
@@ -204,10 +202,18 @@ export default function CursoVista({ onNavigate, curso }) {
       return;
     }
 
-    // ⭐ NUEVO: Cuando solo falta la evaluación final, mostrar modal de confirmación
+    // Si sólo falta la evaluación final -> navegar al contenido final forzando evaluación final
     if (soloFaltaEvaluacionFinal()) {
-      setTipoEvaluacionFinal("final");
-      setMostrarModalEvaluacionFinal(true);
+      // posicionar en el último módulo y último contenido
+      const ultimoModuloIndex = Math.max(0, (cursoActual.modulos?.length || 1) - 1);
+      const ultimoContenidoIndex = Math.max(0, (cursoActual.modulos?.[ultimoModuloIndex]?.contenido?.length || 1) - 1);
+
+      onNavigate("curso-contenido", {
+        curso: { ...cursoActual, id: cursoId },
+        moduloIndex: ultimoModuloIndex,
+        contenidoIndex: ultimoContenidoIndex,
+        forzarEvaluacionFinal: true // FLAG para que CursoContenido abra el modal de evaluación final
+      });
       return;
     }
 
@@ -229,78 +235,6 @@ export default function CursoVista({ onNavigate, curso }) {
       contenidoIndex: contenidoInicio
     });
   };
-
-  // ⭐ NUEVO: Función para manejar inicio de evaluación final
-  const handleIniciarEvaluacionFinal = () => {
-    const cursoId = cursoActual._id || cursoActual.id;
-
-    setMostrarModalEvaluacionFinal(false);
-
-    onNavigate("evaluacion-final", {
-      curso: { ...cursoActual, id: cursoId },
-      evaluacion: cursoActual.evaluacionFinal
-    });
-  };
-
-  // ⭐ NUEVO: Modal para evaluación final
-  const ModalEvaluacionFinal = () => (
-    <div className="modal-overlay">
-      <div className="modal-confirmacion">
-        <div className="modal-header">
-          <h2>🎓 Evaluación Final del Curso</h2>
-        </div>
-
-        <div className="modal-body">
-          <div className="evaluacion-icono">📝</div>
-          <p>
-            Estás a punto de comenzar la evaluación final del curso{" "}
-            <strong>{cursoActual?.nombre}</strong>.
-          </p>
-
-          <div className="evaluacion-info">
-            <div className="info-item">
-              <span>📝 Preguntas:</span>
-              <span>{cursoActual?.evaluacionFinal?.preguntas?.length || 0}</span>
-            </div>
-            <div className="info-item">
-              <span>⏱️ Duración estimada:</span>
-              <span>{(cursoActual?.evaluacionFinal?.preguntas?.length || 0) * 2} minutos</span>
-            </div>
-            <div className="info-item">
-              <span>🎯 Puntuación mínima:</span>
-              <span>70% para aprobar</span>
-            </div>
-          </div>
-
-          <div className="recomendaciones">
-            <h4>📋 Recomendaciones:</h4>
-            <ul>
-              <li>• Asegúrate de estar en un lugar tranquilo</li>
-              <li>• Evita cerrar la ventana durante la evaluación</li>
-              <li>• Lee cuidadosamente cada pregunta</li>
-              <li>• Revisa tus respuestas antes de finalizar</li>
-            </ul>
-          </div>
-        </div>
-
-        <div className="modal-actions">
-          <button
-            className="btn-comenzar"
-            onClick={handleIniciarEvaluacionFinal}
-          >
-            🚀 Comenzar evaluación
-          </button>
-
-          <button
-            className="btn-secundario"
-            onClick={() => setMostrarModalEvaluacionFinal(false)}
-          >
-            Cancelar
-          </button>
-        </div>
-      </div>
-    </div>
-  );
 
   // móduloBloqueado: lógica segura que usa el array de objetos modulosCompletados
   const moduloBloqueado = (moduloIndex) => {
@@ -688,9 +622,6 @@ export default function CursoVista({ onNavigate, curso }) {
 
       {/* Modal de curso completado */}
       {mostrarModalCompletado && <ModalCursoCompletado />}
-
-      {/* ⭐ NUEVO: Modal de evaluación final */}
-      {mostrarModalEvaluacionFinal && <ModalEvaluacionFinal />}
     </div>
   );
 }

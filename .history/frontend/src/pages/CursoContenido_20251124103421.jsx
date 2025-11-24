@@ -17,20 +17,15 @@ export default function CursoContenido({
     const [progresoBackend, setProgresoBackend] = useState(null);
     const [cargandoProgresoBackend, setCargandoProgresoBackend] = useState(false);
 
-    /*// 🚨 Mostrar SIEMPRE el modal inmediatamente cuando se ordena desde CursoVista
+    // 🚨 Mostrar SIEMPRE el modal inmediatamente cuando se ordena desde CursoVista
     useEffect(() => {
         if (forzarEvaluacionFinal) {
-            // bloquear contenido
-            setModuloActual(null);
-            setContenidoActual(null);
-
-            // abrir modal
-            setTimeout(() => {
-                setTipoEvaluacion("final");
-                setMostrarConfirmacionEvaluacion(true);
-            }, 100);
+            setTipoEvaluacion("final");
+            setMostrarConfirmacionEvaluacion(true);
+            setModuloActual(0);       // bloquear navegación
+            setContenidoActual(0);    // bloquear navegación
         }
-    }, [forzarEvaluacionFinal]);*/
+    }, [forzarEvaluacionFinal]);
 
     useEffect(() => {
         if (typeof moduloIndex === "number") {
@@ -174,13 +169,12 @@ export default function CursoContenido({
     };
 
     const handleSiguiente = async () => {
-        /*// 🚨 Bloquear completamente avance cuando viene desde CursoVista
+        // 🚨 si es evaluación final obligatoria, no avance contenido
         if (forzarEvaluacionFinal) {
-            // nunca avanzar contenido
             setTipoEvaluacion("final");
             setMostrarConfirmacionEvaluacion(true);
             return;
-        }*/
+        }
 
         await guardarProgreso();
         await guardarProgreso(moduloActual, contenidoActual);
@@ -311,12 +305,13 @@ export default function CursoContenido({
     };
 
     const renderContenido = () => {
-        // 🚨 Si estamos en modo evaluación final forzada, NO mostrar nada de contenido
+        // 🚨 Si viene desde CursoVista con forzarEvaluacionFinal, NO mostrar contenido
         if (forzarEvaluacionFinal) {
             return (
-                <div className="contenido-vacio evaluacion-final-bloqueada">
-                    <h2>🎓 Debes presentar la evaluación final</h2>
-                    <p>Haz clic en “Comenzar evaluación” en el modal.</p>
+                <div className="contenido-vacio">
+                    <div className="contenido-vacio-icono">🎯</div>
+                    <h3>Evaluación final pendiente</h3>
+                    <p>Debes completar la evaluación final para continuar.</p>
                 </div>
             );
         }

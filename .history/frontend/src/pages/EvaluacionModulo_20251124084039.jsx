@@ -118,7 +118,7 @@ export default function EvaluacionModulo({ curso, modulo, moduloIndex, onNavigat
     // Función para manejar continuar
     const manejarContinuar = () => {
         const esUltimoModulo = moduloIndex === curso.modulos.length - 1;
-
+    
         if (esUltimoModulo) {
             // Mostrar modal de confirmación
             setMostrarModalFinal(true);
@@ -129,14 +129,14 @@ export default function EvaluacionModulo({ curso, modulo, moduloIndex, onNavigat
             }
         }
     };
+    
 
-
-    // En EvaluacionModulo.jsx - modificar la función irAEvaluacionFinal
     const irAEvaluacionFinal = () => {
         setMostrarModalFinal(false);
-        // En lugar de navegar directamente, volver al curso vista
-        // para que el modal de CursoVista maneje la confirmación
-        onNavigate("curso-vista", { curso });
+        onNavigate("evaluacion-final", {
+            curso,
+            evaluacion: curso.evaluacionFinal
+        });
     };
 
     const volverAlCurso = () => {
@@ -245,7 +245,7 @@ export default function EvaluacionModulo({ curso, modulo, moduloIndex, onNavigat
                                     onClick={irAEvaluacionFinal}
                                     disabled={!curso.evaluacionFinal || !curso.evaluacionFinal.preguntas || curso.evaluacionFinal.preguntas.length === 0}
                                 >
-                                    Ir a evaluación final modulo
+                                    Ir a evaluación final
                                 </button>
                             </div>
                         </div>
@@ -270,6 +270,16 @@ export default function EvaluacionModulo({ curso, modulo, moduloIndex, onNavigat
         <div className="evaluacion">
             {/* Header de la evaluación */}
             <header className="evaluacion-header">
+                <button
+                    className="btn-volver-evaluacion"
+                    onClick={() => onNavigate("curso-contenido", {
+                        curso,
+                        moduloIndex,
+                        contenidoIndex: modulo.contenido.length - 1
+                    })}
+                >
+                    ← Volver al módulo
+                </button>
 
                 <div className="evaluacion-info">
                     <h1>📝 Evaluación del Módulo</h1>

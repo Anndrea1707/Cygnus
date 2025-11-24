@@ -18,7 +18,7 @@ function calcularProgreso(progreso, curso) {
     const modulosCompletados = (progreso?.modulosCompletados || []).filter(m => m.completado).length;
     let progresoTotal = (modulosCompletados / totalModulos) * 70;
 
-    // 2) Progreso dentro del módulo actual (30% dividido entre módulos)
+    // 2) Progreso dentro del módulo actual (30% total repartido equitativamente)
     const moduloActual = Math.min(Math.max(0, progreso?.moduloActual || 0), totalModulos - 1);
     const contenidosVistosEnModulo = (progreso?.contenidosVistos || []).filter(
         c => c.moduloIndex === moduloActual && c.visto
@@ -27,22 +27,21 @@ function calcularProgreso(progreso, curso) {
     const progresoModuloActual = (contenidosVistosEnModulo / totalContenidosModuloActual) * (30 / totalModulos);
     progresoTotal += progresoModuloActual;
 
-    // Si evaluación final está completada → debe ser 100
-    if (progreso?.evaluacionFinalCompletada) {
-        return 100;
-    }
-
-    // REDONDEAR AQUÍ (antes de comparaciones)
-    const porcentaje = Math.min(100, Math.max(0, Math.round(progresoTotal)));
-
-    // Si llegó a 100 sin evaluación final → marcar 90
-    if (porcentaje >= 100) {
-        return 90;
-    }
-
-    return porcentaje;
+    // 3) Ajustar porcentaje según evaluación final
+if (progreso?.evaluacionFinalCompletada) {
+    return 100; // Todo perfecto
 }
 
+// Si llegó a 100 sin final → bajarlo a 90
+if (porcentaje >= 100) {
+    return 90;
+}
+
+
+    // redondear y proteger rango
+    const porcentaje = Math.min(100, Math.max(0, Math.round(progresoTotal)));
+    return porcentaje;
+}
 
 /* ============================================================
    🔹 UTIL: Calcular nueva habilidad MEJORADO CON DESAUMENTOS
@@ -259,7 +258,7 @@ router.post("/completar-modulo", async (req, res) => {
 
         // ✅ ACTUALIZAR HABILIDAD_NUEVA CON LÓGICA MEJORADA (ANTES de guardar)
         const nuevaHabilidad = await calcularNuevaHabilidad(usuarioId, curso.nivel, nota, "modulo");
-
+        
         // Recalcular progreso
         progreso.progresoPorcentual = calcularProgreso(progreso, curso);
         progreso.ultimaActualizacion = new Date();
@@ -292,10 +291,10 @@ router.post("/evaluacion-final", async (req, res) => {
 
         // ✅ CAMBIO: Usar find + save() en lugar de findOneAndUpdate para activar middleware
         let progreso = await ProgresoCurso.findOne({ usuarioId, cursoId });
-
+        
         if (!progreso) {
-            progreso = new ProgresoCurso({
-                usuarioId,
+            progreso = new ProgresoCurso({ 
+                usuarioId, 
                 cursoId,
                 modulosCompletados: [],
                 contenidosVistos: []

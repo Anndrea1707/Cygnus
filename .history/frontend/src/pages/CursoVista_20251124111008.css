@@ -1,24 +1,24 @@
 /* Variables de diseño basadas en tu paleta */
 :root {
-    --color-lavandaClaro: #d163f2;
-    --color-primary: #a44bbe;
-    --color-primary-dark: #7d148b;
-    --color-dark: #09152c;
-    --color-dark-overlay: rgba(9, 21, 44, 0.566);
-    --color-dark-transparent: rgba(9, 21, 44, 0.808);
-    --color-light: #ffffff;
-    --color-light-transparent: rgba(255, 255, 255, 0.85);
-    --color-light-text: #d8d8d8;
-    --color-muted: #ddd;
-    --color-glass: rgba(255, 255, 255, 0.08);
-    --color-border-glass: rgba(255, 255, 255, 0.1);
-    --color-hover-shadow: rgba(164, 75, 190, 0.5);
-    --color-subtext: #cfcfcf;
-    --color-dorado-light: #e9d89a;
-
-    --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
-    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  --color-lavandaClaro: #d163f2;
+  --color-primary: #a44bbe;
+  --color-primary-dark: #7d148b;
+  --color-dark: #09152c;
+  --color-dark-overlay: rgba(9, 21, 44, 0.566);
+  --color-dark-transparent: rgba(9, 21, 44, 0.808);
+  --color-light: #ffffff;
+  --color-light-transparent: rgba(255, 255, 255, 0.85);
+  --color-light-text: #d8d8d8;
+  --color-muted: #ddd;
+  --color-glass: rgba(255, 255, 255, 0.08);
+  --color-border-glass: rgba(255, 255, 255, 0.1);
+  --color-hover-shadow: rgba(164, 75, 190, 0.5);
+  --color-subtext: #cfcfcf;
+  --color-dorado-light: #e9d89a;
+  
+  --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
 }
 
 /* Reset y base */
@@ -33,8 +33,7 @@
     border: none !important;
     box-shadow: none !important;
     backdrop-filter: none !important;
-    position: relative;
-    /* ya no debe ser sticky */
+    position: relative; /* ya no debe ser sticky */
     padding: 1rem 0;
 }
 
@@ -243,8 +242,7 @@
     gap: 0.5rem;
 }
 
-.btn-expandir,
-.btn-colapsar {
+.btn-expandir, .btn-colapsar {
     padding: 0.5rem 1rem;
     background: var(--color-glass);
     color: var(--color-light);
@@ -255,8 +253,7 @@
     transition: all 0.3s;
 }
 
-.btn-expandir:hover,
-.btn-colapsar:hover {
+.btn-expandir:hover, .btn-colapsar:hover {
     background: var(--color-primary);
     border-color: var(--color-primary);
 }
@@ -415,8 +412,7 @@
     flex-wrap: wrap;
 }
 
-.recurso-tipo,
-.recurso-extra {
+.recurso-tipo, .recurso-extra {
     font-size: 0.625rem;
     padding: 0.25rem 0.5rem;
     background: var(--color-glass);
@@ -565,12 +561,12 @@
         grid-template-columns: 1fr;
         gap: 1rem;
     }
-
+    
     .curso-sidebar {
         position: static;
         order: 2;
     }
-
+    
     .curso-contenido-principal {
         order: 1;
     }
@@ -582,35 +578,35 @@
         align-items: flex-start;
         gap: 0.5rem;
     }
-
+    
     .contenido-header {
         flex-direction: column;
         align-items: flex-start;
         gap: 1rem;
     }
-
+    
     .contenido-acciones {
         width: 100%;
         justify-content: space-between;
     }
-
+    
     .modulo-header {
         padding: 1rem;
     }
-
+    
     .modulo-contenido-detalle {
         padding: 0 1rem 1rem 1rem;
     }
-
+    
     .modulo-info-principal {
         gap: 0.75rem;
     }
-
+    
     .leccion-item {
         flex-direction: column;
         gap: 0.5rem;
     }
-
+    
     .leccion-duracion {
         align-self: flex-end;
     }
@@ -618,92 +614,92 @@
 
 /* Estilos para la sección de progreso */
 .progreso-global {
-    background: #f8f9fa;
-    border-radius: 12px;
-    padding: 20px;
-    margin: 20px 0;
-    border: 1px solid #e9ecef;
+  background: #f8f9fa;
+  border-radius: 12px;
+  padding: 20px;
+  margin: 20px 0;
+  border: 1px solid #e9ecef;
 }
 
 .progreso-global h4 {
-    margin: 0 0 15px 0;
-    color: #2c3e50;
-    font-size: 1.1em;
-    font-weight: 600;
+  margin: 0 0 15px 0;
+  color: #2c3e50;
+  font-size: 1.1em;
+  font-weight: 600;
 }
 
 .progreso-bar-global {
-    width: 100%;
-    height: 8px;
-    background: #e9ecef;
-    border-radius: 10px;
-    overflow: hidden;
-    margin-bottom: 10px;
+  width: 100%;
+  height: 8px;
+  background: #e9ecef;
+  border-radius: 10px;
+  overflow: hidden;
+  margin-bottom: 10px;
 }
 
 .progreso-fill-global {
-    height: 100%;
-    background: linear-gradient(90deg, #4CAF50, #45a049);
-    border-radius: 10px;
-    transition: width 0.3s ease;
+  height: 100%;
+  background: linear-gradient(90deg, #4CAF50, #45a049);
+  border-radius: 10px;
+  transition: width 0.3s ease;
 }
 
-.progreso-global>span {
-    font-size: 0.9em;
-    color: #6c757d;
-    font-weight: 500;
+.progreso-global > span {
+  font-size: 0.9em;
+  color: #6c757d;
+  font-weight: 500;
 }
 
 .progreso-detalles {
-    margin-top: 15px;
-    padding-top: 15px;
-    border-top: 1px solid #e9ecef;
+  margin-top: 15px;
+  padding-top: 15px;
+  border-top: 1px solid #e9ecef;
 }
 
 .progreso-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 8px;
-    font-size: 0.85em;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+  font-size: 0.85em;
 }
 
 .progreso-label {
-    color: #6c757d;
+  color: #6c757d;
 }
 
 .progreso-valor {
-    color: #2c3e50;
-    font-weight: 500;
+  color: #2c3e50;
+  font-weight: 500;
 }
 
 .progreso-item.completado .progreso-label {
-    color: #28a745;
+  color: #28a745;
 }
 
 .progreso-item.completado .progreso-valor {
-    color: #28a745;
-    font-weight: 600;
+  color: #28a745;
+  font-weight: 600;
 }
 
 /* Mejora el botón de empezar/continuar */
 .btn-empezar-curso {
-    width: 100%;
-    padding: 12px 20px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    border: none;
-    border-radius: 8px;
-    font-size: 1em;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    margin-top: 10px;
+  width: 100%;
+  padding: 12px 20px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1em;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 10px;
 }
 
 .btn-empezar-curso:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
 }
 
 .modal-completado {
@@ -757,49 +753,49 @@
 
 /* CursoVista.css - Agregar estos estilos */
 .evaluacion-info {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    margin: 15px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 15px 0;
 }
 
 .info-item {
-    display: flex;
-    justify-content: space-between;
-    padding: 8px 0;
-    border-bottom: 1px solid #eee;
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 0;
+  border-bottom: 1px solid #eee;
 }
 
 .info-item:last-child {
-    border-bottom: none;
+  border-bottom: none;
 }
 
 .recomendaciones {
-    background: #f8f9fa;
-    padding: 15px;
-    border-radius: 8px;
-    margin-top: 15px;
+  background: #f8f9fa;
+  padding: 15px;
+  border-radius: 8px;
+  margin-top: 15px;
 }
 
 .recomendaciones h4 {
-    margin: 0 0 10px 0;
-    color: #333;
+  margin: 0 0 10px 0;
+  color: #333;
 }
 
 .recomendaciones ul {
-    margin: 0;
-    padding-left: 20px;
+  margin: 0;
+  padding-left: 20px;
 }
 
 .recomendaciones li {
-    margin-bottom: 5px;
-    color: #666;
+  margin-bottom: 5px;
+  color: #666;
 }
 
 .evaluacion-icono {
-    font-size: 3rem;
-    text-align: center;
-    margin-bottom: 15px;
+  font-size: 3rem;
+  text-align: center;
+  margin-bottom: 15px;
 }
 
 /* 🚫 Evitar desplazamiento horizontal */
@@ -816,12 +812,12 @@ body {
     padding: 40px;
     padding-top: 80px;
 }
-
 .modulo-bloqueado {
     opacity: 0.5;
     pointer-events: none;
-}
-
-.modulo-bloqueado .modulo-titulo::after {
+  }
+  
+  .modulo-bloqueado .modulo-titulo::after {
     content: " 🔒";
-}
+  }
+  

@@ -690,7 +690,7 @@ export default function CursoVista({ onNavigate, curso }) {
       {mostrarModalCompletado && <ModalCursoCompletado />}
 
       {/* ⭐ NUEVO: Modal de evaluación final */}
-      {mostrarModalEvaluacionFinal && <ModalEvaluacionFinal />}
+{mostrarModalEvaluacionFinal && <ModalEvaluacionFinal />}
     </div>
   );
 }

@@ -1,4 +1,3 @@
-// EvaluacionFinal.jsx - ELIMINAR el modal de inicio y modificar el useEffect
 import React, { useState, useEffect } from "react";
 import "./Evaluacion.css";
 
@@ -9,15 +8,16 @@ export default function EvaluacionFinal({ curso, evaluacion, onNavigate, onEvalu
     const [evaluacionCompletada, setEvaluacionCompletada] = useState(false);
     const [puntaje, setPuntaje] = useState(0);
     const [certificadoGenerado, setCertificadoGenerado] = useState(false);
-    // 🚨 ELIMINAR este estado - ya no necesitamos el modal aquí
-    // const [mostrarModalInicio, setMostrarModalInicio] = useState(true);
+    const [mostrarModalInicio, setMostrarModalInicio] = useState(true);
 
     const preguntas = evaluacion?.preguntas || [];
-    const tiempoTotal = preguntas.length * 2 * 60; // 2 minutos por pregunta
+    const tiempoTotal = preguntas.length * 2 * 60; // 2 minutos por pregunta en segundos
 
-    // 🚨 MODIFICAR: Inicializar inmediatamente sin modal
+    // Inicializar el temporizador y las respuestas
     useEffect(() => {
-        // Inicializar sin esperar por modal
+        // No iniciar temporizador si el modal de inicio está visible
+        if (mostrarModalInicio) return;
+
         setRespuestas(new Array(preguntas.length).fill(null));
         setTiempoRestante(tiempoTotal);
 
@@ -33,16 +33,13 @@ export default function EvaluacionFinal({ curso, evaluacion, onNavigate, onEvalu
         }, 1000);
 
         return () => clearInterval(timer);
-    }, []); // 🚨 Quitar la dependencia de mostrarModalInicio
+    }, [mostrarModalInicio]); // depender de mostrarModalInicio
 
-    // 🚨 ELIMINAR completamente la función modalInicioEvaluacion
-    // const modalInicioEvaluacion = mostrarModalInicio && ( ... )
 
-    // Resto del código se mantiene igual...
     const formatearTiempo = (segundos) => {
         const minutos = Math.floor(segundos / 60);
         const segs = segundos % 60;
-        return `${minutos}:${segs < 10 ? "0" : ""}${segs}`;
+        return `${minutos}:${segs < 10 ? '0' : ''}${segs}`;
     };
 
     const manejarRespuesta = (opcionIndex) => {
@@ -69,12 +66,10 @@ export default function EvaluacionFinal({ curso, evaluacion, onNavigate, onEvalu
         if (!curso || !evaluacion || preguntas.length === 0) return;
 
         let correctas = 0;
-
         respuestas.forEach((r, i) => {
-            const opcionCorrecta =
-                typeof preguntas[i].opcionCorrecta === "string"
-                    ? parseInt(preguntas[i].opcionCorrecta)
-                    : preguntas[i].opcionCorrecta;
+            const opcionCorrecta = typeof preguntas[i].opcionCorrecta === 'string'
+                ? parseInt(preguntas[i].opcionCorrecta)
+                : preguntas[i].opcionCorrecta;
 
             if (r === opcionCorrecta) correctas++;
         });
@@ -82,13 +77,13 @@ export default function EvaluacionFinal({ curso, evaluacion, onNavigate, onEvalu
         const puntajeCalculado = (correctas / preguntas.length) * 100;
         const notaFinal = puntajeCalculado;
 
-        setPuntaje(notaFinal);
+        setPuntaje(puntajeCalculado);
 
         try {
             const usuario = JSON.parse(localStorage.getItem("usuario"));
             const cursoId = curso._id || curso.id;
 
-            // Registrar evaluación final
+            // 1. Registrar evaluación final
             const responseEvaluacion = await fetch("http://localhost:4000/api/progreso/evaluacion-final", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -102,7 +97,9 @@ export default function EvaluacionFinal({ curso, evaluacion, onNavigate, onEvalu
             const resultEvaluacion = await responseEvaluacion.json();
 
             if (resultEvaluacion.success) {
-                // Actualizar localStorage con habilidad_nueva
+                console.log("✅ Evaluación final guardada:", resultEvaluacion);
+
+                // ✅ ACTUALIZAR LOCALSTORAGE CON LA NUEVA HABILIDAD
                 const usuarioActual = JSON.parse(localStorage.getItem("usuario"));
                 if (usuarioActual && resultEvaluacion.habilidad_nueva) {
                     const usuarioActualizado = {
@@ -110,9 +107,10 @@ export default function EvaluacionFinal({ curso, evaluacion, onNavigate, onEvalu
                         habilidad_nueva: resultEvaluacion.habilidad_nueva
                     };
                     localStorage.setItem("usuario", JSON.stringify(usuarioActualizado));
+                    console.log("🔄 localStorage actualizado con habilidad_nueva:", resultEvaluacion.habilidad_nueva);
                 }
 
-                // Marcar curso como completado
+                // 2. Marcar curso como completado
                 const responseCompletado = await fetch("http://localhost:4000/api/progreso/completar-curso", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
@@ -124,6 +122,7 @@ export default function EvaluacionFinal({ curso, evaluacion, onNavigate, onEvalu
 
                 const resultCompletado = await responseCompletado.json();
                 if (resultCompletado.success) {
+                    console.log("✅ Curso marcado como completado:", resultCompletado);
                     setCertificadoGenerado(true);
                 }
             }
@@ -135,15 +134,22 @@ export default function EvaluacionFinal({ curso, evaluacion, onNavigate, onEvalu
         setEvaluacionCompletada(true);
     };
 
+    const descargarCertificado = () => {
+        // Aquí iría la lógica para generar y descargar el certificado
+        alert("Certificado generado exitosamente!");
+    };
+
     const manejarFinalizarCurso = () => {
-        if (onEvaluacionCompletada) onEvaluacionCompletada();
+        if (onEvaluacionCompletada) {
+            onEvaluacionCompletada();
+        }
     };
 
     const pregunta = preguntas[preguntaActual];
 
-    // 🚨 ELIMINAR la referencia al modal en el return
     if (evaluacionCompletada) {
         return (
+        
             <div className="evaluacion-completada">
                 <div className="evaluacion-header">
                     <h1>🎓 Evaluación Final Completada</h1>
@@ -151,10 +157,10 @@ export default function EvaluacionFinal({ curso, evaluacion, onNavigate, onEvalu
                 </div>
 
                 <div className="resultado-container">
-                    <div className={`puntaje-circular ${puntaje >= 70 ? "aprobado" : "reprobado"}`}>
+                    <div className={`puntaje-circular ${puntaje >= 70 ? 'aprobado' : 'reprobado'}`}>
                         <div className="puntaje-numero">{puntaje.toFixed(0)}%</div>
                         <div className="puntaje-texto">
-                            {puntaje >= 70 ? "¡Aprobado!" : "Reprobado"}
+                            {puntaje >= 70 ? '¡Aprobado!' : 'Reprobado'}
                         </div>
                     </div>
 
@@ -165,25 +171,25 @@ export default function EvaluacionFinal({ curso, evaluacion, onNavigate, onEvalu
                         </div>
                         <div className="estadistica">
                             <span className="estadistica-valor">
-                                {respuestas.filter((resp, i) =>
-                                    resp === (
-                                        typeof preguntas[i].opcionCorrecta === "string"
-                                            ? parseInt(preguntas[i].opcionCorrecta)
-                                            : preguntas[i].opcionCorrecta
-                                    )
-                                ).length}
+                                {respuestas.filter((resp, index) => {
+                                    // ⭐ CORRECCIÓN: Usar opcionCorrecta y asegurar que sea número
+                                    const opcionCorrecta = typeof preguntas[index].opcionCorrecta === 'string'
+                                        ? parseInt(preguntas[index].opcionCorrecta)
+                                        : preguntas[index].opcionCorrecta;
+                                    return resp === opcionCorrecta;
+                                }).length}
                             </span>
                             <span className="estadistica-label">Correctas</span>
                         </div>
                         <div className="estadistica">
                             <span className="estadistica-valor">
-                                {respuestas.filter((resp, i) =>
-                                    resp !== (
-                                        typeof preguntas[i].opcionCorrecta === "string"
-                                            ? parseInt(preguntas[i].opcionCorrecta)
-                                            : preguntas[i].opcionCorrecta
-                                    )
-                                ).length}
+                                {respuestas.filter((resp, index) => {
+                                    // ⭐ CORRECCIÓN: Usar opcionCorrecta y asegurar que sea número
+                                    const opcionCorrecta = typeof preguntas[index].opcionCorrecta === 'string'
+                                        ? parseInt(preguntas[index].opcionCorrecta)
+                                        : preguntas[index].opcionCorrecta;
+                                    return resp !== opcionCorrecta;
+                                }).length}
                             </span>
                             <span className="estadistica-label">Incorrectas</span>
                         </div>
@@ -194,7 +200,10 @@ export default function EvaluacionFinal({ curso, evaluacion, onNavigate, onEvalu
                             <div className="certificado-icono">🏆</div>
                             <h3>¡Felicidades! Has aprobado el curso</h3>
                             <p>Tu certificado está listo para descargar</p>
-                            <button className="btn-certificado" onClick={() => alert("Certificado generado")}>
+                            <button
+                                className="btn-certificado"
+                                onClick={descargarCertificado}
+                            >
                                 📄 Descargar Certificado
                             </button>
                         </div>
@@ -232,10 +241,14 @@ export default function EvaluacionFinal({ curso, evaluacion, onNavigate, onEvalu
 
     return (
         <div className="evaluacion evaluacion-final">
-            {/* 🚨 ELIMINADO: {modalInicioEvaluacion} */}
-
-            {/* Header */}
+            {/* Header de la evaluación */}
             <header className="evaluacion-header">
+                <button
+                    className="btn-volver-evaluacion"
+                    onClick={() => onNavigate("curso-vista", { curso })}
+                >
+                    ← Volver al curso
+                </button>
 
                 <div className="evaluacion-info">
                     <h1>🎓 Evaluación Final</h1>
@@ -260,10 +273,9 @@ export default function EvaluacionFinal({ curso, evaluacion, onNavigate, onEvalu
                 </div>
             </div>
 
-            {/* Pregunta */}
+            {/* Pregunta actual */}
             <main className="evaluacion-contenido">
                 <div className="pregunta-card">
-
                     <div className="pregunta-header">
                         <span className="dificultad-badge">
                             Dificultad: {pregunta.dificultad}/5
@@ -276,13 +288,16 @@ export default function EvaluacionFinal({ curso, evaluacion, onNavigate, onEvalu
                         {pregunta.opciones.map((opcion, index) => (
                             <div
                                 key={index}
-                                className={`opcion-item ${respuestas[preguntaActual] === index ? "seleccionada" : ""}`}
+                                className={`opcion-item ${respuestas[preguntaActual] === index ? 'seleccionada' : ''
+                                    }`}
                                 onClick={() => manejarRespuesta(index)}
                             >
-                                <div className="opcion-indice">{String.fromCharCode(65 + index)}</div>
+                                <div className="opcion-indice">
+                                    {String.fromCharCode(65 + index)}
+                                </div>
                                 <div className="opcion-texto">{opcion}</div>
                                 <div className="opcion-check">
-                                    {respuestas[preguntaActual] === index && "✓"}
+                                    {respuestas[preguntaActual] === index && '✓'}
                                 </div>
                             </div>
                         ))}
@@ -290,7 +305,7 @@ export default function EvaluacionFinal({ curso, evaluacion, onNavigate, onEvalu
                 </div>
             </main>
 
-            {/* Footer navegación */}
+            {/* Navegación */}
             <footer className="evaluacion-navegacion">
                 <button
                     className="btn-anterior-pregunta"

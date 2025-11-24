@@ -10,7 +10,7 @@ export default function CursoVista({ onNavigate, curso }) {
   const [mostrarModalCompletado, setMostrarModalCompletado] = useState(false);
   const [cargandoProgreso, setCargandoProgreso] = useState(false);
   const [mostrarModalEvaluacionFinal, setMostrarModalEvaluacionFinal] = useState(false);
-  const [tipoEvaluacionFinal, setTipoEvaluacionFinal] = useState(null);
+const [tipoEvaluacionFinal, setTipoEvaluacionFinal] = useState(null);
 
   // Obtener usuario del localStorage
   useEffect(() => {
@@ -229,6 +229,10 @@ export default function CursoVista({ onNavigate, curso }) {
       contenidoIndex: contenidoInicio
     });
   };
+
+  // ⭐ NUEVO: Estado para el modal de evaluación final
+  const [mostrarModalEvaluacionFinal, setMostrarModalEvaluacionFinal] = useState(false);
+  const [tipoEvaluacionFinal, setTipoEvaluacionFinal] = useState(null);
 
   // ⭐ NUEVO: Función para manejar inicio de evaluación final
   const handleIniciarEvaluacionFinal = () => {
@@ -688,9 +692,6 @@ export default function CursoVista({ onNavigate, curso }) {
 
       {/* Modal de curso completado */}
       {mostrarModalCompletado && <ModalCursoCompletado />}
-
-      {/* ⭐ NUEVO: Modal de evaluación final */}
-      {mostrarModalEvaluacionFinal && <ModalEvaluacionFinal />}
     </div>
   );
 }

@@ -30,7 +30,7 @@ export default function CursoContenido({
                 setMostrarConfirmacionEvaluacion(true);
             }, 100);
         }
-    }, [forzarEvaluacionFinal]);*/
+    }, [forzarEvaluacionFinal]);
 
     useEffect(() => {
         if (typeof moduloIndex === "number") {

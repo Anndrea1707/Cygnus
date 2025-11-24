@@ -131,12 +131,12 @@ export default function EvaluacionModulo({ curso, modulo, moduloIndex, onNavigat
     };
 
 
-    // En EvaluacionModulo.jsx - modificar la función irAEvaluacionFinal
     const irAEvaluacionFinal = () => {
         setMostrarModalFinal(false);
-        // En lugar de navegar directamente, volver al curso vista
-        // para que el modal de CursoVista maneje la confirmación
-        onNavigate("curso-vista", { curso });
+        onNavigate("evaluacion-final", {
+            curso,
+            evaluacion: curso.evaluacionFinal
+        });
     };
 
     const volverAlCurso = () => {
@@ -245,119 +245,132 @@ export default function EvaluacionModulo({ curso, modulo, moduloIndex, onNavigat
                                     onClick={irAEvaluacionFinal}
                                     disabled={!curso.evaluacionFinal || !curso.evaluacionFinal.preguntas || curso.evaluacionFinal.preguntas.length === 0}
                                 >
-                                    Ir a evaluación final modulo
+                                    Ir a evaluación final
                                 </button>
                             </div>
+
                         </div>
                     </div>
-                )}
+                    </div >
+                )
+    }
             </>
         );
-    }
+}
 
-    if (!pregunta) {
-        return (
-            <div className="evaluacion-error">
-                <h2>Error al cargar la evaluación</h2>
-                <button onClick={() => onNavigate("curso-contenido", { curso, moduloIndex, contenidoIndex: 0 })}>
-                    ← Volver al curso
-                </button>
-            </div>
-        );
-    }
-
+if (!pregunta) {
     return (
-        <div className="evaluacion">
-            {/* Header de la evaluación */}
-            <header className="evaluacion-header">
-
-                <div className="evaluacion-info">
-                    <h1>📝 Evaluación del Módulo</h1>
-                    <p>{modulo.nombre}</p>
-                </div>
-
-                <div className="temporizador">
-                    ⏱️ {formatearTiempo(tiempoRestante)}
-                </div>
-            </header>
-
-            {/* Progreso */}
-            <div className="evaluacion-progreso">
-                <div className="progreso-bar">
-                    <div
-                        className="progreso-fill"
-                        style={{ width: `${((preguntaActual + 1) / preguntas.length) * 100}%` }}
-                    ></div>
-                </div>
-                <div className="progreso-texto">
-                    Pregunta {preguntaActual + 1} de {preguntas.length}
-                </div>
-            </div>
-
-            {/* Pregunta actual */}
-            <main className="evaluacion-contenido">
-                <div className="pregunta-card">
-                    <div className="pregunta-header">
-                        <span className="dificultad-badge">
-                            Dificultad: {pregunta.dificultad}/5
-                        </span>
-                    </div>
-
-                    <h2 className="pregunta-texto">{pregunta.interrogante}</h2>
-
-                    <div className="opciones-lista">
-                        {pregunta.opciones.map((opcion, index) => (
-                            <div
-                                key={index}
-                                className={`opcion-item ${respuestas[preguntaActual] === index ? 'seleccionada' : ''
-                                    }`}
-                                onClick={() => manejarRespuesta(index)}
-                            >
-                                <div className="opcion-indice">
-                                    {String.fromCharCode(65 + index)} {/* A, B, C, D */}
-                                </div>
-                                <div className="opcion-texto">{opcion}</div>
-                                <div className="opcion-check">
-                                    {respuestas[preguntaActual] === index && '✓'}
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-            </main>
-
-            {/* Navegación */}
-            <footer className="evaluacion-navegacion">
-                <button
-                    className="btn-anterior-pregunta"
-                    onClick={preguntaAnterior}
-                    disabled={preguntaActual === 0}
-                >
-                    ← Anterior
-                </button>
-
-                <div className="contador-preguntas">
-                    {preguntaActual + 1} / {preguntas.length}
-                </div>
-
-                {preguntaActual < preguntas.length - 1 ? (
-                    <button
-                        className="btn-siguiente-pregunta"
-                        onClick={siguientePregunta}
-                        disabled={respuestas[preguntaActual] === null}
-                    >
-                        Siguiente →
-                    </button>
-                ) : (
-                    <button
-                        className="btn-finalizar-evaluacion"
-                        onClick={finalizarEvaluacion}
-                        disabled={respuestas[preguntaActual] === null}
-                    >
-                        🏁 Finalizar evaluación
-                    </button>
-                )}
-            </footer>
+        <div className="evaluacion-error">
+            <h2>Error al cargar la evaluación</h2>
+            <button onClick={() => onNavigate("curso-contenido", { curso, moduloIndex, contenidoIndex: 0 })}>
+                ← Volver al curso
+            </button>
         </div>
     );
+}
+
+return (
+    <div className="evaluacion">
+        {/* Header de la evaluación */}
+        <header className="evaluacion-header">
+            <button
+                className="btn-volver-evaluacion"
+                onClick={() => onNavigate("curso-contenido", {
+                    curso,
+                    moduloIndex,
+                    contenidoIndex: modulo.contenido.length - 1
+                })}
+            >
+                ← Volver al módulo
+            </button>
+
+            <div className="evaluacion-info">
+                <h1>📝 Evaluación del Módulo</h1>
+                <p>{modulo.nombre}</p>
+            </div>
+
+            <div className="temporizador">
+                ⏱️ {formatearTiempo(tiempoRestante)}
+            </div>
+        </header>
+
+        {/* Progreso */}
+        <div className="evaluacion-progreso">
+            <div className="progreso-bar">
+                <div
+                    className="progreso-fill"
+                    style={{ width: `${((preguntaActual + 1) / preguntas.length) * 100}%` }}
+                ></div>
+            </div>
+            <div className="progreso-texto">
+                Pregunta {preguntaActual + 1} de {preguntas.length}
+            </div>
+        </div>
+
+        {/* Pregunta actual */}
+        <main className="evaluacion-contenido">
+            <div className="pregunta-card">
+                <div className="pregunta-header">
+                    <span className="dificultad-badge">
+                        Dificultad: {pregunta.dificultad}/5
+                    </span>
+                </div>
+
+                <h2 className="pregunta-texto">{pregunta.interrogante}</h2>
+
+                <div className="opciones-lista">
+                    {pregunta.opciones.map((opcion, index) => (
+                        <div
+                            key={index}
+                            className={`opcion-item ${respuestas[preguntaActual] === index ? 'seleccionada' : ''
+                                }`}
+                            onClick={() => manejarRespuesta(index)}
+                        >
+                            <div className="opcion-indice">
+                                {String.fromCharCode(65 + index)} {/* A, B, C, D */}
+                            </div>
+                            <div className="opcion-texto">{opcion}</div>
+                            <div className="opcion-check">
+                                {respuestas[preguntaActual] === index && '✓'}
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            </div>
+        </main>
+
+        {/* Navegación */}
+        <footer className="evaluacion-navegacion">
+            <button
+                className="btn-anterior-pregunta"
+                onClick={preguntaAnterior}
+                disabled={preguntaActual === 0}
+            >
+                ← Anterior
+            </button>
+
+            <div className="contador-preguntas">
+                {preguntaActual + 1} / {preguntas.length}
+            </div>
+
+            {preguntaActual < preguntas.length - 1 ? (
+                <button
+                    className="btn-siguiente-pregunta"
+                    onClick={siguientePregunta}
+                    disabled={respuestas[preguntaActual] === null}
+                >
+                    Siguiente →
+                </button>
+            ) : (
+                <button
+                    className="btn-finalizar-evaluacion"
+                    onClick={finalizarEvaluacion}
+                    disabled={respuestas[preguntaActual] === null}
+                >
+                    🏁 Finalizar evaluación
+                </button>
+            )}
+        </footer>
+    </div>
+);
 }

@@ -17,7 +17,7 @@ export default function CursoContenido({
     const [progresoBackend, setProgresoBackend] = useState(null);
     const [cargandoProgresoBackend, setCargandoProgresoBackend] = useState(false);
 
-    /*// 🚨 Mostrar SIEMPRE el modal inmediatamente cuando se ordena desde CursoVista
+    // 🚨 Mostrar SIEMPRE el modal inmediatamente cuando se ordena desde CursoVista
     useEffect(() => {
         if (forzarEvaluacionFinal) {
             // bloquear contenido
@@ -30,7 +30,7 @@ export default function CursoContenido({
                 setMostrarConfirmacionEvaluacion(true);
             }, 100);
         }
-    }, [forzarEvaluacionFinal]);*/
+    }, [forzarEvaluacionFinal]);
 
     useEffect(() => {
         if (typeof moduloIndex === "number") {
@@ -174,13 +174,12 @@ export default function CursoContenido({
     };
 
     const handleSiguiente = async () => {
-        /*// 🚨 Bloquear completamente avance cuando viene desde CursoVista
+        // 🚨 Bloquear completamente avance cuando viene desde CursoVista
         if (forzarEvaluacionFinal) {
-            // nunca avanzar contenido
             setTipoEvaluacion("final");
             setMostrarConfirmacionEvaluacion(true);
             return;
-        }*/
+        }
 
         await guardarProgreso();
         await guardarProgreso(moduloActual, contenidoActual);
@@ -315,8 +314,9 @@ export default function CursoContenido({
         if (forzarEvaluacionFinal) {
             return (
                 <div className="contenido-vacio evaluacion-final-bloqueada">
-                    <h2>🎓 Debes presentar la evaluación final</h2>
-                    <p>Haz clic en “Comenzar evaluación” en el modal.</p>
+                    <div className="contenido-vacio-icono">🎯</div>
+                    <h3>Evaluación final pendiente</h3>
+                    <p>Debes iniciar la evaluación final para continuar.</p>
                 </div>
             );
         }

@@ -236,6 +236,9 @@ export default function EvaluacionFinal({ curso, evaluacion, onNavigate, onEvalu
 
             {/* Header */}
             <header className="evaluacion-header">
+                <button className="btn-volver-evaluacion" onClick={() => onNavigate("curso-vista", { curso })}>
+                    ← Volver al curso
+                </button>
 
                 <div className="evaluacion-info">
                     <h1>🎓 Evaluación Final</h1>

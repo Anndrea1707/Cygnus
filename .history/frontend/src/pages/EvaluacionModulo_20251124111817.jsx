@@ -270,6 +270,7 @@ export default function EvaluacionModulo({ curso, modulo, moduloIndex, onNavigat
         <div className="evaluacion">
             {/* Header de la evaluación */}
             <header className="evaluacion-header">
+                
 
                 <div className="evaluacion-info">
                     <h1>📝 Evaluación del Módulo</h1>

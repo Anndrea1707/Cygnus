@@ -1,4 +1,3 @@
-// EvaluacionFinal.jsx - ELIMINAR el modal de inicio y modificar el useEffect
 import React, { useState, useEffect } from "react";
 import "./Evaluacion.css";
 
@@ -9,15 +8,15 @@ export default function EvaluacionFinal({ curso, evaluacion, onNavigate, onEvalu
     const [evaluacionCompletada, setEvaluacionCompletada] = useState(false);
     const [puntaje, setPuntaje] = useState(0);
     const [certificadoGenerado, setCertificadoGenerado] = useState(false);
-    // 🚨 ELIMINAR este estado - ya no necesitamos el modal aquí
-    // const [mostrarModalInicio, setMostrarModalInicio] = useState(true);
+    const [mostrarModalInicio, setMostrarModalInicio] = useState(true);
 
     const preguntas = evaluacion?.preguntas || [];
     const tiempoTotal = preguntas.length * 2 * 60; // 2 minutos por pregunta
 
-    // 🚨 MODIFICAR: Inicializar inmediatamente sin modal
+    // Inicializar el temporizador y respuestas SOLO cuando cierre el modal
     useEffect(() => {
-        // Inicializar sin esperar por modal
+        if (mostrarModalInicio) return;
+
         setRespuestas(new Array(preguntas.length).fill(null));
         setTiempoRestante(tiempoTotal);
 
@@ -33,12 +32,8 @@ export default function EvaluacionFinal({ curso, evaluacion, onNavigate, onEvalu
         }, 1000);
 
         return () => clearInterval(timer);
-    }, []); // 🚨 Quitar la dependencia de mostrarModalInicio
+    }, [mostrarModalInicio]);
 
-    // 🚨 ELIMINAR completamente la función modalInicioEvaluacion
-    // const modalInicioEvaluacion = mostrarModalInicio && ( ... )
-
-    // Resto del código se mantiene igual...
     const formatearTiempo = (segundos) => {
         const minutos = Math.floor(segundos / 60);
         const segs = segundos % 60;
@@ -141,7 +136,67 @@ export default function EvaluacionFinal({ curso, evaluacion, onNavigate, onEvalu
 
     const pregunta = preguntas[preguntaActual];
 
-    // 🚨 ELIMINAR la referencia al modal en el return
+    // ===========================
+    // ⭐⭐⭐ MODAL DE INICIO MOVIDO ⭐⭐⭐
+    // ===========================
+
+    const modalInicioEvaluacion = mostrarModalInicio && (
+        <div className="modal-overlay">
+            <div className="modal-confirmacion">
+                <div className="modal-header">
+                    <h2>🎓 Evaluación Final del Curso</h2>
+                </div>
+
+                <div className="modal-body">
+                    <p>
+                        Estás a punto de comenzar la evaluación final del curso{" "}
+                        <strong>{curso.nombre}</strong>.
+                    </p>
+
+                    <div className="evaluacion-info">
+                        <div className="info-item">
+                            <span>📝 Preguntas:</span>
+                            <span>{preguntas.length}</span>
+                        </div>
+                        <div classname="info-item">
+                            <span>⏱️ Duración estimada:</span>
+                            <span>{preguntas.length * 2} minutos</span>
+                        </div>
+                    </div>
+
+                    <div className="recomendaciones">
+                        <h4>📋 Recomendaciones:</h4>
+                        <ul>
+                            <li>• Asegúrate de estar en un lugar tranquilo</li>
+                            <li>• Evita cerrar la ventana durante la evaluación</li>
+                            <li>• Lee cuidadosamente cada pregunta</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div className="modal-actions">
+                    <button
+                        className="btn-comenzar"
+                        onClick={() => setMostrarModalInicio(false)}
+                    >
+                        🚀 Comenzar evaluación
+                    </button>
+
+                    <button
+                        className="btn-volver"
+                        onClick={() => onNavigate("curso-vista", { curso })}
+                    >
+                        Volver al curso
+                    </button>
+                </div>
+            </div>
+        </div>
+    );
+
+    // ===========================
+    //     RENDERIZADO FINAL
+    // ===========================
+
     if (evaluacionCompletada) {
         return (
             <div className="evaluacion-completada">
@@ -232,10 +287,15 @@ export default function EvaluacionFinal({ curso, evaluacion, onNavigate, onEvalu
 
     return (
         <div className="evaluacion evaluacion-final">
-            {/* 🚨 ELIMINADO: {modalInicioEvaluacion} */}
+
+            {/* MODAL DE INICIO */}
+            {modalInicioEvaluacion}
 
             {/* Header */}
             <header className="evaluacion-header">
+                <button className="btn-volver-evaluacion" onClick={() => onNavigate("curso-vista", { curso })}>
+                    ← Volver al curso
+                </button>
 
                 <div className="evaluacion-info">
                     <h1>🎓 Evaluación Final</h1>

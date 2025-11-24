@@ -270,6 +270,16 @@ export default function EvaluacionModulo({ curso, modulo, moduloIndex, onNavigat
         <div className="evaluacion">
             {/* Header de la evaluación */}
             <header className="evaluacion-header">
+                <button
+                    className="btn-volver-evaluacion"
+                    onClick={() => onNavigate("curso-contenido", {
+                        curso,
+                        moduloIndex,
+                        contenidoIndex: modulo.contenido.length - 1
+                    })}
+                >
+                    ← Volver al módulo
+                </button>
 
                 <div className="evaluacion-info">
                     <h1>📝 Evaluación del Módulo</h1>

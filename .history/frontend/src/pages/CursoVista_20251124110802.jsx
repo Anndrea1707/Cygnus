@@ -230,6 +230,10 @@ export default function CursoVista({ onNavigate, curso }) {
     });
   };
 
+  // ⭐ NUEVO: Estado para el modal de evaluación final
+  const [mostrarModalEvaluacionFinal, setMostrarModalEvaluacionFinal] = useState(false);
+  const [tipoEvaluacionFinal, setTipoEvaluacionFinal] = useState(null);
+
   // ⭐ NUEVO: Función para manejar inicio de evaluación final
   const handleIniciarEvaluacionFinal = () => {
     const cursoId = cursoActual._id || cursoActual.id;
@@ -688,9 +692,6 @@ export default function CursoVista({ onNavigate, curso }) {
 
       {/* Modal de curso completado */}
       {mostrarModalCompletado && <ModalCursoCompletado />}
-
-      {/* ⭐ NUEVO: Modal de evaluación final */}
-      {mostrarModalEvaluacionFinal && <ModalEvaluacionFinal />}
     </div>
   );
 }
