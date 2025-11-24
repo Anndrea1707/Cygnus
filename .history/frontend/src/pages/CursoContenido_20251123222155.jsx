@@ -30,7 +30,7 @@ export default function CursoContenido({ curso, moduloIndex = 0, contenidoIndex 
         if (esUltimoContenido) {
             if (esUltimoModulo) {
                 if (hayEvaluacionFinal) {
-                    return "Presentar evaluación módulo final";
+                    return "Presentar evaluación Modulo final";
                 } else {
                     return "Finalizar curso";
                 }
