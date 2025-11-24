@@ -117,10 +117,19 @@ export default function EvaluacionModulo({ curso, modulo, moduloIndex, onNavigat
 
     // Función para manejar continuar
     const manejarContinuar = () => {
-        if (onEvaluacionCompletada) {
-            onEvaluacionCompletada(moduloIndex);
+        const esUltimoModulo = moduloIndex === curso.modulos.length - 1;
+    
+        if (esUltimoModulo) {
+            // Mostrar modal de confirmación
+            setMostrarModalFinal(true);
+        } else {
+            // Continuar con la navegación normal
+            if (onEvaluacionCompletada) {
+                onEvaluacionCompletada(moduloIndex);
+            }
         }
     };
+    
 
     const irAEvaluacionFinal = () => {
         setMostrarModalFinal(false);
