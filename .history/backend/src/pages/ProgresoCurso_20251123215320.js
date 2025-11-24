@@ -82,7 +82,6 @@ const progresoCursoSchema = new mongoose.Schema({
 // ============================================================
 // 🔥 MIDDLEWARE: Actualizar recordación nueva automáticamente
 // ============================================================
-// 🔥 MIDDLEWARE: Actualizar recordación nueva automáticamente
 progresoCursoSchema.post('save', async function (doc) {
     // Solo ejecutar si el curso se acaba de marcar como completado
     if (doc.cursoCompletado && doc.fechaCompletado) {
@@ -103,8 +102,8 @@ progresoCursoSchema.post('save', async function (doc) {
                 return;
             }
 
-            // 1. CONTAR CURSOS COMPLETADOS (incluyendo este) - USAR this.constructor
-            const totalCursosCompletados = await this.constructor.countDocuments({
+            // 1. CONTAR CURSOS COMPLETADOS (incluyendo este)
+            const totalCursosCompletados = await ProgresoCurso.countDocuments({
                 usuarioId: doc.usuarioId,
                 cursoCompletado: true,
                 fechaCompletado: { $ne: null }
@@ -135,8 +134,8 @@ progresoCursoSchema.post('save', async function (doc) {
                 // ✅ SEGUNDO CURSO EN ADELANTE
                 console.log(`📚 Es el curso #${totalCursosCompletados} del usuario`);
 
-                // Buscar el PENÚLTIMO curso completado - USAR this.constructor
-                const cursosCompletados = await this.constructor.find({
+                // Buscar el PENÚLTIMO curso completado
+                const cursosCompletados = await ProgresoCurso.find({
                     usuarioId: doc.usuarioId,
                     cursoCompletado: true,
                     fechaCompletado: { $ne: null },

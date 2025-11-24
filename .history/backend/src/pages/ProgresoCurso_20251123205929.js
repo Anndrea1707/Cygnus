@@ -82,16 +82,15 @@ const progresoCursoSchema = new mongoose.Schema({
 // ============================================================
 // 🔥 MIDDLEWARE: Actualizar recordación nueva automáticamente
 // ============================================================
-// 🔥 MIDDLEWARE: Actualizar recordación nueva automáticamente
-progresoCursoSchema.post('save', async function (doc) {
+progresoCursoSchema.post('save', async function(doc) {
     // Solo ejecutar si el curso se acaba de marcar como completado
     if (doc.cursoCompletado && doc.fechaCompletado) {
         try {
             console.log(`🔄 Procesando actualización de recordación para usuario ${doc.usuarioId}`);
-
+            
             const Usuario = mongoose.model('Usuario');
             const usuario = await Usuario.findById(doc.usuarioId);
-
+            
             if (!usuario) {
                 console.log(`❌ Usuario ${doc.usuarioId} no encontrado`);
                 return;
@@ -103,71 +102,31 @@ progresoCursoSchema.post('save', async function (doc) {
                 return;
             }
 
-            // 1. CONTAR CURSOS COMPLETADOS (incluyendo este) - USAR this.constructor
-            const totalCursosCompletados = await this.constructor.countDocuments({
-                usuarioId: doc.usuarioId,
-                cursoCompletado: true,
-                fechaCompletado: { $ne: null }
-            });
+            // 1. Calcular tiempo transcurrido desde el último curso (en años)
+            const fechaActual = new Date();
+            const fechaUltimoCurso = new Date(doc.fechaCompletado);
+            const diffMilisegundos = fechaActual - fechaUltimoCurso;
+            const tiempoTranscurrido = diffMilisegundos / (1000 * 60 * 60 * 24 * 365.25); // en años
 
-            console.log(`📊 Total cursos completados: ${totalCursosCompletados}`);
+            console.log(`📅 Tiempo transcurrido: ${tiempoTranscurrido.toFixed(6)} años`);
 
-            const tiempoAreaOriginal = usuario.encuesta_inicial.tiempo_area || 1;
+            // 2. Obtener parámetros originales de la encuesta
+            const tiempoAreaOriginal = usuario.encuesta_inicial.tiempo_area || 1; // años (default 1 si no existe)
             const nivelRecordacionOriginal = usuario.nivel_recordacion;
-            let nivelFinal;
 
-            // 2. LÓGICA DIFERENTE SEGÚN SI ES PRIMER CURSO O NO
-            if (totalCursosCompletados === 1) {
-                // ✅ PRIMER CURSO COMPLETADO
-                console.log(`🎯 Es el PRIMER curso del usuario`);
+            // 3. Aplicar regla de tres para calcular nuevo nivel
+            const nivelRecordacionNuevo = (tiempoTranscurrido * nivelRecordacionOriginal) / tiempoAreaOriginal;
 
-                // Para el primer curso, mantener recordación alta (90-100% del original)
-                const fechaRegistro = usuario.creado_en;
-                const fechaActual = new Date();
-                const tiempoDesdeRegistro = (fechaActual - fechaRegistro) / (1000 * 60 * 60 * 24 * 365.25);
+            // 4. Limitar entre 0 y 1
+            let nivelFinal = Math.max(0, Math.min(1, nivelRecordacionNuevo));
 
-                // FÓRMULA INVERSA CORREGIDA
-                nivelFinal = nivelRecordacionOriginal * (1 - (tiempoDesdeRegistro / (tiempoAreaOriginal * 2)));
-
-                console.log(`   - Tiempo desde registro: ${tiempoDesdeRegistro.toFixed(4)} años`);
-
-            } else {
-                // ✅ SEGUNDO CURSO EN ADELANTE
-                console.log(`📚 Es el curso #${totalCursosCompletados} del usuario`);
-
-                // Buscar el PENÚLTIMO curso completado - USAR this.constructor
-                const cursosCompletados = await this.constructor.find({
-                    usuarioId: doc.usuarioId,
-                    cursoCompletado: true,
-                    fechaCompletado: { $ne: null },
-                    _id: { $ne: doc._id } // Excluir el curso actual
-                }).sort({ fechaCompletado: -1 }).limit(1);
-
-                if (cursosCompletados.length === 0) {
-                    console.log(`❌ No se encontró curso anterior`);
-                    return;
-                }
-
-                const fechaUltimoCurso = cursosCompletados[0].fechaCompletado;
-                const fechaActual = new Date();
-                const tiempoTranscurrido = (fechaActual - fechaUltimoCurso) / (1000 * 60 * 60 * 24 * 365.25);
-
-                console.log(`📅 Tiempo desde último curso: ${tiempoTranscurrido.toFixed(6)} años`);
-
-                // ✅ FÓRMULA INVERSA CORREGIDA
-                nivelFinal = nivelRecordacionOriginal * (1 - (tiempoTranscurrido / tiempoAreaOriginal));
-
-                // Si el tiempo es negativo o muy extraño, usar valor mínimo
-                if (tiempoTranscurrido < 0) {
-                    nivelFinal = nivelRecordacionOriginal * 0.95;
-                    console.log(`⚠️  Tiempo negativo, usando valor seguro`);
-                }
+            // 5. Si el tiempo transcurrido es mayor al tiempo original, aplicar reducción adicional
+            if (tiempoTranscurrido > tiempoAreaOriginal) {
+                nivelFinal = nivelFinal * 0.7; // Reducir 30% adicional
+                console.log(`📉 Aplicando reducción adicional por tiempo extendido`);
             }
 
-            // 3. LIMITAR ENTRE MÍNIMO Y MÁXIMO
-            nivelFinal = Math.max(0.05, Math.min(0.95, nivelFinal)); // Mínimo 5%, máximo 95%
-
-            // 4. ACTUALIZAR USUARIO
+            // 6. Actualizar usuario
             await Usuario.findByIdAndUpdate(doc.usuarioId, {
                 nivel_recordacion_nuevo: Number(nivelFinal.toFixed(4)),
                 ultima_actualizacion_recordacion: new Date(),
@@ -175,9 +134,11 @@ progresoCursoSchema.post('save', async function (doc) {
             });
 
             console.log(`✅ Recordación actualizada: ${usuario.nombre_completo}`);
-            console.log(`   - Tiempo original encuesta: ${tiempoAreaOriginal} años`);
+            console.log(`   - Tiempo original: ${tiempoAreaOriginal} años`);
             console.log(`   - Recordación original: ${(nivelRecordacionOriginal * 100).toFixed(1)}%`);
+            console.log(`   - Tiempo transcurrido: ${tiempoTranscurrido.toFixed(4)} años`);
             console.log(`   - Recordación nueva: ${(nivelFinal * 100).toFixed(1)}%`);
+            console.log(`   - Fecha último curso: ${fechaUltimoCurso.toLocaleDateString()}`);
 
         } catch (error) {
             console.error(`❌ Error en middleware de recordación para usuario ${doc.usuarioId}:`, error);

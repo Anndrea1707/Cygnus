@@ -32,9 +32,25 @@ const usuarioSchema = new mongoose.Schema(
     },
     nivel_recordacion: { type: Number, default: null },
 
-    // ⭐ NUEVO: Campos para recordación actualizada
-    nivel_recordacion_nuevo: { 
-      type: Number, 
+    // ⭐ PRUEBA DE CONOCIMIENTO
+    prueba_conocimiento: {
+      completada: { type: Boolean, default: false },
+      fecha_realizacion: { type: Date, default: null },
+      puntuacion: { type: Number, default: 0 },
+      habilidad: { type: Number, min: 0, max: 5, default: 1 }
+      // NOTA: Se eliminó categoria_evaluada
+    },
+    // ⭐ NUEVO CAMPO: Habilidad Nueva - No se promedia, se actualiza directamente
+    habilidad_nueva: {
+      type: Number,
+      min: 0,
+      max: 5,
+      default: 0
+    },
+
+    // En Usuario.js, agregar en el schema:
+    nivel_recordacion_nuevo: {
+      type: Number,
       default: null,
       min: 0,
       max: 1  // 0 a 1 (0% a 100%)
@@ -46,24 +62,7 @@ const usuarioSchema = new mongoose.Schema(
     ultimo_curso_completado: {
       type: Date,
       default: null
-    },
-
-    // ⭐ PRUEBA DE CONOCIMIENTO
-    prueba_conocimiento: {
-      completada: { type: Boolean, default: false },
-      fecha_realizacion: { type: Date, default: null },
-      puntuacion: { type: Number, default: 0 },
-      habilidad: { type: Number, min: 0, max: 5, default: 1 }
-    },
-    
-    // ⭐ NUEVO CAMPO: Habilidad Nueva - No se promedia, se actualiza directamente
-    habilidad_nueva: { 
-      type: Number, 
-      min: 0, 
-      max: 5, 
-      default: 0 
-    },
-    
+    }
     creado_en: { type: Date, default: Date.now },
 
     // ⭐ Registro básico para seguimiento de sesiones

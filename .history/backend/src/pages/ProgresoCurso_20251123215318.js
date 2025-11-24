@@ -82,16 +82,15 @@ const progresoCursoSchema = new mongoose.Schema({
 // ============================================================
 // 🔥 MIDDLEWARE: Actualizar recordación nueva automáticamente
 // ============================================================
-// 🔥 MIDDLEWARE: Actualizar recordación nueva automáticamente
-progresoCursoSchema.post('save', async function (doc) {
+progresoCursoSchema.post('save', async function(doc) {
     // Solo ejecutar si el curso se acaba de marcar como completado
     if (doc.cursoCompletado && doc.fechaCompletado) {
         try {
             console.log(`🔄 Procesando actualización de recordación para usuario ${doc.usuarioId}`);
-
+            
             const Usuario = mongoose.model('Usuario');
             const usuario = await Usuario.findById(doc.usuarioId);
-
+            
             if (!usuario) {
                 console.log(`❌ Usuario ${doc.usuarioId} no encontrado`);
                 return;
@@ -103,8 +102,8 @@ progresoCursoSchema.post('save', async function (doc) {
                 return;
             }
 
-            // 1. CONTAR CURSOS COMPLETADOS (incluyendo este) - USAR this.constructor
-            const totalCursosCompletados = await this.constructor.countDocuments({
+            // 1. CONTAR CURSOS COMPLETADOS (incluyendo este)
+            const totalCursosCompletados = await ProgresoCurso.countDocuments({
                 usuarioId: doc.usuarioId,
                 cursoCompletado: true,
                 fechaCompletado: { $ne: null }
@@ -120,23 +119,23 @@ progresoCursoSchema.post('save', async function (doc) {
             if (totalCursosCompletados === 1) {
                 // ✅ PRIMER CURSO COMPLETADO
                 console.log(`🎯 Es el PRIMER curso del usuario`);
-
+                
                 // Para el primer curso, mantener recordación alta (90-100% del original)
                 const fechaRegistro = usuario.creado_en;
                 const fechaActual = new Date();
                 const tiempoDesdeRegistro = (fechaActual - fechaRegistro) / (1000 * 60 * 60 * 24 * 365.25);
-
+                
                 // FÓRMULA INVERSA CORREGIDA
                 nivelFinal = nivelRecordacionOriginal * (1 - (tiempoDesdeRegistro / (tiempoAreaOriginal * 2)));
-
+                
                 console.log(`   - Tiempo desde registro: ${tiempoDesdeRegistro.toFixed(4)} años`);
-
+                
             } else {
                 // ✅ SEGUNDO CURSO EN ADELANTE
                 console.log(`📚 Es el curso #${totalCursosCompletados} del usuario`);
-
-                // Buscar el PENÚLTIMO curso completado - USAR this.constructor
-                const cursosCompletados = await this.constructor.find({
+                
+                // Buscar el PENÚLTIMO curso completado
+                const cursosCompletados = await ProgresoCurso.find({
                     usuarioId: doc.usuarioId,
                     cursoCompletado: true,
                     fechaCompletado: { $ne: null },
