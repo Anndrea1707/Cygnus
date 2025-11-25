@@ -65,8 +65,8 @@ export default function NavbarPrincipal({
             rol === "usuario"
               ? onNavigate("dashboard")
               : rol === "admin"
-              ? onNavigate("paneladmin")
-              : onNavigate("home")
+                ? onNavigate("paneladmin")
+                : onNavigate("home")
           }
         >
           <img src={logo} alt="Logo Cygnus" className="logo-img" />
@@ -137,6 +137,14 @@ export default function NavbarPrincipal({
                   onClick={() => onNavigate("biblioteca")}
                 >
                   Biblioteca
+                </button>
+              </li>
+              <li>
+                <button
+                  className={currentPage === "estadisticas" ? "nav-btn active" : "nav-btn"}
+                  onClick={() => onNavigate("estadisticas")}
+                >
+                  Estadísticas
                 </button>
               </li>
             </>

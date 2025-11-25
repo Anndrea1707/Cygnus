@@ -28,6 +28,7 @@ import CursoVista from "./pages/CursoVista";
 import CursoContenido from "./pages/CursoContenido";
 import EvaluacionModulo from "./pages/EvaluacionModulo";
 import EvaluacionFinal from "./pages/EvaluacionFinal";
+import Estadisticas from "./pages/Estadisticas"; // <-- Import agregado
 
 function App() {
   const [currentPage, setCurrentPage] = useState("home");
@@ -93,7 +94,6 @@ function App() {
     setUsuario(userData);
     localStorage.setItem("usuario", JSON.stringify(userData));
 
-    // ⭐ Registrar INICIO DE SESIÓN
     try {
       await fetch("http://localhost:4000/api/sesiones/inicio", {
         method: "POST",
@@ -136,7 +136,6 @@ function App() {
   const handleLogout = async () => {
     if (usuario?._id) {
       try {
-        // ⭐ Registrar CIERRE DE SESIÓN
         await fetch("http://localhost:4000/api/sesiones/cierre", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -152,9 +151,7 @@ function App() {
     setCurrentPage("home");
   };
 
-  const handleEncuestaCompletada = () => {
-    setCurrentPage("prueba-conocimiento");
-  };
+  const handleEncuestaCompletada = () => setCurrentPage("prueba-conocimiento");
 
   const handlePruebaCompletada = () => {
     setCurrentPage("dashboard");
@@ -171,38 +168,20 @@ function App() {
     }
   };
 
-  // En handleEvaluacionModuloCompletada, corregir:
   const handleEvaluacionModuloCompletada = async (moduloIndexCompletado) => {
     const { curso } = pageParams;
-
-    console.log("📝 Evaluación completada del módulo:", moduloIndexCompletado);
-    console.log("📊 Total de módulos del curso:", curso.modulos.length);
-
-    // Verificar si es el último módulo
     const esUltimoModulo = moduloIndexCompletado === curso.modulos.length - 1;
 
     if (esUltimoModulo) {
-      console.log("🎯 Último módulo completado, navegando a evaluación final");
-      // Si es el último módulo, ir a evaluación final
-      handleNavigate("evaluacion-final", {
-        curso,
-        evaluacion: curso.evaluacionFinal
-      });
+      handleNavigate("evaluacion-final", { curso, evaluacion: curso.evaluacionFinal });
     } else {
-      console.log("➡️ Módulo intermedio completado, navegando al siguiente módulo");
-      // Si no es el último módulo, ir al siguiente módulo
       const siguienteModuloIndex = moduloIndexCompletado + 1;
-      handleNavigate("curso-contenido", {
-        curso,
-        moduloIndex: siguienteModuloIndex,
-        contenidoIndex: 0
-      });
+      handleNavigate("curso-contenido", { curso, moduloIndex: siguienteModuloIndex, contenidoIndex: 0 });
     }
   };
 
   const handleFinalizarCurso = () => {
     const { curso } = pageParams;
-
     const nuevoProgreso = {
       ...cursoProgreso,
       [curso.id]: {
@@ -211,17 +190,13 @@ function App() {
         fechaCompletado: new Date().toISOString()
       }
     };
-
     setCursoProgreso(nuevoProgreso);
     localStorage.setItem("cursoProgreso", JSON.stringify(nuevoProgreso));
-
     handleNavigate("cursosusuario");
   };
 
-  const handleEvaluacionFinalCompletada = async () => {
+  const handleEvaluacionFinalCompletada = () => {
     const { curso } = pageParams;
-
-    // Guardar progreso local (curso completado)
     const nuevoProgreso = {
       ...cursoProgreso,
       [curso.id]: {
@@ -231,23 +206,14 @@ function App() {
         completado: true
       }
     };
-
     setCursoProgreso(nuevoProgreso);
     localStorage.setItem("cursoProgreso", JSON.stringify(nuevoProgreso));
-
     handleNavigate("cursosusuario");
   };
 
   if (cargando) {
     return (
-      <div style={{
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        height: '100vh',
-        fontSize: '18px',
-        color: '#666'
-      }}>
+      <div style={{ display:'flex', justifyContent:'center', alignItems:'center', height:'100vh', fontSize:'18px', color:'#666' }}>
         Cargando...
       </div>
     );
@@ -255,249 +221,65 @@ function App() {
 
   switch (currentPage) {
     case "dashboard":
-      // ✅ Obtener usuario actualizado desde localStorage
       const usuarioActualizado = JSON.parse(localStorage.getItem("usuario"));
       const usuarioParaDashboard = usuarioActualizado || usuario;
-
-      return (
-        <Dashboard
-          usuario={usuarioParaDashboard}  // ⬅️ Usar usuario actualizado
-          onLogout={handleLogout}
-          onNavigate={handleNavigate}
-          currentPage={currentPage}
-        />
-      );
-      
+      return <Dashboard usuario={usuarioParaDashboard} onLogout={handleLogout} onNavigate={handleNavigate} currentPage={currentPage} />;
     case "perfil":
-      return (
-        <Perfil
-          usuario={usuario}
-          onLogout={handleLogout}
-          onNavigate={handleNavigate}
-          currentPage={currentPage}
-        />
-      );
+      return <Perfil usuario={usuario} onLogout={handleLogout} onNavigate={handleNavigate} currentPage={currentPage} />;
     case "login":
-      return (
-        <Login
-          onBackToHome={() => setCurrentPage("home")}
-          onRegisterClick={() => setCurrentPage("registro")}
-          onLoginSuccess={handleLoginSuccess}
-          currentPage={currentPage}
-        />
-      );
+      return <Login onBackToHome={() => setCurrentPage("home")} onRegisterClick={() => setCurrentPage("registro")} onLoginSuccess={handleLoginSuccess} currentPage={currentPage} />;
     case "registro":
-      return (
-        <Registro
-          onBackToLogin={() => setCurrentPage("login")}
-          currentPage={currentPage}
-        />
-      );
+      return <Registro onBackToLogin={() => setCurrentPage("login")} currentPage={currentPage} />;
     case "sobreNosotros":
-      return (
-        <SobreNosotros
-          currentPage={currentPage}
-          onNavigate={handleNavigate}
-          onLoginClick={handleLoginClick}
-        />
-      );
+      return <SobreNosotros currentPage={currentPage} onNavigate={handleNavigate} onLoginClick={handleLoginClick} />;
     case "ayuda":
-      return (
-        <Ayuda
-          currentPage={currentPage}
-          onNavigate={handleNavigate}
-          onLoginClick={handleLoginClick}
-        />
-      );
+      return <Ayuda currentPage={currentPage} onNavigate={handleNavigate} onLoginClick={handleLoginClick} />;
     case "cursos":
-      return (
-        <CursosPrincipal
-          currentPage={currentPage}
-          onNavigate={handleNavigate}
-          onLoginClick={handleLoginClick}
-        />
-      );
+      return <CursosPrincipal currentPage={currentPage} onNavigate={handleNavigate} onLoginClick={handleLoginClick} />;
     case "cursosusuario":
-      return (
-        <CursosUsuario
-          currentPage={currentPage}
-          usuario={usuario}
-          onNavigate={handleNavigate}
-          onLogout={handleLogout}
-          onLoginClick={handleLoginClick}
-        />
-      );
+      return <CursosUsuario currentPage={currentPage} usuario={usuario} onNavigate={handleNavigate} onLogout={handleLogout} onLoginClick={handleLoginClick} />;
     case "encuesta":
-      return (
-        <Encuesta
-          usuario={usuario}
-          onEncuestaCompletada={handleEncuestaCompletada}
-        />
-      );
+      return <Encuesta usuario={usuario} onEncuestaCompletada={handleEncuestaCompletada} />;
     case "prueba-conocimiento":
-      return (
-        <TomarPrueba
-          usuario={usuario}
-          onPruebaCompletada={handlePruebaCompletada}
-        />
-      );
+      return <TomarPrueba usuario={usuario} onPruebaCompletada={handlePruebaCompletada} />;
     case "paneladmin":
-      return (
-        <PanelAdmin
-          usuario={usuario}
-          onLogout={handleLogout}
-          onNavigate={handleNavigate}
-        />
-      );
+      return <PanelAdmin usuario={usuario} onLogout={handleLogout} onNavigate={handleNavigate} />;
     case "modificarPerfil":
-      return (
-        <ModificarPerfil
-          usuario={usuario}
-          onLogout={handleLogout}
-          onNavigate={handleNavigate}
-        />
-      );
+      return <ModificarPerfil usuario={usuario} onLogout={handleLogout} onNavigate={handleNavigate} />;
     case "bibliotecaadmin":
-      return (
-        <Biblioteca
-          usuario={usuario}
-          onNavigate={handleNavigate}
-          onLogout={handleLogout}
-          currentPage={currentPage}
-        />
-      );
+      return <Biblioteca usuario={usuario} onNavigate={handleNavigate} onLogout={handleLogout} currentPage={currentPage} />;
     case "usuarios":
-      return (
-        <AdminUsuarios
-          usuario={usuario}
-          onNavigate={handleNavigate}
-          onLogout={handleLogout}
-          currentPage={currentPage}
-        />
-      );
+      return <AdminUsuarios usuario={usuario} onNavigate={handleNavigate} onLogout={handleLogout} currentPage={currentPage} />;
     case "biblioteca":
-      return (
-        <BibliotecaUsuario
-          usuario={usuario}
-          onNavigate={handleNavigate}
-          onLogout={handleLogout}
-          currentPage={currentPage}
-        />
-      );
+      return <BibliotecaUsuario usuario={usuario} onNavigate={handleNavigate} onLogout={handleLogout} currentPage={currentPage} />;
     case "adminusuarios":
-      return (
-        <UsuariosAdmin
-          usuario={usuario}
-          onNavigate={handleNavigate}
-          onLogout={handleLogout}
-          currentPage={currentPage}
-        />
-      );
+      return <UsuariosAdmin usuario={usuario} onNavigate={handleNavigate} onLogout={handleLogout} currentPage={currentPage} />;
     case "adminperfil":
-      return (
-        <AdminPerfil
-          usuario={usuario}
-          onLogout={handleLogout}
-          onNavigate={handleNavigate}
-        />
-      );
+      return <AdminPerfil usuario={usuario} onLogout={handleLogout} onNavigate={handleNavigate} />;
     case "gestionarAdmins":
-      return (
-        <GestionarAdmins
-          usuario={usuario}
-          onLogout={handleLogout}
-          onNavigate={handleNavigate}
-          currentPage={currentPage}
-        />
-      );
+      return <GestionarAdmins usuario={usuario} onLogout={handleLogout} onNavigate={handleNavigate} currentPage={currentPage} />;
     case "cursosadmin":
-      return (
-        <CursosAdmin
-          usuario={usuario}
-          onNavigate={handleNavigate}
-          onLogout={handleLogout}
-          currentPage={currentPage}
-        />
-      );
+      return <CursosAdmin usuario={usuario} onNavigate={handleNavigate} onLogout={handleLogout} currentPage={currentPage} />;
     case "curso-vista":
-      return (
-        <CursoVista
-          currentPage={currentPage}
-          usuario={usuario}
-          onNavigate={handleNavigate}
-          curso={pageParams.curso}
-          progreso={cursoProgreso[pageParams.curso?.id]}
-        />
-      );
+      return <CursoVista currentPage={currentPage} usuario={usuario} onNavigate={handleNavigate} curso={pageParams.curso} progreso={cursoProgreso[pageParams.curso?.id]} />;
     case "crearcursosadmin":
-      return (
-        <CrearCursoAdmin
-          usuario={usuario}
-          onNavigate={handleNavigate}
-          cursoEditar={pageParams}
-          onLogout={handleLogout}
-          currentPage={currentPage}
-        />
-      );
+      return <CrearCursoAdmin usuario={usuario} onNavigate={handleNavigate} cursoEditar={pageParams} onLogout={handleLogout} currentPage={currentPage} />;
     case "crearprueba":
-      return (
-        <PruebaConocimiento
-          onNavigate={handleNavigate}
-          categoriaPreSeleccionada={pageParams.categoriaPreSeleccionada}
-        />
-      );
+      return <PruebaConocimiento onNavigate={handleNavigate} categoriaPreSeleccionada={pageParams.categoriaPreSeleccionada} />;
     case "gestionarpruebas":
-      return (
-        <GestionarPruebas
-          onNavigate={handleNavigate}
-        />
-      );
+      return <GestionarPruebas onNavigate={handleNavigate} />;
     case "editarprueba":
-      return (
-        <EditarPrueba
-          onNavigate={handleNavigate}
-          pruebaId={pageParams.pruebaId}
-        />
-      );
+      return <EditarPrueba onNavigate={handleNavigate} pruebaId={pageParams.pruebaId} />;
     case "curso-contenido":
-      return (
-        <CursoContenido
-          curso={pageParams.curso}
-          moduloIndex={pageParams.moduloIndex || 0}
-          contenidoIndex={pageParams.contenidoIndex || 0}
-          onNavigate={handleNavigate}
-          onFinalizarCurso={handleFinalizarCurso}
-        />
-      );
+      return <CursoContenido curso={pageParams.curso} moduloIndex={pageParams.moduloIndex || 0} contenidoIndex={pageParams.contenidoIndex || 0} onNavigate={handleNavigate} onFinalizarCurso={handleFinalizarCurso} />;
     case "evaluacion-modulo":
-      return (
-        <EvaluacionModulo
-          curso={pageParams.curso}
-          modulo={pageParams.modulo}
-          moduloIndex={pageParams.moduloIndex}
-          onNavigate={handleNavigate}
-          onEvaluacionCompletada={handleEvaluacionModuloCompletada}
-        />
-      );
+      return <EvaluacionModulo curso={pageParams.curso} modulo={pageParams.modulo} moduloIndex={pageParams.moduloIndex} onNavigate={handleNavigate} onEvaluacionCompletada={handleEvaluacionModuloCompletada} />;
     case "evaluacion-final":
-      return (
-        <EvaluacionFinal
-          curso={pageParams.curso}
-          evaluacion={pageParams.evaluacion}
-          onNavigate={handleNavigate}
-          onEvaluacionCompletada={handleEvaluacionFinalCompletada}
-        />
-      );
+      return <EvaluacionFinal curso={pageParams.curso} evaluacion={pageParams.evaluacion} onNavigate={handleNavigate} onEvaluacionCompletada={handleEvaluacionFinalCompletada} />;
+    case "estadisticas":
+      return <Estadisticas usuario={usuario} onLogout={handleLogout} onNavigate={handleNavigate} currentPage={currentPage} />;
     default:
-      return (
-        <div style={{ position: 'relative', zIndex: 1 }}>
-          <Home
-            currentPage={currentPage}
-            onNavigate={handleNavigate}
-            onLoginClick={handleLoginClick}
-          />
-        </div>
-      );
+      return <Home currentPage={currentPage} onNavigate={handleNavigate} onLoginClick={handleLoginClick} />;
   }
 }
 
