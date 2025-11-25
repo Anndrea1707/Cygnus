@@ -234,12 +234,10 @@ export default function CursoContenido({
 
     // --- PROGRESO CORREGIDO ---
     const calcularProgreso = () => {
-        // Si viene del backend, úsalo directamente
         if (progresoBackend && typeof progresoBackend.progresoPorcentual === "number") {
             return Math.min(100, Math.max(0, Math.round(progresoBackend.progresoPorcentual)));
         }
 
-        // Calcular progreso basado en contenido visto
         let vistosPrevios = 0;
         for (let i = 0; i < moduloActual; i++) {
             vistosPrevios += curso.modulos[i].contenido.length;
@@ -250,7 +248,6 @@ export default function CursoContenido({
 
         let porcentaje = Math.round((vistos / total) * 100);
 
-        // Si tiene evaluación final, nunca mostrar 100%
         if (hayEvaluacionFinal && porcentaje >= 100) {
             return 99;
         }
@@ -258,7 +255,6 @@ export default function CursoContenido({
         return porcentaje;
     };
 
-    // FUNCIONES PARA RENDERIZAR CONTENIDO (COMPLETO)
     const extraerYouTubeId = (url) => {
         if (!url) return null;
         const patrones = [
@@ -415,15 +411,25 @@ export default function CursoContenido({
 
                     <div className="modulo-info">
                         <h4>Información del módulo</h4>
-                        <p><strong>Módulo:</strong> {modulo.nombre}</p>
-                        <p><strong>Descripción:</strong> {modulo.descripcion}</p>
+                        <div className="modulo-item">
+                            <span className="modulo-icon">📘</span>
+                            <span className="modulo-text">{modulo.nombre}</span>
+                        </div>
+                        <div className="modulo-item">
+                            <span className="modulo-icon">📝</span>
+                            <span className="modulo-text">{modulo.descripcion}</span>
+                        </div>
                         {hayEvaluacionModulo && (
-                            <p><strong>Evaluación:</strong> {modulo.evaluacion.preguntas.length} preguntas</p>
+                            <div className="modulo-item">
+                                <span className="modulo-icon">✅</span>
+                                <span className="modulo-text">{modulo.evaluacion.preguntas.length} preguntas</span>
+                            </div>
                         )}
                     </div>
                 </div>
             </main>
 
+            {/* --- Footer corregido --- */}
             <footer className="contenido-navegacion">
                 <button
                     onClick={handleAnterior}
@@ -432,7 +438,7 @@ export default function CursoContenido({
                     ← Anterior
                 </button>
 
-                <div className="progreso-container">
+                <div className="progreso-footer">
                     <div className="progreso-texto">
                         Progreso: {calcularProgreso()}%
                     </div>
@@ -441,6 +447,13 @@ export default function CursoContenido({
                             className="progreso-fill"
                             style={{ width: `${calcularProgreso()}%` }}
                         ></div>
+
+                        <div
+                            className="progreso-indicador"
+                            style={{ left: `${calcularProgreso()}%` }}
+                        ></div>
+
+                        <div className="progreso-meta"></div>
                     </div>
                 </div>
 
@@ -452,20 +465,17 @@ export default function CursoContenido({
             {mostrarConfirmacionEvaluacion && (
                 <div className="modal-overlay">
                     <div className="modal-confirmacion">
-                        <h2>{tipoEvaluacion === "modulo" ? "Evaluación del módulo" : "Evaluación final"}</h2>
+                        <button className="modal-cerrar" onClick={() => setMostrarConfirmacionEvaluacion(false)}>×</button>
 
+                        <h2>{tipoEvaluacion === "modulo" ? "Evaluación del módulo" : "Evaluación final"}</h2>
                         <p>
                             {tipoEvaluacion === "modulo"
                                 ? `Vas a iniciar la evaluación del módulo "${modulo.nombre}".`
                                 : `Vas a iniciar la evaluación final del curso "${curso.nombre}".`}
                         </p>
-
                         <div className="modal-actions">
                             <button className="btn-comenzar" onClick={comenzarEvaluacion}>
                                 Comenzar evaluación
-                            </button>
-                            <button className="btn-secundario" onClick={saltarEvaluacion}>
-                                Saltar evaluación
                             </button>
                         </div>
                     </div>

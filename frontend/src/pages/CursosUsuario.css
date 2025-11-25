@@ -1,24 +1,22 @@
-/* Variables de diseño basadas en tu paleta */
 :root {
-  --color-lavandaClaro: #d163f2;
-  --color-primary: #a44bbe;
-  --color-primary-dark: #7d148b;
-  --color-dark: #09152c;
-  --color-dark-overlay: rgba(9, 21, 44, 0.566);
-  --color-dark-transparent: rgba(9, 21, 44, 0.808);
-  --color-light: #ffffff;
-  --color-light-transparent: rgba(255, 255, 255, 0.85);
-  --color-light-text: #d8d8d8;
-  --color-muted: #ddd;
-  --color-glass: rgba(255, 255, 255, 0.08);
-  --color-border-glass: rgba(255, 255, 255, 0.1);
-  --color-hover-shadow: rgba(164, 75, 190, 0.5);
-  --color-subtext: #cfcfcf;
-  --color-dorado-light: #e9d89a;
-  
-  --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+    --color-lavandaClaro: #d163f2;
+    --color-primary: #a44bbe;
+    --color-primary-dark: #7d148b;
+    --color-dark: #09152c;
+    --color-dark-overlay: rgba(9, 21, 44, 0.566);
+    --color-dark-transparent: rgba(9, 21, 44, 0.808);
+    --color-light: #ffffff;
+    --color-light-transparent: rgba(255, 255, 255, 0.85);
+    --color-light-text: #d8d8d8;
+    --color-muted: #ddd;
+    --color-glass: rgba(255, 255, 255, 0.08);
+    --color-border-glass: rgba(255, 255, 255, 0.1);
+    --color-hover-shadow: rgba(164, 75, 190, 0.5);
+    --color-subtext: #cfcfcf;
+    --color-dorado-light: #e9d89a;
+    --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
 }
 
 /* Estructura principal */
@@ -33,18 +31,46 @@
     margin: 0 auto;
 }
 
-/* Hero Section */
+/* HERO con imagen de fondo completa */
 .hero-cursos {
-    text-align: center;
-    margin-bottom: 3rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 3rem 1rem;
+    border-radius: 12px;
+    background-image: url('../imagenes/fondoCursos.jpg'); /* tu imagen */
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    margin-bottom: 2.5rem; /* espacio con el buscador */
+    min-height: 400px;
     color: var(--color-light);
+    text-align: center;
+    position: relative;
+}
+
+.hero-cursos::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(9, 21, 44, 0.5); /* oscurece la imagen para resaltar texto */
+    border-radius: 12px;
+    z-index: 0;
+}
+
+.hero-text {
+    position: relative;
+    z-index: 1;
+    max-width: 700px;
 }
 
 .titulo-hero {
     font-size: 2.5rem;
     font-weight: 700;
     margin-bottom: 1rem;
-    text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
     background: linear-gradient(135deg, var(--color-light) 0%, var(--color-dorado-light) 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -54,8 +80,6 @@
 .subtitulo-hero {
     font-size: 1.2rem;
     opacity: 0.9;
-    max-width: 600px;
-    margin: 0 auto;
     color: var(--color-light-text);
 }
 
@@ -68,10 +92,9 @@
     box-shadow: var(--shadow);
     margin-bottom: 2rem;
     border: 1px solid var(--color-border-glass);
-}
-
-.filtro-busqueda {
-    margin-bottom: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
 }
 
 .input-busqueda {
@@ -93,19 +116,6 @@
     outline: none;
     border-color: var(--color-primary);
     box-shadow: 0 0 0 3px var(--color-hover-shadow);
-}
-
-.filtros-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 1rem;
-}
-
-.filtro-grupo label {
-    display: block;
-    margin-bottom: 0.5rem;
-    font-weight: 600;
-    color: var(--color-light);
 }
 
 .select-filtro {
@@ -172,7 +182,6 @@
     align-items: flex-start;
     margin-bottom: 1rem;
     gap: 1rem;
-    background: var(--color-dark);
 }
 
 .curso-header h3 {
@@ -180,11 +189,8 @@
     font-size: 1.25rem;
     color: var(--color-dorado-light);
     flex: 1;
-    line-height: 1.4;
-    background: var(--color-dark);
 }
 
-/* Etiquetas de Nivel */
 .etiqueta-nivel {
     padding: 0.25rem 0.75rem;
     border-radius: 20px;
@@ -210,13 +216,16 @@
     color: var(--color-light);
 }
 
+
 .curso-descripcion {
     color: var(--color-light-text);
     margin-bottom: 1rem;
     line-height: 1.5;
     display: -webkit-box;
     -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
     overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .curso-meta {
@@ -228,7 +237,7 @@
 
 .meta-item {
     font-size: 0.875rem;
-    color: var(--color-subtext);
+    color: var(--color-light-text);
     display: flex;
     align-items: center;
     gap: 0.25rem;
@@ -253,13 +262,10 @@
     box-shadow: 0 4px 12px var(--color-hover-shadow);
 }
 
-/* Modal */
+/* Modal “Ver más” (igual que tu diseño original) */
 .modal-overlay {
     position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
+    top: 0; left: 0; right: 0; bottom: 0;
     background: var(--color-dark-overlay);
     backdrop-filter: blur(5px);
     display: flex;
@@ -282,29 +288,28 @@
     border: 1px solid var(--color-border-glass);
 }
 
-.modal-cerrar {
+.modal-boton-cerrar {
     position: absolute;
     top: 1rem;
     right: 1rem;
-    background: var(--color-glass);
-    border: 1px solid var(--color-border-glass);
-    font-size: 1.5rem;
-    cursor: pointer;
+    padding: 0.5rem 1rem;
+    background: var(--color-primary);
     color: var(--color-light);
-    z-index: 10;
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    font-weight: bold;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
     transition: all 0.3s;
+    z-index: 10;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
 }
 
-.modal-cerrar:hover {
-    background: var(--color-primary);
-    border-color: var(--color-primary);
+.modal-boton-cerrar:hover {
+    background: var(--color-lavandaClaro);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(0,0,0,0.4);
 }
+
 
 .modal-header {
     position: relative;
@@ -359,31 +364,12 @@
     border: 1px solid var(--color-border-glass);
 }
 
-.stat {
-    text-align: center;
-}
+.stat { text-align: center; }
+.stat strong { display: block; margin-bottom: 0.25rem; color: var(--color-light); }
 
-.stat strong {
-    display: block;
-    margin-bottom: 0.25rem;
-    color: var(--color-light);
-}
-
-.modal-modulos-preview {
-    margin-bottom: 1.5rem;
-}
-
-.modal-modulos-preview h4 {
-    margin-bottom: 0.75rem;
-    color: var(--color-light);
-}
-
-.modal-modulos-preview ul {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-}
-
+.modal-modulos-preview { margin-bottom: 1.5rem; }
+.modal-modulos-preview h4 { margin-bottom: 0.75rem; color: var(--color-light); }
+.modal-modulos-preview ul { list-style: none; padding: 0; margin: 0; }
 .modal-modulos-preview li {
     padding: 0.5rem 0;
     border-bottom: 1px solid var(--color-border-glass);
@@ -391,10 +377,7 @@
     align-items: center;
     gap: 0.75rem;
 }
-
-.modal-modulos-preview li:last-child {
-    border-bottom: none;
-}
+.modal-modulos-preview li:last-child { border-bottom: none; }
 
 .modulo-indice {
     background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-lavandaClaro) 100%);
@@ -410,10 +393,7 @@
     flex-shrink: 0;
 }
 
-.mas-modulos {
-    color: var(--color-subtext);
-    font-style: italic;
-}
+.mas-modulos { color: var(--color-subtext); font-style: italic; }
 
 .modal-actions {
     padding: 1.5rem;
@@ -440,24 +420,27 @@
     box-shadow: 0 4px 12px var(--color-hover-shadow);
 }
 
-.btn-secundario {
-    flex: 1;
-    padding: 0.75rem 1.5rem;
-    background: var(--color-glass);
+
+
+/* Contador de cursos y secciones */
+.titulo-seccion {
     color: var(--color-light);
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.contador-cursos {
+    background: var(--color-glass);
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.875rem;
+    color: var(--color-dorad-ligh); 
     border: 1px solid var(--color-border-glass);
-    border-radius: 8px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s;
 }
 
-.btn-secundario:hover {
-    background: var(--color-primary);
-    border-color: var(--color-primary);
-}
-
-/* Estados */
+/* Estados y spinner */
 .cargando {
     text-align: center;
     padding: 3rem;
@@ -504,50 +487,18 @@
     transform: translateY(-2px);
 }
 
-.titulo-seccion {
-    color: var(--color-light);
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    margin-bottom: 1rem;
-}
-
-.contador-cursos {
-    background: var(--color-glass);
-    padding: 0.25rem 0.75rem;
-    border-radius: 20px;
-    font-size: 0.875rem;
-    color: var(--color-light);
-    border: 1px solid var(--color-border-glass);
-}
-
 /* Responsive */
 @media (max-width: 768px) {
-    .grid-cursos {
-        grid-template-columns: 1fr;
-    }
-    
-    .filtros-grid {
-        grid-template-columns: 1fr;
-    }
-    
-    .modal-actions {
-        flex-direction: column;
-    }
-    
-    .titulo-hero {
-        font-size: 2rem;
-    }
-    
-    .curso-header {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 0.5rem;
-    }
-    
-    .modal-info-basica {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 0.5rem;
-    }
+    .grid-cursos { grid-template-columns: 1fr; }
+    .filtros-grid { grid-template-columns: 1fr; }
+    .modal-actions { flex-direction: column; }
+    .titulo-hero { font-size: 2rem; }
+    .curso-header { flex-direction: column; align-items: flex-start; gap: 0.5rem; }
+    .modal-info-basica { flex-direction: column; align-items: flex-start; gap: 0.5rem; }
+}
+.filtro-busqueda-fila {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-bottom: 2rem; /* espacio con la sección de cursos */
 }

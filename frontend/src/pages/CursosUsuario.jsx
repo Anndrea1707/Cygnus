@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import NavbarPrincipal from "../components/NavbarPrincipal";
 import Footer from "../components/Footer";
+import fondoCursos from "../imagenes/fondoCursos.jpg";
 import "./CursosUsuario.css";
 
 export default function CursosUsuario({ currentPage, usuario, onNavigate, onLogout, onLoginClick }) {
@@ -10,22 +11,17 @@ export default function CursosUsuario({ currentPage, usuario, onNavigate, onLogo
     const [busqueda, setBusqueda] = useState("");
     const [loading, setLoading] = useState(true);
 
-    // Traer cursos desde la API
     useEffect(() => {
         const cargarCursos = async () => {
             try {
                 setLoading(true);
-                const res = await fetch("http://localhost:4000/api/cursos"); // ✅ URL completa
+                const res = await fetch("http://localhost:4000/api/cursos");
                 const data = await res.json();
-                
-                // ✅ Normalizar los cursos para asegurar que tengan tanto _id como id
                 const cursosNormalizados = data.map(curso => ({
                     ...curso,
-                    id: curso._id || curso.id // ✅ Asegurar que tenga propiedad id
+                    id: curso._id || curso.id
                 }));
-                
                 setCursos(cursosNormalizados);
-                console.log("📚 Cursos cargados y normalizados:", cursosNormalizados);
             } catch (err) {
                 console.error("Error al cargar cursos:", err);
             } finally {
@@ -37,16 +33,13 @@ export default function CursosUsuario({ currentPage, usuario, onNavigate, onLogo
 
     const niveles = ["Todos", "básico", "intermedio", "avanzado"];
 
-    // Filtrar cursos
     const cursosFiltrados = cursos.filter(curso => {
         const coincideNivel = nivelFiltro === "Todos" || curso.nivel === nivelFiltro;
         const coincideBusqueda = curso.nombre.toLowerCase().includes(busqueda.toLowerCase()) ||
             curso.descripcion.toLowerCase().includes(busqueda.toLowerCase());
-
         return coincideNivel && coincideBusqueda;
     });
 
-    // Componente de Card de Curso
     const CardCurso = ({ curso }) => (
         <div className="tarjeta-curso">
             <img src={curso.imagen} alt={curso.nombre} className="imagen-curso" />
@@ -74,14 +67,14 @@ export default function CursosUsuario({ currentPage, usuario, onNavigate, onLogo
         </div>
     );
 
-    // Modal de información básica
     const ModalCurso = ({ curso, onClose, onVerDetalles }) => {
         if (!curso) return null;
 
         return (
             <div className="modal-overlay" onClick={onClose}>
                 <div className="modal-contenido" onClick={(e) => e.stopPropagation()}>
-                    <button className="modal-cerrar" onClick={onClose}>×</button>
+                    <button className="modal-boton-cerrar" onClick={onClose}>Cerrar</button>
+
 
                     <div className="modal-header">
                         <img src={curso.imagen} alt={curso.nombre} className="modal-imagen" />
@@ -129,12 +122,7 @@ export default function CursosUsuario({ currentPage, usuario, onNavigate, onLogo
                     </div>
 
                     <div className="modal-actions">
-                        <button
-                            className="btn-secundario"
-                            onClick={onClose}
-                        >
-                            Cerrar
-                        </button>
+                        
                         <button
                             className="btn-primario"
                             onClick={() => onVerDetalles(curso)}
@@ -147,17 +135,11 @@ export default function CursosUsuario({ currentPage, usuario, onNavigate, onLogo
         );
     };
 
-    // Función para manejar la navegación al curso
     const handleVerDetallesCurso = (cursoSeleccionado) => {
-        console.log("🔄 Navegando a curso-vista con:", cursoSeleccionado);
-        
-        // ✅ Asegurar que el curso tenga tanto _id como id
         const cursoParaNavegar = {
             ...cursoSeleccionado,
-            id: cursoSeleccionado._id || cursoSeleccionado.id // ✅ Garantizar propiedad id
+            id: cursoSeleccionado._id || cursoSeleccionado.id
         };
-        
-        console.log("✅ Curso preparado para navegación:", cursoParaNavegar);
         setModalCurso(null);
         onNavigate("curso-vista", { curso: cursoParaNavegar });
     };
@@ -173,16 +155,20 @@ export default function CursosUsuario({ currentPage, usuario, onNavigate, onLogo
             />
 
             <section className="seccion-cursos">
+
                 <div className="hero-cursos">
-                    <h1 className="titulo-hero">Explora Nuestros Cursos</h1>
-                    <p className="subtitulo-hero">
-                        Aprende a tu propio ritmo con nuestra plataforma educativa
-                    </p>
+                    <div className="hero-text">
+                        <h1 className="titulo-hero">Explora Nuestros Cursos</h1>
+                        <p className="subtitulo-hero">
+                            Aprende a tu propio ritmo con nuestra plataforma educativa
+                        </p>
+                    </div>
+
                 </div>
 
-                {/* Sistema de Filtros */}
+                {/* Filtros: solo buscador con recuadro */}
                 <div className="filtros-avanzados">
-                    <div className="filtro-busqueda">
+                    <div className="filtro-busqueda-fila">
                         <input
                             type="text"
                             placeholder="🔍 Buscar cursos por nombre..."
@@ -190,31 +176,26 @@ export default function CursosUsuario({ currentPage, usuario, onNavigate, onLogo
                             onChange={(e) => setBusqueda(e.target.value)}
                             className="input-busqueda"
                         />
-                    </div>
-
-                    <div className="filtros-grid">
-                        <div className="filtro-grupo">
-                            <label>Filtrar por nivel:</label>
-                            <select
-                                value={nivelFiltro}
-                                onChange={(e) => setNivelFiltro(e.target.value)}
-                                className="select-filtro"
-                            >
-                                {niveles.map(nivel => (
-                                    <option key={nivel} value={nivel}>
-                                        {nivel === "Todos" ? "Todos los niveles" : nivel.charAt(0).toUpperCase() + nivel.slice(1)}
-                                    </option>
-                                ))}
-                            </select>
-                        </div>
+                        <select
+                            value={nivelFiltro}
+                            onChange={(e) => setNivelFiltro(e.target.value)}
+                            className="select-filtro-lado"
+                        >
+                            {niveles.map((nivel) => (
+                                <option key={nivel} value={nivel}>
+                                    {nivel === "Todos"
+                                        ? "Todos los niveles"
+                                        : nivel.charAt(0).toUpperCase() + nivel.slice(1)}
+                                </option>
+                            ))}
+                        </select>
                     </div>
                 </div>
 
-                {/* Todos los Cursos */}
                 <section className="seccion-todos-cursos">
                     <h2 className="titulo-seccion">
-                        {nivelFiltro === "Todos" ? "Todos los cursos" : `Cursos ${nivelFiltro}`}
-                        <span className="contador-cursos">({cursosFiltrados.length})</span>
+                        {nivelFiltro === "Todos" ? "Todos los cursos :" : `Cursos ${nivelFiltro}`}
+                        <span className="contador-cursos-diseño">{cursosFiltrados.length}</span>
                     </h2>
 
                     {loading ? (
@@ -247,12 +228,11 @@ export default function CursosUsuario({ currentPage, usuario, onNavigate, onLogo
 
             <Footer />
 
-            {/* Modal */}
             {modalCurso && (
                 <ModalCurso
                     curso={modalCurso}
                     onClose={() => setModalCurso(null)}
-                    onVerDetalles={handleVerDetallesCurso} // ✅ Usar la nueva función
+                    onVerDetalles={handleVerDetallesCurso}
                 />
             )}
         </div>
