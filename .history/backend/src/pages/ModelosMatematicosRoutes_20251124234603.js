@@ -47,14 +47,6 @@ router.post('/seleccionar-preguntas', async (req, res) => {
       cursoId
     });
 
-    // ✅ VERIFICAR DETALLES DEL USUARIO EN EL PAYLOAD
-    console.log('🔍 PAYLOAD USUARIO (recordación):', {
-      nivel_recordacion_nuevo: usuario?.nivel_recordacion_nuevo,
-      nivel_recordacion: usuario?.nivel_recordacion,
-      habilidad_nueva: usuario?.habilidad_nueva,
-      habilidad: usuario?.prueba_conocimiento?.habilidad
-    });
-
     // Validaciones básicas
     if (!preguntas || !Array.isArray(preguntas)) {
       return res.status(400).json({
@@ -75,11 +67,11 @@ router.post('/seleccionar-preguntas', async (req, res) => {
     console.log(`🎯 Objetivo: seleccionar ${cantidad} preguntas de ${preguntas.length}`);
 
     // Analizar distribución de dificultades original
-    const dificultadesOriginal = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
+    const dificultadesOriginal = {1:0, 2:0, 3:0, 4:0, 5:0};
     preguntas.forEach(p => {
-      if (p.dificultad >= 1 && p.dificultad <= 5) {
-        dificultadesOriginal[p.dificultad]++;
-      }
+        if (p.dificultad >= 1 && p.dificultad <= 5) {
+            dificultadesOriginal[p.dificultad]++;
+        }
     });
     console.log('📊 Distribución original de dificultades:', dificultadesOriginal);
 
@@ -91,11 +83,11 @@ router.post('/seleccionar-preguntas', async (req, res) => {
     );
 
     // Analizar distribución de dificultades seleccionadas
-    const dificultadesSeleccionadas = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
+    const dificultadesSeleccionadas = {1:0, 2:0, 3:0, 4:0, 5:0};
     preguntasSeleccionadas.forEach(p => {
-      if (p.dificultad >= 1 && p.dificultad <= 5) {
-        dificultadesSeleccionadas[p.dificultad]++;
-      }
+        if (p.dificultad >= 1 && p.dificultad <= 5) {
+            dificultadesSeleccionadas[p.dificultad]++;
+        }
     });
 
     console.log('✅ ===== SELECCIÓN COMPLETADA =====');

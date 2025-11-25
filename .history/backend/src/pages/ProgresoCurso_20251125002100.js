@@ -191,7 +191,7 @@ progresoCursoSchema.post('save', async function (doc) {
 
             console.log(`✅ Recordación actualizada correctamente para ${usuario.nombre_completo}`);
 
-            console.log(`🔄 Usuario actualizado en BD - nivel_recordacion_nuevo: ${usuarioActualizado.nivel_recordacion_nuevo}`);
+                        console.log(`🔄 Usuario actualizado en BD - nivel_recordacion_nuevo: ${usuarioActualizado.nivel_recordacion_nuevo}`);
 
 
         } catch (error) {

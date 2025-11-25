@@ -24,7 +24,7 @@ export default function EvaluacionFinal({ curso, evaluacion, onNavigate, onEvalu
                 const usuario = JSON.parse(localStorage.getItem("usuario"));
 
                 console.log('🔄 Solicitando preguntas adaptativas para evaluación final...');
-
+                
                 const response = await fetch('http://localhost:4000/api/modelos-matematicos/seleccionar-preguntas', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -39,17 +39,6 @@ export default function EvaluacionFinal({ curso, evaluacion, onNavigate, onEvalu
                 const data = await response.json();
                 if (data.success && data.preguntasSeleccionadas.length > 0) {
                     console.log('✅ Preguntas adaptativas cargadas:', data.preguntasSeleccionadas.length);
-                    console.log('📊 Distribución de dificultades seleccionadas:', data.distribucionDificultades);
-
-                    // Debug: mostrar dificultades de las preguntas seleccionadas
-                    const dificultades = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
-                    data.preguntasSeleccionadas.forEach(p => {
-                        if (p.dificultad >= 1 && p.dificultad <= 5) {
-                            dificultades[p.dificultad]++;
-                        }
-                    });
-                    console.log('🎯 Dificultades en preguntas seleccionadas:', dificultades);
-
                     setPreguntasAdaptativas(data.preguntasSeleccionadas);
                 } else {
                     console.log('⚠️ Usando preguntas normales (fallback)');
@@ -75,9 +64,9 @@ export default function EvaluacionFinal({ curso, evaluacion, onNavigate, onEvalu
         }
     }, [preguntasAdaptativas]);
 
-    const preguntas = cargandoPreguntas ? [] :
-        (preguntasAdaptativas.length > 0 ? preguntasAdaptativas :
-            (evaluacion?.preguntas || []));
+    const preguntas = cargandoPreguntas ? [] : 
+                     (preguntasAdaptativas.length > 0 ? preguntasAdaptativas : 
+                     (evaluacion?.preguntas || []));
 
     // 🚨 MODIFICAR: Inicializar inmediatamente sin modal
     useEffect(() => {
@@ -101,6 +90,7 @@ export default function EvaluacionFinal({ curso, evaluacion, onNavigate, onEvalu
         }
     }, [preguntas]); // 🚨 Dependencia de preguntas
 
+    // 🚨 ELIMINAR completamente la función modalInicioEvaluacio
     // const modalInicioEvaluacion = mostrarModalInicio && ( ... )
 
     const formatearTiempo = (segundos) => {
@@ -137,7 +127,7 @@ export default function EvaluacionFinal({ curso, evaluacion, onNavigate, onEvalu
         // ✅ CORREGIR: USAR SOLO LAS RESPUESTAS QUE CORRESPONDEN A LAS PREGUNTAS EXISTENTES
         respuestas.slice(0, preguntas.length).forEach((respuesta, index) => {
             const pregunta = preguntas[index];
-
+            
             if (!pregunta) {
                 console.error(`❌ Pregunta ${index} no encontrada`);
                 return;
@@ -245,22 +235,22 @@ export default function EvaluacionFinal({ curso, evaluacion, onNavigate, onEvalu
         const correctasCount = respuestasValidas.filter((respuesta, i) => {
             const pregunta = preguntas[i];
             if (!pregunta) return false;
-
+            
             const opcionCorrecta = typeof pregunta.opcionCorrecta === "string"
                 ? parseInt(pregunta.opcionCorrecta)
                 : pregunta.opcionCorrecta;
-
+                
             return respuesta === opcionCorrecta;
         }).length;
 
         const incorrectasCount = respuestasValidas.filter((respuesta, i) => {
             const pregunta = preguntas[i];
             if (!pregunta) return false;
-
+            
             const opcionCorrecta = typeof pregunta.opcionCorrecta === "string"
                 ? parseInt(pregunta.opcionCorrecta)
                 : pregunta.opcionCorrecta;
-
+                
             return respuesta !== opcionCorrecta;
         }).length;
 

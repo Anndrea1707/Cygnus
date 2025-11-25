@@ -69,7 +69,7 @@ function calcularScore(pacierto, nivelRecordacion, w1 = 0.7, w2 = 0.3) {
 // -------------------------------------------
 function seleccionarPreguntasAdaptativas(preguntas, usuario, cantidad) {
     console.log('🎯 Iniciando selección adaptativa para:', usuario.nombre_completo);
-
+    
     // ✅ DEBUG DETALLADO de los campos del usuario
     console.log('🔍 CAMPOS COMPLETOS DEL USUARIO (recordación):', {
         nivel_recordacion_nuevo: usuario.nivel_recordacion_nuevo,
@@ -88,16 +88,16 @@ function seleccionarPreguntasAdaptativas(preguntas, usuario, cantidad) {
 
         // ✅ CORREGIR: Lógica mejorada para recordación
         let recordacion;
-
+        
         // Verificar EXPLÍCITAMENTE si nivel_recordacion_nuevo existe y es válido
-        if (usuario.nivel_recordacion_nuevo !== undefined &&
-            usuario.nivel_recordacion_nuevo !== null &&
+        if (usuario.nivel_recordacion_nuevo !== undefined && 
+            usuario.nivel_recordacion_nuevo !== null && 
             !isNaN(usuario.nivel_recordacion_nuevo)) {
             recordacion = usuario.nivel_recordacion_nuevo;
             console.log(`   ✅ Usando nivel_recordacion_nuevo: ${recordacion}`);
-        } else if (usuario.nivel_recordacion !== undefined &&
-            usuario.nivel_recordacion !== null &&
-            !isNaN(usuario.nivel_recordacion)) {
+        } else if (usuario.nivel_recordacion !== undefined && 
+                   usuario.nivel_recordacion !== null && 
+                   !isNaN(usuario.nivel_recordacion)) {
             recordacion = usuario.nivel_recordacion;
             console.log(`   ⚠️  Usando nivel_recordacion (fallback): ${recordacion}`);
         } else {
@@ -110,7 +110,7 @@ function seleccionarPreguntasAdaptativas(preguntas, usuario, cantidad) {
 
         // Calcular P_acierto
         const pacierto = calcularPacierto(habilidad, pregunta.dificultad);
-
+        
         // Calcular Score final
         const score = calcularScore(pacierto, recordacion, 0.7, 0.3);
 
@@ -150,12 +150,12 @@ function seleccionarPreguntasAdaptativas(preguntas, usuario, cantidad) {
 
     // ✅ LIMPIAR: Remover propiedades temporales antes de enviar al frontend
     const preguntasLimpias = preguntasSeleccionadas.map(pregunta => {
-        const {
-            _scoreCalculado,
-            _paciertoCalculado,
-            _habilidadUsuario,
-            _recordacionUsuario,
-            ...preguntaLimpia
+        const { 
+            _scoreCalculado, 
+            _paciertoCalculado, 
+            _habilidadUsuario, 
+            _recordacionUsuario, 
+            ...preguntaLimpia 
         } = pregunta;
         return preguntaLimpia;
     });

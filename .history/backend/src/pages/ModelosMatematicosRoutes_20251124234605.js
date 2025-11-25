@@ -47,14 +47,6 @@ router.post('/seleccionar-preguntas', async (req, res) => {
       cursoId
     });
 
-    // ✅ VERIFICAR DETALLES DEL USUARIO EN EL PAYLOAD
-    console.log('🔍 PAYLOAD USUARIO (recordación):', {
-      nivel_recordacion_nuevo: usuario?.nivel_recordacion_nuevo,
-      nivel_recordacion: usuario?.nivel_recordacion,
-      habilidad_nueva: usuario?.habilidad_nueva,
-      habilidad: usuario?.prueba_conocimiento?.habilidad
-    });
-
     // Validaciones básicas
     if (!preguntas || !Array.isArray(preguntas)) {
       return res.status(400).json({

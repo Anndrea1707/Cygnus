@@ -39,21 +39,25 @@ router.post('/seleccionar-preguntas', async (req, res) => {
   try {
     const { preguntas, usuario, tipoEvaluacion, cursoId } = req.body;
 
-    console.log('🎯 ===== INICIANDO SELECCIÓN ADAPTATIVA =====');
-    console.log('📊 Datos entrada:', {
+    console.log('📊 Iniciando selección adaptativa:', {
       totalPreguntas: preguntas?.length,
       tipoEvaluacion,
-      usuario: usuario?.nombre_completo,
-      cursoId
+      usuario: usuario?.nombre_completo
     });
 
-    // ✅ VERIFICAR DETALLES DEL USUARIO EN EL PAYLOAD
-    console.log('🔍 PAYLOAD USUARIO (recordación):', {
-      nivel_recordacion_nuevo: usuario?.nivel_recordacion_nuevo,
-      nivel_recordacion: usuario?.nivel_recordacion,
-      habilidad_nueva: usuario?.habilidad_nueva,
-      habilidad: usuario?.prueba_conocimiento?.habilidad
-    });
+    // ✅ VERIFICAR ESTRUCTURA DE LAS PREGUNTAS
+    if (preguntas && preguntas.length > 0) {
+      console.log('🔍 Estructura primera pregunta:', {
+        tieneOpcionCorrecta: preguntas[0].opcionCorrecta !== undefined,
+        tieneOpciones: preguntas[0].opciones !== undefined,
+        tieneDificultad: preguntas[0].dificultad !== undefined,
+        preguntaEjemplo: {
+          interrogante: preguntas[0].interrogante?.substring(0, 50) + '...',
+          opcionCorrecta: preguntas[0].opcionCorrecta,
+          dificultad: preguntas[0].dificultad
+        }
+      });
+    }
 
     // Validaciones básicas
     if (!preguntas || !Array.isArray(preguntas)) {
@@ -72,16 +76,6 @@ router.post('/seleccionar-preguntas', async (req, res) => {
 
     // Determinar cantidad según tipo de evaluación
     const cantidad = tipoEvaluacion === 'modulo' ? 10 : 15;
-    console.log(`🎯 Objetivo: seleccionar ${cantidad} preguntas de ${preguntas.length}`);
-
-    // Analizar distribución de dificultades original
-    const dificultadesOriginal = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
-    preguntas.forEach(p => {
-      if (p.dificultad >= 1 && p.dificultad <= 5) {
-        dificultadesOriginal[p.dificultad]++;
-      }
-    });
-    console.log('📊 Distribución original de dificultades:', dificultadesOriginal);
 
     // Usar las funciones estáticas del modelo
     const preguntasSeleccionadas = require('../modelos/ModelosMatematicos').seleccionarPreguntasAdaptativas(
@@ -90,20 +84,9 @@ router.post('/seleccionar-preguntas', async (req, res) => {
       cantidad
     );
 
-    // Analizar distribución de dificultades seleccionadas
-    const dificultadesSeleccionadas = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
-    preguntasSeleccionadas.forEach(p => {
-      if (p.dificultad >= 1 && p.dificultad <= 5) {
-        dificultadesSeleccionadas[p.dificultad]++;
-      }
-    });
-
-    console.log('✅ ===== SELECCIÓN COMPLETADA =====');
-    console.log('📈 Resultados:', {
+    console.log('✅ Selección adaptativa completada:', {
       original: preguntas.length,
-      seleccionadas: preguntasSeleccionadas.length,
-      distribucionOriginal: dificultadesOriginal,
-      distribucionSeleccionada: dificultadesSeleccionadas
+      seleccionadas: preguntasSeleccionadas.length
     });
 
     res.json({
@@ -111,8 +94,7 @@ router.post('/seleccionar-preguntas', async (req, res) => {
       preguntasSeleccionadas: preguntasSeleccionadas,
       totalOriginal: preguntas.length,
       totalSeleccionado: preguntasSeleccionadas.length,
-      tipoEvaluacion: tipoEvaluacion,
-      distribucionDificultades: dificultadesSeleccionadas
+      tipoEvaluacion: tipoEvaluacion
     });
 
   } catch (error) {

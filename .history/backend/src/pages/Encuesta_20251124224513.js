@@ -1,3 +1,4 @@
+// En pages/Encuesta.js - MODIFICAR:
 
 const express = require("express");
 const Usuario = require("./Usuario");

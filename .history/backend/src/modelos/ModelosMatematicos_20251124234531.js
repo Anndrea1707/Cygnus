@@ -69,15 +69,11 @@ function calcularScore(pacierto, nivelRecordacion, w1 = 0.7, w2 = 0.3) {
 // -------------------------------------------
 function seleccionarPreguntasAdaptativas(preguntas, usuario, cantidad) {
     console.log('🎯 Iniciando selección adaptativa para:', usuario.nombre_completo);
-
-    // ✅ DEBUG DETALLADO de los campos del usuario
-    console.log('🔍 CAMPOS COMPLETOS DEL USUARIO (recordación):', {
+    console.log('📊 Parámetros usuario:', {
+        habilidad_nueva: usuario.habilidad_nueva,
+        habilidad: usuario.prueba_conocimiento?.habilidad,
         nivel_recordacion_nuevo: usuario.nivel_recordacion_nuevo,
-        nivel_recordacion: usuario.nivel_recordacion,
-        tipo_nivel_recordacion_nuevo: typeof usuario.nivel_recordacion_nuevo,
-        tipo_nivel_recordacion: typeof usuario.nivel_recordacion,
-        existe_nivel_recordacion_nuevo: 'nivel_recordacion_nuevo' in usuario,
-        existe_nivel_recordacion: 'nivel_recordacion' in usuario
+        nivel_recordacion: usuario.nivel_recordacion
     });
 
     const preguntasConScore = preguntas.map((pregunta, index) => {
@@ -86,31 +82,17 @@ function seleccionarPreguntasAdaptativas(preguntas, usuario, cantidad) {
             usuario.habilidad_nueva :
             (usuario.prueba_conocimiento?.habilidad || 1);
 
-        // ✅ CORREGIR: Lógica mejorada para recordación
-        let recordacion;
-
-        // Verificar EXPLÍCITAMENTE si nivel_recordacion_nuevo existe y es válido
-        if (usuario.nivel_recordacion_nuevo !== undefined &&
-            usuario.nivel_recordacion_nuevo !== null &&
-            !isNaN(usuario.nivel_recordacion_nuevo)) {
-            recordacion = usuario.nivel_recordacion_nuevo;
-            console.log(`   ✅ Usando nivel_recordacion_nuevo: ${recordacion}`);
-        } else if (usuario.nivel_recordacion !== undefined &&
-            usuario.nivel_recordacion !== null &&
-            !isNaN(usuario.nivel_recordacion)) {
-            recordacion = usuario.nivel_recordacion;
-            console.log(`   ⚠️  Usando nivel_recordacion (fallback): ${recordacion}`);
-        } else {
-            recordacion = 0.5; // Valor por defecto
-            console.log(`   🔶 Usando valor por defecto: ${recordacion}`);
-        }
+        // Obtener nivel de recordación (priorizar nivel_recordacion_nuevo)
+        const recordacion = (usuario.nivel_recordacion_nuevo > 0 || usuario.nivel_recordacion_nuevo !== null) ?
+            usuario.nivel_recordacion_nuevo :
+            (usuario.nivel_recordacion || 0.5);
 
         console.log(`📝 Pregunta ${index + 1} - Dificultad: ${pregunta.dificultad}`);
-        console.log(`   Habilidad usuario: ${habilidad}, Recordación FINAL: ${recordacion}`);
+        console.log(`   Habilidad usuario: ${habilidad}, Recordación: ${recordacion}`);
 
         // Calcular P_acierto
         const pacierto = calcularPacierto(habilidad, pregunta.dificultad);
-
+        
         // Calcular Score final
         const score = calcularScore(pacierto, recordacion, 0.7, 0.3);
 
@@ -121,8 +103,7 @@ function seleccionarPreguntasAdaptativas(preguntas, usuario, cantidad) {
             _scoreCalculado: score,
             _paciertoCalculado: pacierto,
             _habilidadUsuario: habilidad,
-            _recordacionUsuario: recordacion,
-            _recordacionFuente: usuario.nivel_recordacion_nuevo !== undefined ? 'NUEVO' : 'ORIGINAL'
+            _recordacionUsuario: recordacion
         };
     });
 
@@ -150,12 +131,12 @@ function seleccionarPreguntasAdaptativas(preguntas, usuario, cantidad) {
 
     // ✅ LIMPIAR: Remover propiedades temporales antes de enviar al frontend
     const preguntasLimpias = preguntasSeleccionadas.map(pregunta => {
-        const {
-            _scoreCalculado,
-            _paciertoCalculado,
-            _habilidadUsuario,
-            _recordacionUsuario,
-            ...preguntaLimpia
+        const { 
+            _scoreCalculado, 
+            _paciertoCalculado, 
+            _habilidadUsuario, 
+            _recordacionUsuario, 
+            ...preguntaLimpia 
         } = pregunta;
         return preguntaLimpia;
     });

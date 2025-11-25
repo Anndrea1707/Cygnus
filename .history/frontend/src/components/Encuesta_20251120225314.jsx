@@ -31,8 +31,8 @@ function Encuesta({ usuario, onEncuestaCompletada }) {
     const mesesNum = Number(meses);
     const olvidoNum = Number(olvido);
 
-    const tiempo_meses = Number(meses);  // ⭐ Enviar en MESES
-    const tasa_olvido = olvidoNum / 100; // ⭐ Convertir porcentaje a decimal
+    const tiempoAnios = mesesNum / 12;
+    const tasaOlvido = olvidoNum / 100;
 
     try {
       const resp = await fetch(`/api/encuesta/${usuario._id}`, {
@@ -40,8 +40,8 @@ function Encuesta({ usuario, onEncuestaCompletada }) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           area_interes: "matematicas",
-          tiempo_area: tiempo_meses,    // ⭐ En MESES
-          tasa_olvido: tasa_olvido,     // ⭐ En decimal (0-1)
+          tiempo_area: tiempoAnios,
+          tasa_olvido: tasaOlvido,
           comodidad_area: comodidad,
           estilo_aprendizaje: estilo,
           tiempo_estudio: tiempo,

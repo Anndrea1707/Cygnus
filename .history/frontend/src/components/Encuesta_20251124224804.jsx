@@ -40,8 +40,8 @@ function Encuesta({ usuario, onEncuestaCompletada }) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           area_interes: "matematicas",
-          tiempo_area: tiempo_meses,    // ⭐ En MESES
-          tasa_olvido: tasa_olvido,     // ⭐ En decimal (0-1)
+          tiempo_area: tiempoAnios,
+          tasa_olvido: tasaOlvido,
           comodidad_area: comodidad,
           estilo_aprendizaje: estilo,
           tiempo_estudio: tiempo,

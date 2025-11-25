@@ -49,7 +49,7 @@ const progresoCursoSchema = new mongoose.Schema({
         type: Number,
         default: 0
     },
-
+    
     progresoPorcentual: {
         type: Number,
         default: 0
@@ -120,7 +120,7 @@ progresoCursoSchema.post('save', async function (doc) {
             // 2. OBTENER DATOS ORIGINALES
             const lambda_original = usuario.lambda_original;
             const tiempo_original_meses = usuario.tiempo_original_meses;
-
+            
             let tiempo_transcurrido_meses;
 
             // 3. CALCULAR TIEMPO TRANSCURRIDO
@@ -130,9 +130,9 @@ progresoCursoSchema.post('save', async function (doc) {
                 const fechaActual = new Date();
                 const diffMs = fechaActual - fechaRegistro;
                 tiempo_transcurrido_meses = diffMs / (1000 * 60 * 60 * 24 * 30.44); // convertir a meses
-
+                
                 console.log(`🎯 Primer curso - Tiempo desde registro: ${tiempo_transcurrido_meses.toFixed(2)} meses`);
-
+                
             } else {
                 // ✅ SEGUNDO CURSO+: tiempo desde último curso completado
                 const cursosCompletados = await this.constructor.find({
@@ -146,12 +146,12 @@ progresoCursoSchema.post('save', async function (doc) {
                     console.log(`❌ No se encontró curso anterior para comparar`);
                     return;
                 }
-
+                
                 const fechaUltimoCurso = cursosCompletados[0].fechaCompletado;
                 const fechaActual = new Date();
                 const diffMs = fechaActual - fechaUltimoCurso;
                 tiempo_transcurrido_meses = diffMs / (1000 * 60 * 60 * 24 * 30.44); // convertir a meses
-
+                
                 console.log(`📚 Curso #${totalCursosCompletados} - Tiempo desde último curso: ${tiempo_transcurrido_meses.toFixed(2)} meses`);
             }
 
@@ -159,7 +159,7 @@ progresoCursoSchema.post('save', async function (doc) {
             // Si original: tiempo_original_meses → lambda_original
             // Ahora: tiempo_transcurrido_meses → lambda_nueva
             const lambda_nueva = (lambda_original * tiempo_transcurrido_meses) / tiempo_original_meses;
-
+            
             // Limitar lambda_nueva entre 0.01 y 0.5 (valores razonables)
             const lambda_final = Math.max(0.01, Math.min(0.5, lambda_nueva));
 
@@ -190,9 +190,6 @@ progresoCursoSchema.post('save', async function (doc) {
             });
 
             console.log(`✅ Recordación actualizada correctamente para ${usuario.nombre_completo}`);
-
-            console.log(`🔄 Usuario actualizado en BD - nivel_recordacion_nuevo: ${usuarioActualizado.nivel_recordacion_nuevo}`);
-
 
         } catch (error) {
             console.error(`❌ Error en middleware de recordación:`, error);
