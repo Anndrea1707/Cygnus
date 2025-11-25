@@ -42,9 +42,9 @@ function calcularScoreCompleto({
     w1 = 0.5,
     w2 = 0.5,
 }) {
-    const t = mesesAnios(mesesDesdeUltimoRepaso);
+    const t = mesesAnios(mesesDesdeUltimoRepaso);  
     const p = probabilidadAcierto(theta, dificultad);
-    const r = recuerdo(t, lambda);
+    const r = recuerdo(t, lambda);                   
     return scoreAprendizaje(p, r, w1, w2);
 }
 
@@ -68,66 +68,44 @@ function calcularScore(pacierto, nivelRecordacion, w1 = 0.7, w2 = 0.3) {
 function seleccionarPreguntasAdaptativas(preguntas, usuario, cantidad) {
     const preguntasConScore = preguntas.map(pregunta => {
         // Obtener habilidad del usuario (priorizar habilidad_nueva)
-        const habilidad = (usuario.habilidad_nueva > 0 || usuario.habilidad_nueva !== null) ?
-            usuario.habilidad_nueva :
-            (usuario.prueba_conocimiento?.habilidad || 1);
-
+        const habilidad = usuario.habilidad_nueva > 0 ? 
+            usuario.habilidad_nueva : usuario.prueba_conocimiento.habilidad;
+        
         // Obtener nivel de recordación (priorizar nivel_recordacion_nuevo)
-        const recordacion = (usuario.nivel_recordacion_nuevo > 0 || usuario.nivel_recordacion_nuevo !== null) ?
-            usuario.nivel_recordacion_nuevo :
-            (usuario.nivel_recordacion || 0.5);
+        const recordacion = usuario.nivel_recordacion_nuevo > 0 || 
+                           usuario.nivel_recordacion_nuevo !== null ? 
+            usuario.nivel_recordacion_nuevo : usuario.nivel_recordacion;
 
         // Calcular P_acierto
         const pacierto = calcularPacierto(habilidad, pregunta.dificultad);
-
+        
         // Calcular Score final
         const score = calcularScore(pacierto, recordacion, 0.7, 0.3);
 
         return {
-            // ✅ MANTENER todas las propiedades originales de la pregunta
             ...pregunta,
-            // ✅ Agregar solo las propiedades nuevas para el cálculo
-            _scoreCalculado: score,
-            _paciertoCalculado: pacierto
+            score: score,
+            pacierto: pacierto
         };
     });
 
     // Ordenar por score descendente
-    preguntasConScore.sort((a, b) => b._scoreCalculado - a._scoreCalculado);
+    preguntasConScore.sort((a, b) => b.score - a.score);
 
     // Seleccionar las mejores y luego mezclar aleatoriamente
-    const topPreguntas = preguntasConScore.slice(0, Math.min(cantidad * 2, preguntasConScore.length));
-
+    const mejoresPreguntas = preguntasConScore.slice(0, Math.min(cantidad * 2, preguntasConScore.length));
+    
     // Mezclar aleatoriamente y tomar la cantidad solicitada
-    const preguntasFinales = mezclarArray(topPreguntas).slice(0, cantidad);
-
-    // ✅ LIMPIAR: Remover propiedades temporales antes de enviar al frontend
-    return preguntasFinales.map(pregunta => {
-        const { _scoreCalculado, _paciertoCalculado, ...preguntaLimpia } = pregunta;
-        return preguntaLimpia;
-    });
-}
-// -------------------------------------------
-// 🔹 Función para mezclar array (Fisher-Yates)
-// -------------------------------------------
-function mezclarArray(array) {
-    const nuevoArray = [...array];
-    for (let i = nuevoArray.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [nuevoArray[i], nuevoArray[j]] = [nuevoArray[j], nuevoArray[i]];
-    }
-    return nuevoArray;
+    return mezclarArray(mejoresPreguntas).slice(0, cantidad);
 }
 
-// Agregar al module.exports:
+// -------------------------------------------
+// 🔹 Exportación CommonJS
+// -------------------------------------------
 module.exports = {
     mesesAnios,
     probabilidadAcierto,
     recuerdo,
     scoreAprendizaje,
-    calcularScoreCompleto,
-    calcularPacierto,
-    calcularScore,
-    seleccionarPreguntasAdaptativas,
-    mezclarArray
+    calcularScoreCompleto
 };

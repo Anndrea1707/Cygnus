@@ -68,14 +68,13 @@ function calcularScore(pacierto, nivelRecordacion, w1 = 0.7, w2 = 0.3) {
 function seleccionarPreguntasAdaptativas(preguntas, usuario, cantidad) {
     const preguntasConScore = preguntas.map(pregunta => {
         // Obtener habilidad del usuario (priorizar habilidad_nueva)
-        const habilidad = (usuario.habilidad_nueva > 0 || usuario.habilidad_nueva !== null) ?
-            usuario.habilidad_nueva :
-            (usuario.prueba_conocimiento?.habilidad || 1);
+        const habilidad = usuario.habilidad_nueva > 0 ?
+            usuario.habilidad_nueva : usuario.prueba_conocimiento.habilidad;
 
         // Obtener nivel de recordación (priorizar nivel_recordacion_nuevo)
-        const recordacion = (usuario.nivel_recordacion_nuevo > 0 || usuario.nivel_recordacion_nuevo !== null) ?
-            usuario.nivel_recordacion_nuevo :
-            (usuario.nivel_recordacion || 0.5);
+        const recordacion = usuario.nivel_recordacion_nuevo > 0 ||
+            usuario.nivel_recordacion_nuevo !== null ?
+            usuario.nivel_recordacion_nuevo : usuario.nivel_recordacion;
 
         // Calcular P_acierto
         const pacierto = calcularPacierto(habilidad, pregunta.dificultad);
@@ -84,29 +83,22 @@ function seleccionarPreguntasAdaptativas(preguntas, usuario, cantidad) {
         const score = calcularScore(pacierto, recordacion, 0.7, 0.3);
 
         return {
-            // ✅ MANTENER todas las propiedades originales de la pregunta
             ...pregunta,
-            // ✅ Agregar solo las propiedades nuevas para el cálculo
-            _scoreCalculado: score,
-            _paciertoCalculado: pacierto
+            score: score,
+            pacierto: pacierto
         };
     });
 
     // Ordenar por score descendente
-    preguntasConScore.sort((a, b) => b._scoreCalculado - a._scoreCalculado);
+    preguntasConScore.sort((a, b) => b.score - a.score);
 
     // Seleccionar las mejores y luego mezclar aleatoriamente
-    const topPreguntas = preguntasConScore.slice(0, Math.min(cantidad * 2, preguntasConScore.length));
+    const mejoresPreguntas = preguntasConScore.slice(0, Math.min(cantidad * 2, preguntasConScore.length));
 
     // Mezclar aleatoriamente y tomar la cantidad solicitada
-    const preguntasFinales = mezclarArray(topPreguntas).slice(0, cantidad);
-
-    // ✅ LIMPIAR: Remover propiedades temporales antes de enviar al frontend
-    return preguntasFinales.map(pregunta => {
-        const { _scoreCalculado, _paciertoCalculado, ...preguntaLimpia } = pregunta;
-        return preguntaLimpia;
-    });
+    return mezclarArray(mejoresPreguntas).slice(0, cantidad);
 }
+
 // -------------------------------------------
 // 🔹 Función para mezclar array (Fisher-Yates)
 // -------------------------------------------

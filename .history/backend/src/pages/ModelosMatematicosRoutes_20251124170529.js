@@ -46,20 +46,6 @@ router.post('/seleccionar-preguntas', async (req, res) => {
       usuario: usuario?.nombre_completo
     });
 
-    // ✅ VERIFICAR ESTRUCTURA DE LAS PREGUNTAS
-    if (preguntas && preguntas.length > 0) {
-      console.log('🔍 Estructura primera pregunta:', {
-        tieneOpcionCorrecta: preguntas[0].opcionCorrecta !== undefined,
-        tieneOpciones: preguntas[0].opciones !== undefined,
-        tieneDificultad: preguntas[0].dificultad !== undefined,
-        preguntaEjemplo: {
-          interrogante: preguntas[0].interrogante?.substring(0, 50) + '...',
-          opcionCorrecta: preguntas[0].opcionCorrecta,
-          dificultad: preguntas[0].dificultad
-        }
-      });
-    }
-
     // Validaciones básicas
     if (!preguntas || !Array.isArray(preguntas)) {
       return res.status(400).json({
@@ -79,7 +65,7 @@ router.post('/seleccionar-preguntas', async (req, res) => {
     const cantidad = tipoEvaluacion === 'modulo' ? 10 : 15;
 
     // Usar las funciones estáticas del modelo
-    const preguntasSeleccionadas = require('../modelos/ModelosMatematicos').seleccionarPreguntasAdaptativas(
+    const preguntasSeleccionadas = require('../models/ModelosMatematicos').seleccionarPreguntasAdaptativas(
       preguntas,
       usuario,
       cantidad

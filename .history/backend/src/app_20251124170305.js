@@ -24,7 +24,8 @@ app.use("/api/cursos", require("./pages/Cursos"));
 app.use("/api/pruebas", require("./pages/PruebaConocimiento"));
 app.use("/api/sesiones", require("./pages/SesionUsuarioRoutes"));
 app.use("/api/progreso", require("./pages/ProgresoCursoRoutes"));
-app.use("/api/modelos-matematicos", require("./pages/ModelosMatematicosRoutes"));
+app.use("/api/")
+
 
 
 // Conexión a MongoDB

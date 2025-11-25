@@ -9,20 +9,39 @@ export default function EvaluacionModulo({ curso, modulo, moduloIndex, onNavigat
     const [puntaje, setPuntaje] = useState(0);
     const [mostrarModalFinal, setMostrarModalFinal] = useState(false);
     const [preguntasAdaptativas, setPreguntasAdaptativas] = useState([]);
-    const [cargandoPreguntas, setCargandoPreguntas] = useState(true);
+
+    const preguntas = preguntasAdaptativas.length > 0 ? preguntasAdaptativas : (modulo?.evaluacion?.preguntas || []);
+    const tiempoTotal = preguntas.length * 2 * 60; // 2 minutos por pregunta en segundos
+
+    // Inicializar el temporizador y las respuestas
+    useEffect(() => {
+        // Inicializar array de respuestas
+        setRespuestas(new Array(preguntas.length).fill(null));
+
+        // Iniciar temporizador
+        setTiempoRestante(tiempoTotal);
+
+        const timer = setInterval(() => {
+            setTiempoRestante(prev => {
+                if (prev <= 1) {
+                    clearInterval(timer);
+                    finalizarEvaluacion();
+                    return 0;
+                }
+                return prev - 1;
+            });
+        }, 1000);
+
+        return () => clearInterval(timer);
+    }, []);
 
     // useEffect para cargar preguntas adaptativas
     useEffect(() => {
         const cargarPreguntasAdaptativas = async () => {
-            if (!modulo?.evaluacion?.preguntas || !curso) {
-                setCargandoPreguntas(false);
-                return;
-            }
+            if (!modulo?.evaluacion?.preguntas || !curso) return;
 
             try {
                 const usuario = JSON.parse(localStorage.getItem("usuario"));
-                
-                console.log('🔄 Solicitando preguntas adaptativas para módulo...');
 
                 const response = await fetch('http://localhost:4000/api/modelos-matematicos/seleccionar-preguntas', {
                     method: 'POST',
@@ -36,72 +55,20 @@ export default function EvaluacionModulo({ curso, modulo, moduloIndex, onNavigat
                 });
 
                 const data = await response.json();
-                if (data.success && data.preguntasSeleccionadas.length > 0) {
-                    console.log('✅ Preguntas adaptativas cargadas:', data.preguntasSeleccionadas.length);
+                if (data.success) {
                     setPreguntasAdaptativas(data.preguntasSeleccionadas);
                 } else {
-                    console.log('⚠️ Usando preguntas normales (fallback)');
+                    // Fallback: usar todas las preguntas
                     setPreguntasAdaptativas(modulo.evaluacion.preguntas);
                 }
             } catch (error) {
-                console.error('❌ Error cargando preguntas adaptativas:', error);
+                console.error('Error cargando preguntas adaptativas:', error);
                 setPreguntasAdaptativas(modulo.evaluacion.preguntas);
-            } finally {
-                setCargandoPreguntas(false);
             }
         };
 
         cargarPreguntasAdaptativas();
     }, [modulo, curso]);
-
-    // ✅ INICIALIZAR respuestas cuando se cargan las preguntas adaptativas
-    useEffect(() => {
-        if (preguntasAdaptativas.length > 0) {
-            // Inicializar array de respuestas con el mismo length que preguntas
-            setRespuestas(new Array(preguntasAdaptativas.length).fill(null));
-            setTiempoRestante(preguntasAdaptativas.length * 2 * 60);
-        }
-    }, [preguntasAdaptativas]);
-
-    const preguntas = cargandoPreguntas ? [] : 
-                     (preguntasAdaptativas.length > 0 ? preguntasAdaptativas : 
-                     (modulo?.evaluacion?.preguntas || []));
-
-    // Inicializar el temporizador y las respuestas
-    useEffect(() => {
-        if (preguntas.length > 0) {
-            // Inicializar array de respuestas
-            setRespuestas(new Array(preguntas.length).fill(null));
-
-            // Iniciar temporizador
-            setTiempoRestante(preguntas.length * 2 * 60);
-
-            const timer = setInterval(() => {
-                setTiempoRestante(prev => {
-                    if (prev <= 1) {
-                        clearInterval(timer);
-                        finalizarEvaluacion();
-                        return 0;
-                    }
-                    return prev - 1;
-                });
-            }, 1000);
-
-            return () => clearInterval(timer);
-        }
-    }, [preguntas]);
-
-    // ✅ AGREGAR loading state
-    if (cargandoPreguntas) {
-        return (
-            <div className="evaluacion-cargando">
-                <div className="cargando-contenido">
-                    <h2>🔄 Cargando evaluación adaptativa...</h2>
-                    <p>Seleccionando las mejores preguntas para ti</p>
-                </div>
-            </div>
-        );
-    }
 
     const formatearTiempo = (segundos) => {
         const minutos = Math.floor(segundos / 60);
@@ -134,17 +101,18 @@ export default function EvaluacionModulo({ curso, modulo, moduloIndex, onNavigat
 
         let correctas = 0;
 
-        // ✅ CORREGIR: USAR SOLO LAS RESPUESTAS QUE CORRESPONDEN A LAS PREGUNTAS EXISTENTES
-        respuestas.slice(0, preguntas.length).forEach((respuesta, index) => {
-            const pregunta = preguntas[index];
-            
-            if (!pregunta) {
-                console.error(`❌ Pregunta ${index} no encontrada`);
+        // ✅ AGREGAR VALIDACIONES
+        respuestas.forEach((r, i) => {
+            // Verificar que la pregunta existe
+            if (!preguntas[i]) {
+                console.error(`❌ Pregunta ${i} no encontrada`);
                 return;
             }
 
+            const pregunta = preguntas[i];
+
             if (pregunta.opcionCorrecta === undefined) {
-                console.error(`❌ Pregunta ${index} no tiene opcionCorrecta:`, pregunta);
+                console.error(`❌ Pregunta ${i} no tiene opcionCorrecta:`, pregunta);
                 return;
             }
 
@@ -152,7 +120,7 @@ export default function EvaluacionModulo({ curso, modulo, moduloIndex, onNavigat
                 ? parseInt(pregunta.opcionCorrecta)
                 : pregunta.opcionCorrecta;
 
-            if (respuesta === opcionCorrecta) correctas++;
+            if (r === opcionCorrecta) correctas++;
         });
 
         const puntajeCalculado = (correctas / preguntas.length) * 100;
@@ -163,10 +131,9 @@ export default function EvaluacionModulo({ curso, modulo, moduloIndex, onNavigat
         // ✅ AGREGAR LOG PARA DEBUG
         console.log('📊 Resultados evaluación módulo:', {
             totalPreguntas: preguntas.length,
-            totalRespuestas: respuestas.length,
-            respuestasValidas: respuestas.slice(0, preguntas.length).length,
             correctas: correctas,
-            puntaje: puntajeCalculado
+            puntaje: puntajeCalculado,
+            respuestasUsuario: respuestas
         });
 
         // ⭐ REGISTRAR EVALUACIÓN EN BACKEND
@@ -204,7 +171,6 @@ export default function EvaluacionModulo({ curso, modulo, moduloIndex, onNavigat
 
         setEvaluacionCompletada(true);
     };
-
     // Función para manejar continuar
     const manejarContinuar = () => {
         const esUltimoModulo = moduloIndex === curso.modulos.length - 1;
@@ -220,6 +186,7 @@ export default function EvaluacionModulo({ curso, modulo, moduloIndex, onNavigat
         }
     };
 
+
     // En EvaluacionModulo.jsx - modificar la función irAEvaluacionFinal
     const irAEvaluacionFinal = () => {
         setMostrarModalFinal(false);
@@ -231,6 +198,7 @@ export default function EvaluacionModulo({ curso, modulo, moduloIndex, onNavigat
         });
     };
 
+
     const volverAlCurso = () => {
         setMostrarModalFinal(false);
         onNavigate("curso-vista", { curso });
@@ -239,30 +207,6 @@ export default function EvaluacionModulo({ curso, modulo, moduloIndex, onNavigat
     const pregunta = preguntas[preguntaActual];
 
     if (evaluacionCompletada) {
-        // ✅ CALCULAR CORRECTAMENTE LAS ESTADÍSTICAS
-        const respuestasValidas = respuestas.slice(0, preguntas.length);
-        const correctasCount = respuestasValidas.filter((respuesta, i) => {
-            const pregunta = preguntas[i];
-            if (!pregunta) return false;
-            
-            const opcionCorrecta = typeof pregunta.opcionCorrecta === "string"
-                ? parseInt(pregunta.opcionCorrecta)
-                : pregunta.opcionCorrecta;
-                
-            return respuesta === opcionCorrecta;
-        }).length;
-
-        const incorrectasCount = respuestasValidas.filter((respuesta, i) => {
-            const pregunta = preguntas[i];
-            if (!pregunta) return false;
-            
-            const opcionCorrecta = typeof pregunta.opcionCorrecta === "string"
-                ? parseInt(pregunta.opcionCorrecta)
-                : pregunta.opcionCorrecta;
-                
-            return respuesta !== opcionCorrecta;
-        }).length;
-
         return (
             <>
                 <div className="evaluacion-completada">
@@ -284,13 +228,25 @@ export default function EvaluacionModulo({ curso, modulo, moduloIndex, onNavigat
                             </div>
                             <div className="estadistica">
                                 <span className="estadistica-valor">
-                                    {correctasCount}
+                                    {respuestas.filter((resp, index) => {
+                                        // ⭐ CORRECCIÓN: Usar opcionCorrecta y asegurar que sea número
+                                        const opcionCorrecta = typeof preguntas[index].opcionCorrecta === 'string'
+                                            ? parseInt(preguntas[index].opcionCorrecta)
+                                            : preguntas[index].opcionCorrecta;
+                                        return resp === opcionCorrecta;
+                                    }).length}
                                 </span>
                                 <span className="estadistica-label">Correctas</span>
                             </div>
                             <div className="estadistica">
                                 <span className="estadistica-valor">
-                                    {incorrectasCount}
+                                    {respuestas.filter((resp, index) => {
+                                        // ⭐ CORRECCIÓN: Usar opcionCorrecta y asegurar que sea número
+                                        const opcionCorrecta = typeof preguntas[index].opcionCorrecta === 'string'
+                                            ? parseInt(preguntas[index].opcionCorrecta)
+                                            : preguntas[index].opcionCorrecta;
+                                        return resp !== opcionCorrecta;
+                                    }).length}
                                 </span>
                                 <span className="estadistica-label">Incorrectas</span>
                             </div>

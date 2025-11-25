@@ -365,17 +365,9 @@
 
     /* Animaciones */
     @keyframes pulse {
-        0% {
-            box-shadow: 0 0 6px var(--color-hover-shadow);
-        }
-
-        50% {
-            box-shadow: 0 0 18px var(--color-hover-shadow);
-        }
-
-        100% {
-            box-shadow: 0 0 6px var(--color-hover-shadow);
-        }
+        0% { box-shadow: 0 0 6px var(--color-hover-shadow); }
+        50% { box-shadow: 0 0 18px var(--color-hover-shadow); }
+        100% { box-shadow: 0 0 6px var(--color-hover-shadow); }
     }
 
     .puntaje-circular.aprobado {
@@ -390,31 +382,4 @@
 
     .temporizador.advertencia {
         background: var(--color-warning);
-    }
-
-    /* En Evaluacion.css - AGREGAR: */
-    .evaluacion-cargando {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        height: 60vh;
-        flex-direction: column;
-        text-align: center;
-    }
-
-    .cargando-contenido {
-        background: white;
-        padding: 2rem;
-        border-radius: 10px;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    }
-
-    .cargando-contenido h2 {
-        color: #3f51b5;
-        margin-bottom: 1rem;
-    }
-
-    .cargando-contenido p {
-        color: #666;
-        font-size: 1.1rem;
     }

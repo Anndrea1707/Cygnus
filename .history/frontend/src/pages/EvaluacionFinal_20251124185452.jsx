@@ -4,7 +4,7 @@ import "./Evaluacion.css";
 
 export default function EvaluacionFinal({ curso, evaluacion, onNavigate, onEvaluacionCompletada }) {
     const [preguntaActual, setPreguntaActual] = useState(0);
-    const [respuestas, setRespuestas] = useState([]);
+    const [respuestas, setRespuestas] = useState([]); // ← Este array debe coincidir con preguntas
     const [tiempoRestante, setTiempoRestante] = useState(null);
     const [evaluacionCompletada, setEvaluacionCompletada] = useState(false);
     const [puntaje, setPuntaje] = useState(0);
@@ -12,7 +12,16 @@ export default function EvaluacionFinal({ curso, evaluacion, onNavigate, onEvalu
     const [preguntasAdaptativas, setPreguntasAdaptativas] = useState([]);
     const [cargandoPreguntas, setCargandoPreguntas] = useState(true);
 
-    // useEffect para cargar preguntas adaptativas
+    // ✅ INICIALIZAR respuestas cuando se cargan las preguntas adaptativas
+    useEffect(() => {
+        if (preguntasAdaptativas.length > 0) {
+            // Inicializar array de respuestas con el mismo length que preguntas
+            setRespuestas(new Array(preguntasAdaptativas.length).fill(null));
+            setTiempoRestante(preguntasAdaptativas.length * 2 * 60);
+        }
+    }, [preguntasAdaptativas]);
+
+    // useEffect para cargar preguntas adaptativas (ya lo tienes)
     useEffect(() => {
         const cargarPreguntasAdaptativas = async () => {
             if (!evaluacion?.preguntas || !curso) {
@@ -22,7 +31,7 @@ export default function EvaluacionFinal({ curso, evaluacion, onNavigate, onEvalu
 
             try {
                 const usuario = JSON.parse(localStorage.getItem("usuario"));
-
+                
                 console.log('🔄 Solicitando preguntas adaptativas para evaluación final...');
                 
                 const response = await fetch('http://localhost:4000/api/modelos-matematicos/seleccionar-preguntas', {
@@ -31,12 +40,13 @@ export default function EvaluacionFinal({ curso, evaluacion, onNavigate, onEvalu
                     body: JSON.stringify({
                         preguntas: evaluacion.preguntas,
                         usuario: usuario,
-                        tipoEvaluacion: 'final', // 15 preguntas para final
+                        tipoEvaluacion: 'final',
                         cursoId: curso._id || curso.id
                     })
                 });
 
                 const data = await response.json();
+                
                 if (data.success && data.preguntasSeleccionadas.length > 0) {
                     console.log('✅ Preguntas adaptativas cargadas:', data.preguntasSeleccionadas.length);
                     setPreguntasAdaptativas(data.preguntasSeleccionadas);
@@ -55,76 +65,18 @@ export default function EvaluacionFinal({ curso, evaluacion, onNavigate, onEvalu
         cargarPreguntasAdaptativas();
     }, [evaluacion, curso]);
 
-    // ✅ INICIALIZAR respuestas cuando se cargan las preguntas adaptativas
-    useEffect(() => {
-        if (preguntasAdaptativas.length > 0) {
-            // Inicializar array de respuestas con el mismo length que preguntas
-            setRespuestas(new Array(preguntasAdaptativas.length).fill(null));
-            setTiempoRestante(preguntasAdaptativas.length * 2 * 60);
-        }
-    }, [preguntasAdaptativas]);
-
+    // ✅ USAR preguntas adaptativas
     const preguntas = cargandoPreguntas ? [] : 
                      (preguntasAdaptativas.length > 0 ? preguntasAdaptativas : 
                      (evaluacion?.preguntas || []));
 
-    // 🚨 MODIFICAR: Inicializar inmediatamente sin modal
-    useEffect(() => {
-        if (preguntas.length > 0) {
-            // Inicializar sin esperar por modal
-            setRespuestas(new Array(preguntas.length).fill(null));
-            setTiempoRestante(preguntas.length * 2 * 60);
-
-            const timer = setInterval(() => {
-                setTiempoRestante(prev => {
-                    if (prev <= 1) {
-                        clearInterval(timer);
-                        finalizarEvaluacion();
-                        return 0;
-                    }
-                    return prev - 1;
-                });
-            }, 1000);
-
-            return () => clearInterval(timer);
-        }
-    }, [preguntas]); // 🚨 Dependencia de preguntas
-
-    // 🚨 ELIMINAR completamente la función modalInicioEvaluacion
-    // const modalInicioEvaluacion = mostrarModalInicio && ( ... )
-
-    const formatearTiempo = (segundos) => {
-        const minutos = Math.floor(segundos / 60);
-        const segs = segundos % 60;
-        return `${minutos}:${segs < 10 ? "0" : ""}${segs}`;
-    };
-
-    const manejarRespuesta = (opcionIndex) => {
-        const nuevasRespuestas = [...respuestas];
-        nuevasRespuestas[preguntaActual] = opcionIndex;
-        setRespuestas(nuevasRespuestas);
-    };
-
-    const siguientePregunta = () => {
-        if (preguntaActual < preguntas.length - 1) {
-            setPreguntaActual(prev => prev + 1);
-        } else {
-            finalizarEvaluacion();
-        }
-    };
-
-    const preguntaAnterior = () => {
-        if (preguntaActual > 0) {
-            setPreguntaActual(prev => prev - 1);
-        }
-    };
-
+    // ✅ CORREGIR finalizarEvaluacion - usar solo las respuestas que corresponden
     const finalizarEvaluacion = async () => {
         if (!curso || !evaluacion || preguntas.length === 0) return;
 
         let correctas = 0;
 
-        // ✅ CORREGIR: USAR SOLO LAS RESPUESTAS QUE CORRESPONDEN A LAS PREGUNTAS EXISTENTES
+        // ✅ USAR SOLO LAS RESPUESTAS QUE CORRESPONDEN A LAS PREGUNTAS EXISTENTES
         respuestas.slice(0, preguntas.length).forEach((respuesta, index) => {
             const pregunta = preguntas[index];
             
@@ -150,7 +102,6 @@ export default function EvaluacionFinal({ curso, evaluacion, onNavigate, onEvalu
 
         setPuntaje(notaFinal);
 
-        // ✅ AGREGAR LOG PARA DEBUG
         console.log('📊 Resultados evaluación final:', {
             totalPreguntas: preguntas.length,
             totalRespuestas: respuestas.length,
@@ -210,25 +161,7 @@ export default function EvaluacionFinal({ curso, evaluacion, onNavigate, onEvalu
         setEvaluacionCompletada(true);
     };
 
-    const manejarFinalizarCurso = () => {
-        if (onEvaluacionCompletada) onEvaluacionCompletada();
-    };
-
-    const pregunta = preguntas[preguntaActual];
-
-    // ✅ AGREGAR loading state
-    if (cargandoPreguntas) {
-        return (
-            <div className="evaluacion-cargando">
-                <div className="cargando-contenido">
-                    <h2>🔄 Cargando evaluación final adaptativa...</h2>
-                    <p>Seleccionando las mejores preguntas para ti</p>
-                </div>
-            </div>
-        );
-    }
-
-    // 🚨 ELIMINAR la referencia al modal en el return
+    // ✅ CORREGIR también la sección de estadísticas en el resultado
     if (evaluacionCompletada) {
         // ✅ CALCULAR CORRECTAMENTE LAS ESTADÍSTICAS
         const respuestasValidas = respuestas.slice(0, preguntas.length);

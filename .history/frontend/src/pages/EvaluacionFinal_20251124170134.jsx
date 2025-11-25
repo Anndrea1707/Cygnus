@@ -10,21 +10,40 @@ export default function EvaluacionFinal({ curso, evaluacion, onNavigate, onEvalu
     const [puntaje, setPuntaje] = useState(0);
     const [certificadoGenerado, setCertificadoGenerado] = useState(false);
     const [preguntasAdaptativas, setPreguntasAdaptativas] = useState([]);
-    const [cargandoPreguntas, setCargandoPreguntas] = useState(true);
+
+    // const [mostrarModalInicio, setMostrarModalInicio] = useState(true);
+
+    const preguntas = evaluacion?.preguntas || [];
+    const tiempoTotal = preguntas.length * 2 * 60; // 2 minutos por pregunta
+
+    // 🚨 MODIFICAR: Inicializar inmediatamente sin modal
+    useEffect(() => {
+        // Inicializar sin esperar por modal
+        setRespuestas(new Array(preguntas.length).fill(null));
+        setTiempoRestante(tiempoTotal);
+
+        const timer = setInterval(() => {
+            setTiempoRestante(prev => {
+                if (prev <= 1) {
+                    clearInterval(timer);
+                    finalizarEvaluacion();
+                    return 0;
+                }
+                return prev - 1;
+            });
+        }, 1000);
+
+        return () => clearInterval(timer);
+    }, []); // 🚨 Quitar la dependencia de mostrarModalInicio
 
     // useEffect para cargar preguntas adaptativas
     useEffect(() => {
         const cargarPreguntasAdaptativas = async () => {
-            if (!evaluacion?.preguntas || !curso) {
-                setCargandoPreguntas(false);
-                return;
-            }
+            if (!evaluacion?.preguntas || !curso) return;
 
             try {
                 const usuario = JSON.parse(localStorage.getItem("usuario"));
 
-                console.log('🔄 Solicitando preguntas adaptativas para evaluación final...');
-                
                 const response = await fetch('http://localhost:4000/api/modelos-matematicos/seleccionar-preguntas', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -37,60 +56,20 @@ export default function EvaluacionFinal({ curso, evaluacion, onNavigate, onEvalu
                 });
 
                 const data = await response.json();
-                if (data.success && data.preguntasSeleccionadas.length > 0) {
-                    console.log('✅ Preguntas adaptativas cargadas:', data.preguntasSeleccionadas.length);
+                if (data.success) {
                     setPreguntasAdaptativas(data.preguntasSeleccionadas);
                 } else {
-                    console.log('⚠️ Usando preguntas normales (fallback)');
                     setPreguntasAdaptativas(evaluacion.preguntas);
                 }
             } catch (error) {
-                console.error('❌ Error cargando preguntas adaptativas:', error);
+                console.error('Error cargando preguntas adaptativas:', error);
                 setPreguntasAdaptativas(evaluacion.preguntas);
-            } finally {
-                setCargandoPreguntas(false);
             }
         };
 
         cargarPreguntasAdaptativas();
     }, [evaluacion, curso]);
 
-    // ✅ INICIALIZAR respuestas cuando se cargan las preguntas adaptativas
-    useEffect(() => {
-        if (preguntasAdaptativas.length > 0) {
-            // Inicializar array de respuestas con el mismo length que preguntas
-            setRespuestas(new Array(preguntasAdaptativas.length).fill(null));
-            setTiempoRestante(preguntasAdaptativas.length * 2 * 60);
-        }
-    }, [preguntasAdaptativas]);
-
-    const preguntas = cargandoPreguntas ? [] : 
-                     (preguntasAdaptativas.length > 0 ? preguntasAdaptativas : 
-                     (evaluacion?.preguntas || []));
-
-    // 🚨 MODIFICAR: Inicializar inmediatamente sin modal
-    useEffect(() => {
-        if (preguntas.length > 0) {
-            // Inicializar sin esperar por modal
-            setRespuestas(new Array(preguntas.length).fill(null));
-            setTiempoRestante(preguntas.length * 2 * 60);
-
-            const timer = setInterval(() => {
-                setTiempoRestante(prev => {
-                    if (prev <= 1) {
-                        clearInterval(timer);
-                        finalizarEvaluacion();
-                        return 0;
-                    }
-                    return prev - 1;
-                });
-            }, 1000);
-
-            return () => clearInterval(timer);
-        }
-    }, [preguntas]); // 🚨 Dependencia de preguntas
-
-    // 🚨 ELIMINAR completamente la función modalInicioEvaluacion
     // const modalInicioEvaluacion = mostrarModalInicio && ( ... )
 
     const formatearTiempo = (segundos) => {
@@ -124,40 +103,19 @@ export default function EvaluacionFinal({ curso, evaluacion, onNavigate, onEvalu
 
         let correctas = 0;
 
-        // ✅ CORREGIR: USAR SOLO LAS RESPUESTAS QUE CORRESPONDEN A LAS PREGUNTAS EXISTENTES
-        respuestas.slice(0, preguntas.length).forEach((respuesta, index) => {
-            const pregunta = preguntas[index];
-            
-            if (!pregunta) {
-                console.error(`❌ Pregunta ${index} no encontrada`);
-                return;
-            }
+        respuestas.forEach((r, i) => {
+            const opcionCorrecta =
+                typeof preguntas[i].opcionCorrecta === "string"
+                    ? parseInt(preguntas[i].opcionCorrecta)
+                    : preguntas[i].opcionCorrecta;
 
-            if (pregunta.opcionCorrecta === undefined) {
-                console.error(`❌ Pregunta ${index} no tiene opcionCorrecta:`, pregunta);
-                return;
-            }
-
-            const opcionCorrecta = typeof pregunta.opcionCorrecta === "string"
-                ? parseInt(pregunta.opcionCorrecta)
-                : pregunta.opcionCorrecta;
-
-            if (respuesta === opcionCorrecta) correctas++;
+            if (r === opcionCorrecta) correctas++;
         });
 
         const puntajeCalculado = (correctas / preguntas.length) * 100;
         const notaFinal = puntajeCalculado;
 
         setPuntaje(notaFinal);
-
-        // ✅ AGREGAR LOG PARA DEBUG
-        console.log('📊 Resultados evaluación final:', {
-            totalPreguntas: preguntas.length,
-            totalRespuestas: respuestas.length,
-            respuestasValidas: respuestas.slice(0, preguntas.length).length,
-            correctas: correctas,
-            puntaje: puntajeCalculado
-        });
 
         try {
             const usuario = JSON.parse(localStorage.getItem("usuario"));
@@ -216,44 +174,8 @@ export default function EvaluacionFinal({ curso, evaluacion, onNavigate, onEvalu
 
     const pregunta = preguntas[preguntaActual];
 
-    // ✅ AGREGAR loading state
-    if (cargandoPreguntas) {
-        return (
-            <div className="evaluacion-cargando">
-                <div className="cargando-contenido">
-                    <h2>🔄 Cargando evaluación final adaptativa...</h2>
-                    <p>Seleccionando las mejores preguntas para ti</p>
-                </div>
-            </div>
-        );
-    }
-
     // 🚨 ELIMINAR la referencia al modal en el return
     if (evaluacionCompletada) {
-        // ✅ CALCULAR CORRECTAMENTE LAS ESTADÍSTICAS
-        const respuestasValidas = respuestas.slice(0, preguntas.length);
-        const correctasCount = respuestasValidas.filter((respuesta, i) => {
-            const pregunta = preguntas[i];
-            if (!pregunta) return false;
-            
-            const opcionCorrecta = typeof pregunta.opcionCorrecta === "string"
-                ? parseInt(pregunta.opcionCorrecta)
-                : pregunta.opcionCorrecta;
-                
-            return respuesta === opcionCorrecta;
-        }).length;
-
-        const incorrectasCount = respuestasValidas.filter((respuesta, i) => {
-            const pregunta = preguntas[i];
-            if (!pregunta) return false;
-            
-            const opcionCorrecta = typeof pregunta.opcionCorrecta === "string"
-                ? parseInt(pregunta.opcionCorrecta)
-                : pregunta.opcionCorrecta;
-                
-            return respuesta !== opcionCorrecta;
-        }).length;
-
         return (
             <div className="evaluacion-completada">
                 <div className="evaluacion-header">
@@ -276,13 +198,25 @@ export default function EvaluacionFinal({ curso, evaluacion, onNavigate, onEvalu
                         </div>
                         <div className="estadistica">
                             <span className="estadistica-valor">
-                                {correctasCount}
+                                {respuestas.filter((resp, i) =>
+                                    resp === (
+                                        typeof preguntas[i].opcionCorrecta === "string"
+                                            ? parseInt(preguntas[i].opcionCorrecta)
+                                            : preguntas[i].opcionCorrecta
+                                    )
+                                ).length}
                             </span>
                             <span className="estadistica-label">Correctas</span>
                         </div>
                         <div className="estadistica">
                             <span className="estadistica-valor">
-                                {incorrectasCount}
+                                {respuestas.filter((resp, i) =>
+                                    resp !== (
+                                        typeof preguntas[i].opcionCorrecta === "string"
+                                            ? parseInt(preguntas[i].opcionCorrecta)
+                                            : preguntas[i].opcionCorrecta
+                                    )
+                                ).length}
                             </span>
                             <span className="estadistica-label">Incorrectas</span>
                         </div>
