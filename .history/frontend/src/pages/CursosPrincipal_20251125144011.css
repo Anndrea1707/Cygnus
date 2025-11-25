@@ -698,8 +698,8 @@ body {
 .cursos-principal,
 .detalle-curso-pro {
   min-height: 100vh;
+  display: flex;
   flex-direction: column;
-  margin-bottom: 50px;
 }
 
 footer {

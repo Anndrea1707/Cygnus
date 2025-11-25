@@ -535,6 +535,7 @@ footer * {
 .detalle-curso-pro {
   width: 100%;
   min-height: 100vh;
+  background: var(--color-dark);
   color: var(--color-light);
   padding: 3rem 2rem 4rem;
 }
@@ -663,6 +664,7 @@ footer * {
 
 body {
   min-height: 100vh;
+  display: flex;
   flex-direction: column;
 }
 
@@ -687,6 +689,7 @@ body {
 /* Para que la vista de DETALLE también empuje el footer abajo */
 .detalle-curso-pro {
   min-height: 100vh;
+  display: flex;
   flex-direction: column;
 }
 
@@ -698,16 +701,113 @@ body {
 .cursos-principal,
 .detalle-curso-pro {
   min-height: 100vh;
+  display: flex;
   flex-direction: column;
-  margin-bottom: 50px;
 }
 
 footer {
   margin-top: auto;
 }
+* {
+  outline: 1px solid red;
+}
+/* ---------------------- Fix footer pegado y espacio extra ---------------------- */
 
-#root, .App {
-  min-height: 100vh;
-  display: flex;
+/* Asegura que la app y root ocupen todo el alto y permitan layout column */
+html, body, #root, .App {
+  height: 100%;
+  min-height: 100%;
 }
 
+/* Uso de layout columna para poder empujar el footer hacia abajo.
+   Si ya usas esto en otro archivo global, igual deja las siguientes reglas. */
+body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Contenedor principal de la página (todo el contenido excepto footer) */
+.cursos-principal {
+  /* permite que el contenido empuje el footer hacia abajo */
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  /* Evita overflow horizontal causado por 100vw y mantiene tu fondo */
+  width: 100%;
+  max-width: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+/* Si usas una vista de detalle con clase propia, también debe crecer */
+.detalle-curso-pro {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-height: 0; /* importante para que los children no desborden en flex parents */
+  margin: 0;     /* elimina margin-bottom que pueda empujar el footer */
+  /* reduces padding-bottom para que no genere espacio extra debajo del footer */
+  padding-bottom: 2rem;
+}
+
+/* Contenido interior principal para que use el espacio disponible */
+.detalle-layout,
+.main-content {
+  flex: 1 1 auto;
+  min-height: 0; /* permite scroll interno sin empujar footer fuera de pantalla */
+}
+
+/* Footer: no usar 100vw (causa overflow/scroll) y evitar que se "encaje" mal */
+footer {
+  position: relative;     /* evita overlays problemáticos */
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;            /* usar 100% en vez de 100vw */
+  max-width: 100%;
+  margin: 0;
+  padding: 1.5rem 1rem;   /* espacio visual entre footer y contenido */
+  box-sizing: border-box;
+  flex-shrink: 0;         /* nunca reducir el footer */
+}
+
+/* Si el footer está dentro del componente detalle, forzamos que quede abajo */
+.detalle-curso-pro > footer {
+  margin-top: auto;
+}
+
+/* Limpia márgenes inesperados en los componentes que viste sobresaliendo */
+.detalle-info-box,
+.modulo-card,
+.tarjeta-curso,
+.grid-cursos,
+.detalle-layout {
+  box-sizing: border-box;
+}
+
+/* Evita que elementos con border-radius o sombras salgan del área visible
+   cuando tienes paddings grandes en layout. Ajusta paddings para que queden
+   espacios coherentes sin empujar el footer. */
+.detalle-layout {
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+/* evita hr o bordes con margenes grandes que empujen hacia abajo */
+footer hr, .detalle-curso-pro hr {
+  margin: 1rem 0;
+}
+
+/* Opcional — si aún ves color morado por detrás, revisa que no haya un
+   elemento de fondo (ej. .banner-motivacional) con height fijo grande.
+   Puedes limitarlo así: */
+.banner-motivacional {
+  margin-bottom: 0; /* no empuja el footer */
+}
+
+/* Por último, si tenías reglas debug (outline:1px solid red) quítalas */
+* { outline: none !important; }

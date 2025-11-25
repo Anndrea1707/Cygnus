@@ -14,7 +14,7 @@
 
 .faq-section h2 {
   font-family: 'Changa', sans-serif;
-  color: var(--color--dorad-ligh);
+  color: var(--color-light);
   margin-bottom: 50px;
   font-size: 2rem;
 }
@@ -81,7 +81,7 @@
 
 /* --- FORMULARIO PQRS --- */
 .pqrs-section {
-  background: var(--color-dark);
+  background: var(--color-dar);
   padding: 80px 20px 120px;
   display: flex;
   flex-direction: column;
@@ -89,7 +89,7 @@
 }
 
 .pqrs-section h2 {
-  color: var(--color-dorad-ligh);
+  color: var(--color-light);
   font-family: 'Changa', sans-serif;
   margin-bottom: 35px;
 }

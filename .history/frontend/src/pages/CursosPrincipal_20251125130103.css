@@ -330,6 +330,13 @@ footer * {
   margin: 0 auto;
 }
 
+/* Para evitar espacios laterales por padding del body */
+body,
+html {
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+}
 
 
 /* === POR QUÉ NOSOTROS === */
@@ -385,6 +392,11 @@ footer * {
   margin-bottom: 1.5rem;
 }
 
+/* ✅ Evita desbordes */
+body,
+html {
+  overflow-x: hidden !important;
+}
 
 .cursos-principal {
   width: 100vw;
@@ -535,6 +547,7 @@ footer * {
 .detalle-curso-pro {
   width: 100%;
   min-height: 100vh;
+  background: var(--color-dark);
   color: var(--color-light);
   padding: 3rem 2rem 4rem;
 }
@@ -638,6 +651,12 @@ footer * {
   line-height: 1.4;
 }
 
+.detalle-curso-pro {
+  padding-bottom: 6rem;
+  /* espacio para respirar arriba del footer */
+  margin-bottom: 2rem;
+}
+
 .lista-modulos {
   padding-right: 1rem;
   padding-left: 1rem;
@@ -653,6 +672,13 @@ footer * {
   padding-right: 3rem;
 }
 
+/* 🔹 Contenedor interno del footer sin márgenes */
+footer>* {
+  max-width: 100%;
+  margin: 0;
+  padding: 0;
+}
+
 /* === AJUSTES ESPECÍFICOS PARA LA ESTRUCTURA HTML === */
 /* Si el footer está dentro de .detalle-curso */
 .detalle-curso>footer {
@@ -661,9 +687,18 @@ footer * {
   width: 100%;
 }
 
+/* === VERSIÓN ALTERNATIVA SI EL FOOTER ESTÁ FUERA === */
 body {
-  min-height: 100vh;
+  display: flex;
   flex-direction: column;
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
+}
+
+.main-content {
+  flex: 1;
+  width: 100%;
 }
 
 /* 🔹 Botón login MÁS SEPARADO del footer */
@@ -684,30 +719,20 @@ body {
   transition: all 0.3s ease;
 }
 
-/* Para que la vista de DETALLE también empuje el footer abajo */
-.detalle-curso-pro {
-  min-height: 100vh;
-  flex-direction: column;
-}
-
-/* Footer pegado al final de la vista del curso */
-.detalle-curso-pro > footer {
-  margin-top: auto;
-}
-
-.cursos-principal,
-.detalle-curso-pro {
-  min-height: 100vh;
-  flex-direction: column;
-  margin-bottom: 50px;
-}
-
+/* === FOOTER CORREGIDO - SIN ESPACIOS === */
 footer {
+  position: relative;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100vw;
+  max-width: 100vw;
+  margin: 0;
+  padding: 0;
+  /* 🔹 Asegurar sin padding */
+  background: var(--color-dark);
   margin-top: auto;
+  /* 🔹 NUEVO: Empuja hacia abajo */
 }
 
-#root, .App {
-  min-height: 100vh;
-  display: flex;
-}
 

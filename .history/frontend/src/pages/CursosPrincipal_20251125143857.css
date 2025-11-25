@@ -450,7 +450,6 @@ footer * {
 .banner-motivacional {
   text-align: center;
   padding: 4rem 1.5rem;
-  background: linear-gradient(90deg, var(--color-primary-dark), var(--color-dark));
   margin-top: 5rem;
   box-shadow: inset 0 0 30px var(--color-hover-shadow);
 }
@@ -535,6 +534,7 @@ footer * {
 .detalle-curso-pro {
   width: 100%;
   min-height: 100vh;
+  background: var(--color-dark);
   color: var(--color-light);
   padding: 3rem 2rem 4rem;
 }
@@ -663,6 +663,7 @@ footer * {
 
 body {
   min-height: 100vh;
+  display: flex;
   flex-direction: column;
 }
 
@@ -687,6 +688,7 @@ body {
 /* Para que la vista de DETALLE también empuje el footer abajo */
 .detalle-curso-pro {
   min-height: 100vh;
+  display: flex;
   flex-direction: column;
 }
 
@@ -698,8 +700,8 @@ body {
 .cursos-principal,
 .detalle-curso-pro {
   min-height: 100vh;
+  display: flex;
   flex-direction: column;
-  margin-bottom: 50px;
 }
 
 footer {

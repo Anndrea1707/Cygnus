@@ -99,75 +99,73 @@ export default function CursosPrincipal({ currentPage, onLoginClick, onNavigate 
 
   // === DETALLE DE CURSO ===
   if (cursoSeleccionado) {
-    return (
-      <div className="detalle-curso-pro">
+  return (
+    <div className="detalle-curso-pro">
 
-        <button className="btn-volver" onClick={() => setCursoSeleccionado(null)}>
-          ← Volver a los cursos
-        </button>
+      <button className="btn-volver" onClick={() => setCursoSeleccionado(null)}>
+        ← Volver a los cursos
+      </button>
 
-        {/* Contenedor principal */}
-        <div className="detalle-layout">
+      {/* Contenedor principal */}
+      <div className="detalle-layout">
 
-          {/* COLUMNA IZQUIERDA */}
-          <div className="detalle-left">
-            <img
-              src={cursoSeleccionado.imagen}
-              alt={cursoSeleccionado.titulo}
-              className="detalle-img"
-            />
+        {/* COLUMNA IZQUIERDA */}
+        <div className="detalle-left">
+          <img
+            src={cursoSeleccionado.imagen}
+            alt={cursoSeleccionado.titulo}
+            className="detalle-img"
+          />
 
-            <div className="detalle-info-box">
-              <p><strong>⏱ Duración:</strong> {cursoSeleccionado.horas} horas</p>
-              <p><strong>📘 Nivel:</strong> {cursoSeleccionado.nivel}</p>
-              <p><strong>📦 Módulos:</strong> {cursoSeleccionado.modulos.length}</p>
+          <div className="detalle-info-box">
+            <p><strong>⏱ Duración:</strong> {cursoSeleccionado.horas} horas</p>
+            <p><strong>📘 Nivel:</strong> {cursoSeleccionado.nivel}</p>
+            <p><strong>📦 Módulos:</strong> {cursoSeleccionado.modulos.length}</p>
 
-              <p>
-                <strong>🗓 Publicado:</strong>{" "}
-                {cursoSeleccionado.fechaPublicacion
-                  ? new Date(cursoSeleccionado.fechaPublicacion).toLocaleDateString("es-CO")
-                  : cursoSeleccionado.fecha
-                    ? new Date(cursoSeleccionado.fecha).toLocaleDateString("es-CO")
-                    : "Sin fecha"}
-              </p>
-            </div>
-          </div>
-
-          {/* COLUMNA DERECHA */}
-          <div className="detalle-right">
-            <h1 className="detalle-titulo">{cursoSeleccionado.titulo}</h1>
-
-            <p className="detalle-descripcion-pro">{cursoSeleccionado.descripcion}</p>
-
-            {/* Módulos estilo PRO */}
-            <div className="modulos-detalle">
-              <h3>Módulos del curso</h3>
-
-              <div className="lista-modulos">
-                {cursoSeleccionado.modulos.map((mod, i) => (
-                  <div key={i} className="modulo-card">
-                    <div className="modulo-icono">📘</div>
-                    <div>
-                      <h4 className="modulo-titulo">{mod.nombre}</h4>
-                      <p className="modulo-descripcion">{mod.descripcion}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <button className="btn-login-detalle" onClick={onLoginClick}>
-              Iniciar sesión para acceder al contenido
-            </button>
+            <p>
+              <strong>🗓 Publicado:</strong>{" "}
+              {cursoSeleccionado.fechaPublicacion
+                ? new Date(cursoSeleccionado.fechaPublicacion).toLocaleDateString("es-CO")
+                : cursoSeleccionado.fecha
+                ? new Date(cursoSeleccionado.fecha).toLocaleDateString("es-CO")
+                : "Sin fecha"}
+            </p>
           </div>
         </div>
 
-        <br />
-        <br />
-        <Footer />
+        {/* COLUMNA DERECHA */}
+        <div className="detalle-right">
+          <h1 className="detalle-titulo">{cursoSeleccionado.titulo}</h1>
+
+          <p className="detalle-descripcion-pro">{cursoSeleccionado.descripcion}</p>
+
+          {/* Módulos estilo PRO */}
+          <div className="modulos-detalle">
+            <h3>Módulos del curso</h3>
+
+            <div className="lista-modulos">
+              {cursoSeleccionado.modulos.map((mod, i) => (
+                <div key={i} className="modulo-card">
+                  <div className="modulo-icono">📘</div>
+                  <div>
+                    <h4 className="modulo-titulo">{mod.nombre}</h4>
+                    <p className="modulo-descripcion">{mod.descripcion}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <button className="btn-login-detalle" onClick={onLoginClick}>
+            Iniciar sesión para acceder al contenido
+          </button>
+        </div>
       </div>
-    );
-  }
+
+      <Footer />
+    </div>
+  );
+}
 
 
   // === PÁGINA PRINCIPAL ===

@@ -162,8 +162,6 @@ export default function CursosPrincipal({ currentPage, onLoginClick, onNavigate 
           </div>
         </div>
 
-        <br />
-        <br />
         <Footer />
       </div>
     );

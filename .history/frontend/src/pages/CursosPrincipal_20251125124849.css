@@ -330,6 +330,13 @@ footer * {
   margin: 0 auto;
 }
 
+/* Para evitar espacios laterales por padding del body */
+body,
+html {
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+}
 
 
 /* === POR QUÉ NOSOTROS === */
@@ -385,6 +392,11 @@ footer * {
   margin-bottom: 1.5rem;
 }
 
+/* ✅ Evita desbordes */
+body,
+html {
+  overflow-x: hidden !important;
+}
 
 .cursos-principal {
   width: 100vw;
@@ -535,6 +547,7 @@ footer * {
 .detalle-curso-pro {
   width: 100%;
   min-height: 100vh;
+  background: var(--color-dark);
   color: var(--color-light);
   padding: 3rem 2rem 4rem;
 }
@@ -638,6 +651,11 @@ footer * {
   line-height: 1.4;
 }
 
+.detalle-curso-pro {
+  padding-bottom: 6rem;
+  /* espacio para respirar arriba del footer */
+}
+
 .lista-modulos {
   padding-right: 1rem;
   padding-left: 1rem;
@@ -650,64 +668,5 @@ footer * {
 
 .detalle-layout {
   padding-left: 1rem;
-  padding-right: 3rem;
+  padding-right: 5rem;
 }
-
-/* === AJUSTES ESPECÍFICOS PARA LA ESTRUCTURA HTML === */
-/* Si el footer está dentro de .detalle-curso */
-.detalle-curso>footer {
-  margin-top: auto;
-  /* 🔹 Empuja el footer hacia abajo */
-  width: 100%;
-}
-
-body {
-  min-height: 100vh;
-  flex-direction: column;
-}
-
-/* 🔹 Botón login MÁS SEPARADO del footer */
-.btn-login-detalle {
-  display: inline-block;
-  margin-top: 3rem;
-  margin-bottom: 4rem;
-  /* 🔹 Aumentado para más separación */
-  padding: 0.9rem 2rem;
-  border-radius: 25px;
-  border: none;
-  background: var(--color-primary);
-  color: var(--color-light);
-  font-weight: 600;
-  font-size: 1rem;
-  cursor: pointer;
-  box-shadow: 0 0 15px var(--color-hover-shadow);
-  transition: all 0.3s ease;
-}
-
-/* Para que la vista de DETALLE también empuje el footer abajo */
-.detalle-curso-pro {
-  min-height: 100vh;
-  flex-direction: column;
-}
-
-/* Footer pegado al final de la vista del curso */
-.detalle-curso-pro > footer {
-  margin-top: auto;
-}
-
-.cursos-principal,
-.detalle-curso-pro {
-  min-height: 100vh;
-  flex-direction: column;
-  margin-bottom: 50px;
-}
-
-footer {
-  margin-top: auto;
-}
-
-#root, .App {
-  min-height: 100vh;
-  display: flex;
-}
-

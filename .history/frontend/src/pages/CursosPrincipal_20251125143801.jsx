@@ -162,8 +162,6 @@ export default function CursosPrincipal({ currentPage, onLoginClick, onNavigate 
           </div>
         </div>
 
-        <br />
-        <br />
         <Footer />
       </div>
     );
@@ -263,14 +261,7 @@ export default function CursosPrincipal({ currentPage, onLoginClick, onNavigate 
         </div>
       </section>
 
-      {/* BANNER MOTIVACIONAL */}
-      <section className="banner-motivacional">
-        <h2>✨ El conocimiento es tu mejor herramienta.</h2>
-        <p>Únete a miles de estudiantes que ya están construyendo su futuro.</p>
-        <button className="btn-principal" onClick={onLoginClick}>
-          Crear cuenta gratis
-        </button>
-      </section>
+
 
       <Footer />
     </div>

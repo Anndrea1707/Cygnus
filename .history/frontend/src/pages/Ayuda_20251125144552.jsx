@@ -77,7 +77,16 @@ export default function Ayuda({ currentPage, onNavigate, onLoginClick }) {
     {
       pregunta: '¿Por qué el enfoque inicial en matemáticas?',
       respuesta:
-        'Decidimos enfocar nuestro lanzamiento en matemáticas porque es un área donde los estudiantes enfrentan mayores dificultades de aprendizaje y porque su naturaleza estructurada nos permite medir con precisión el progreso, refinar nuestros algoritmos de recomendación personalizada y garantizar una experiencia de alta calidad antes de expandirnos progresivamente a otras disciplinas, construyendo así una base sólida para convertirnos en la plataforma educativa integral que aspiramos ser.'
+        'Las matemáticas fueron seleccionadas como nuestro piloto porque:', '
+        Son una de las áreas con mayores dificultades de aprendizaje
+
+Desarrollan pensamiento lógico fundamental para otras disciplinas
+
+Permiten medir el progreso con precisión para refinar nuestros algoritmos
+
+Nos permiten garantizar calidad antes de expandirnos
+
+Esta estrategia nos asegura crear una base sólida antes de convertirnos en la plataforma educativa integral que visualizamos.'
     },
     {
       pregunta: '¿Cómo funciona la adaptación del contenido?',

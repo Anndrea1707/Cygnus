@@ -535,6 +535,7 @@ footer * {
 .detalle-curso-pro {
   width: 100%;
   min-height: 100vh;
+  background: var(--color-dark);
   color: var(--color-light);
   padding: 3rem 2rem 4rem;
 }
@@ -663,6 +664,7 @@ footer * {
 
 body {
   min-height: 100vh;
+  display: flex;
   flex-direction: column;
 }
 
@@ -687,6 +689,7 @@ body {
 /* Para que la vista de DETALLE también empuje el footer abajo */
 .detalle-curso-pro {
   min-height: 100vh;
+  display: flex;
   flex-direction: column;
 }
 
@@ -698,8 +701,8 @@ body {
 .cursos-principal,
 .detalle-curso-pro {
   min-height: 100vh;
+  display: flex;
   flex-direction: column;
-  margin-bottom: 50px;
 }
 
 footer {

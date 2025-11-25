@@ -330,6 +330,13 @@ footer * {
   margin: 0 auto;
 }
 
+/* Para evitar espacios laterales por padding del body */
+body,
+html {
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+}
 
 
 /* === POR QUÉ NOSOTROS === */
@@ -385,6 +392,11 @@ footer * {
   margin-bottom: 1.5rem;
 }
 
+/* ✅ Evita desbordes */
+body,
+html {
+  overflow-x: hidden !important;
+}
 
 .cursos-principal {
   width: 100vw;
@@ -535,6 +547,7 @@ footer * {
 .detalle-curso-pro {
   width: 100%;
   min-height: 100vh;
+  background: var(--color-dark);
   color: var(--color-light);
   padding: 3rem 2rem 4rem;
 }
@@ -653,18 +666,8 @@ footer * {
   padding-right: 3rem;
 }
 
-/* === AJUSTES ESPECÍFICOS PARA LA ESTRUCTURA HTML === */
-/* Si el footer está dentro de .detalle-curso */
-.detalle-curso>footer {
-  margin-top: auto;
-  /* 🔹 Empuja el footer hacia abajo */
-  width: 100%;
-}
 
-body {
-  min-height: 100vh;
-  flex-direction: column;
-}
+
 
 /* 🔹 Botón login MÁS SEPARADO del footer */
 .btn-login-detalle {
@@ -684,30 +687,15 @@ body {
   transition: all 0.3s ease;
 }
 
-/* Para que la vista de DETALLE también empuje el footer abajo */
-.detalle-curso-pro {
-  min-height: 100vh;
-  flex-direction: column;
+/* 🚫 Evitar desplazamiento horizontal */
+html,
+body {
+    overflow-x: hidden;
+    width: 100%;
 }
 
-/* Footer pegado al final de la vista del curso */
-.detalle-curso-pro > footer {
-  margin-top: auto;
+/* 🔧 Ajuste para que el contenedor ocupe toda la pantalla */
+.detalle-cur {
+    width: 100vw;
+    box-sizing: border-box;
 }
-
-.cursos-principal,
-.detalle-curso-pro {
-  min-height: 100vh;
-  flex-direction: column;
-  margin-bottom: 50px;
-}
-
-footer {
-  margin-top: auto;
-}
-
-#root, .App {
-  min-height: 100vh;
-  display: flex;
-}
-

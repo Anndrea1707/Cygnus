@@ -330,6 +330,13 @@ footer * {
   margin: 0 auto;
 }
 
+/* Para evitar espacios laterales por padding del body */
+body,
+html {
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+}
 
 
 /* === POR QUÉ NOSOTROS === */
@@ -385,6 +392,11 @@ footer * {
   margin-bottom: 1.5rem;
 }
 
+/* ✅ Evita desbordes */
+body,
+html {
+  overflow-x: hidden !important;
+}
 
 .cursos-principal {
   width: 100vw;
@@ -535,6 +547,7 @@ footer * {
 .detalle-curso-pro {
   width: 100%;
   min-height: 100vh;
+  background: var(--color-dark);
   color: var(--color-light);
   padding: 3rem 2rem 4rem;
 }
@@ -564,13 +577,14 @@ footer * {
 }
 
 .detalle-info-box {
-  margin-top: 1.5rem;
+  margin-top: 1.8rem;
   width: 100%;
-  background: var(--color-glass);
-  border: 1px solid var(--color-border-glass);
-  padding: 1.2rem 1.5rem;
-  border-radius: 12px;
-  box-shadow: 0 0 18px rgba(0, 0, 0, 0.25);
+  background: rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  padding: 1.4rem 1.5rem;
+  border-radius: 16px;
+  box-shadow: 0 0 22px rgba(0, 0, 0, 0.25);
 }
 
 /* COLUMNA DERECHA */
@@ -609,11 +623,12 @@ footer * {
   display: flex;
   align-items: flex-start;
   gap: 1rem;
-  background: var(--color-glass);
-  border: 1px solid var(--color-border-glass);
+  background: rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
   padding: 1rem 1.3rem;
-  border-radius: 12px;
-  box-shadow: 0 0 12px rgba(0, 0, 0, 0.25);
+  border-radius: 14px;
+  box-shadow: 0 0 22px rgba(0, 0, 0, 0.25);
   transition: transform .3s, box-shadow .3s;
 }
 
@@ -638,76 +653,25 @@ footer * {
   line-height: 1.4;
 }
 
-.lista-modulos {
-  padding-right: 1rem;
-  padding-left: 1rem;
-}
-
-.modulo-card {
-  width: 100%;
-  box-sizing: border-box;
-}
-
-.detalle-layout {
-  padding-left: 1rem;
-  padding-right: 3rem;
-}
-
-/* === AJUSTES ESPECÍFICOS PARA LA ESTRUCTURA HTML === */
-/* Si el footer está dentro de .detalle-curso */
-.detalle-curso>footer {
-  margin-top: auto;
-  /* 🔹 Empuja el footer hacia abajo */
-  width: 100%;
-}
-
-body {
-  min-height: 100vh;
-  flex-direction: column;
-}
-
-/* 🔹 Botón login MÁS SEPARADO del footer */
-.btn-login-detalle {
-  display: inline-block;
-  margin-top: 3rem;
-  margin-bottom: 4rem;
-  /* 🔹 Aumentado para más separación */
-  padding: 0.9rem 2rem;
-  border-radius: 25px;
-  border: none;
-  background: var(--color-primary);
-  color: var(--color-light);
-  font-weight: 600;
-  font-size: 1rem;
-  cursor: pointer;
-  box-shadow: 0 0 15px var(--color-hover-shadow);
-  transition: all 0.3s ease;
-}
-
-/* Para que la vista de DETALLE también empuje el footer abajo */
 .detalle-curso-pro {
-  min-height: 100vh;
+  min-w: 100vh;
+  display: flex;
   flex-direction: column;
-}
-
-/* Footer pegado al final de la vista del curso */
-.detalle-curso-pro > footer {
-  margin-top: auto;
-}
-
-.cursos-principal,
-.detalle-curso-pro {
-  min-height: 100vh;
-  flex-direction: column;
-  margin-bottom: 50px;
 }
 
 footer {
   margin-top: auto;
 }
 
-#root, .App {
-  min-height: 100vh;
-  display: flex;
+.detalle-layout {
+  margin-bottom: 3.5rem;
+  /* espacio antes del footer */
 }
 
+.detalle-layout {
+  padding: 0 2rem;
+}
+
+.detalle-layout {
+  padding-top: 2rem;
+}

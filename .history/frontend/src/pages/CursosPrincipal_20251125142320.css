@@ -385,6 +385,11 @@ footer * {
   margin-bottom: 1.5rem;
 }
 
+/* ✅ Evita desbordes */
+body,
+html {
+  overflow-x: hidden !important;
+}
 
 .cursos-principal {
   width: 100vw;
@@ -535,6 +540,7 @@ footer * {
 .detalle-curso-pro {
   width: 100%;
   min-height: 100vh;
+  background: var(--color-dark);
   color: var(--color-light);
   padding: 3rem 2rem 4rem;
 }
@@ -663,6 +669,7 @@ footer * {
 
 body {
   min-height: 100vh;
+  display: flex;
   flex-direction: column;
 }
 
@@ -687,6 +694,7 @@ body {
 /* Para que la vista de DETALLE también empuje el footer abajo */
 .detalle-curso-pro {
   min-height: 100vh;
+  display: flex;
   flex-direction: column;
 }
 
@@ -694,20 +702,3 @@ body {
 .detalle-curso-pro > footer {
   margin-top: auto;
 }
-
-.cursos-principal,
-.detalle-curso-pro {
-  min-height: 100vh;
-  flex-direction: column;
-  margin-bottom: 50px;
-}
-
-footer {
-  margin-top: auto;
-}
-
-#root, .App {
-  min-height: 100vh;
-  display: flex;
-}
-

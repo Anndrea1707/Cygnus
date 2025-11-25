@@ -75,9 +75,9 @@ export default function Ayuda({ currentPage, onNavigate, onLoginClick }) {
 
   const faqs = [
     {
-      pregunta: '¿Por qué el enfoque inicial en matemáticas?',
+      pregunta: '¿Por qué se eligieron las categorías actuales para el lanzamiento?',
       respuesta:
-        'Decidimos enfocar nuestro lanzamiento en matemáticas porque es un área donde los estudiantes enfrentan mayores dificultades de aprendizaje y porque su naturaleza estructurada nos permite medir con precisión el progreso, refinar nuestros algoritmos de recomendación personalizada y garantizar una experiencia de alta calidad antes de expandirnos progresivamente a otras disciplinas, construyendo así una base sólida para convertirnos en la plataforma educativa integral que aspiramos ser.'
+        'Las categorías implementadas fueron seleccionadas según las áreas con mayor demanda entre los estudiantes: Matemáticas, Lenguaje, Ciencias y Tecnología. Esto permite iniciar con una base sólida y expandir progresivamente a otras disciplinas según el comportamiento de los usuarios.'
     },
     {
       pregunta: '¿Cómo funciona la adaptación del contenido?',

@@ -535,6 +535,7 @@ footer * {
 .detalle-curso-pro {
   width: 100%;
   min-height: 100vh;
+  background: var(--color-dark);
   color: var(--color-light);
   padding: 3rem 2rem 4rem;
 }
@@ -661,10 +662,6 @@ footer * {
   width: 100%;
 }
 
-body {
-  min-height: 100vh;
-  flex-direction: column;
-}
 
 /* 🔹 Botón login MÁS SEPARADO del footer */
 .btn-login-detalle {
@@ -687,6 +684,7 @@ body {
 /* Para que la vista de DETALLE también empuje el footer abajo */
 .detalle-curso-pro {
   min-height: 100vh;
+  display: flex;
   flex-direction: column;
 }
 
@@ -694,20 +692,3 @@ body {
 .detalle-curso-pro > footer {
   margin-top: auto;
 }
-
-.cursos-principal,
-.detalle-curso-pro {
-  min-height: 100vh;
-  flex-direction: column;
-  margin-bottom: 50px;
-}
-
-footer {
-  margin-top: auto;
-}
-
-#root, .App {
-  min-height: 100vh;
-  display: flex;
-}
-
