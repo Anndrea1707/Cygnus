@@ -1,6 +1,6 @@
 // backend/src/pages/Login.js
 const express = require("express");
-const bcrypt = require("bcryptjs"); // o "bcrypt", si lo usas
+const bcryptjs = require("bcryptjs"); // o "bcrypt", si lo usas
 const Usuario = require("./Usuario");
 
 const router = express.Router();
@@ -19,7 +19,7 @@ const loginUsuario = async (req, res) => {
       return res.status(404).json({ mensaje: "Usuario no encontrado" });
     }
 
-    const contrasenaValida = await bcrypt.compare(contrasena, usuario.contrasena);
+    const contrasenaValida = await bcryptjs.compare(contrasena, usuario.contrasena);
     if (!contrasenaValida) {
       return res.status(401).json({ mensaje: "Contraseña incorrecta" });
     }

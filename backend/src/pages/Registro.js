@@ -1,5 +1,5 @@
 const express = require("express");
-const bcrypt = require("bcryptjs");
+const bcryptjs = require("bcryptjs");
 const Usuario = require("./Usuario"); // 👈 corregido según tu estructura (mismo folder)
 
 const router = express.Router();
@@ -46,8 +46,8 @@ router.post("/", async (req, res) => {
 
     // Encriptar contraseña
     console.log("🔐 Encriptando contraseña...");
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(contrasena, salt);
+    const salt = await bcryptjs.genSalt(10);
+    const hashedPassword = await bcryptjs.hash(contrasena, salt);
 
     // Guardar nuevo usuario
     const nuevoUsuario = new Usuario({
