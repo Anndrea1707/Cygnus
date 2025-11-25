@@ -74,31 +74,33 @@ export default function SoportePanel({ onClose, tipoVista, setTipoVista, usuario
     const faqs = [
         {
             pregunta: '¿Por qué el enfoque inicial en matemáticas?',
-            respuesta: 'Las matemáticas son fundamentales para el desarrollo del pensamiento lógico y representan una de las áreas con mayores dificultades de aprendizaje. Nuestro enfoque inicial nos permite perfeccionar los algoritmos de personalización y garantizar una experiencia de alta calidad antes de expandirnos a otras disciplinas académicas.'
+            respuesta:
+                'Decidimos enfocar nuestro lanzamiento en matemáticas porque es un área donde los estudiantes enfrentan mayores dificultades de aprendizaje y porque su naturaleza estructurada nos permite medir con precisión el progreso, refinar nuestros algoritmos de recomendación personalizada y garantizar una experiencia de alta calidad antes de expandirnos progresivamente a otras disciplinas, construyendo así una base sólida para convertirnos en la plataforma educativa integral que aspiramos ser.'
         },
         {
-            pregunta: "¿Cómo se adapta el contenido a mi nivel?",
-            respuesta: "Nuestra plataforma utiliza un sistema inteligente que analiza tu desempeño en tiempo real. Basándonos en tus aciertos, tiempos de respuesta y patrones de aprendizaje, ajustamos automáticamente la dificultad de los ejercicios y recomendamos contenido específico para fortalecer tus áreas de oportunidad."
+            pregunta: "¿Cómo funciona la adaptación del contenido?",
+            respuesta:
+                "La plataforma analiza tu progreso y ajusta la dificultad según tu desempeño...",
         },
         {
-            pregunta: "¿Qué modelos de personalización utiliza Cygnus?",
-            respuesta: "Implementamos dos modelos complementarios: el primero ajusta la dificultad del contenido según tu desempeño inmediato, y el segundo aplica la curva del olvido para programar repasos estratégicos en los momentos óptimos, maximizando tu retención a largo plazo."
+            pregunta: "¿Qué modelos matemáticos utiliza la plataforma?",
+            respuesta:
+                "Cygnus usa dos modelos sencillos para personalizar: uno ajusta dificultad y otro analiza el tiempo desde tu último estudio.",
         },
         {
-            pregunta: "¿Cómo funciona el sistema de recompensas y copas?",
-            respuesta: "Las copas son reconocimientos que obtienes al completar hitos significativos en tu aprendizaje. Inicialmente, funcionarán como logros visuales, pero en futuras actualizaciones planeamos convertirlas en un sistema de recompensas que permitirá desbloquear contenido exclusivo, personalizaciones de perfil y beneficios especiales dentro de la plataforma."
+            pregunta: "¿Cómo puedo registrarme o iniciar sesión?",
+            respuesta:
+                "Desde la página principal, selecciona Registrarse o Iniciar sesión y sigue los pasos.",
         },
         {
-            pregunta: "¿Qué es la tabla de progreso semanal y cómo interpretarla?",
-            respuesta: "La tabla de progreso semanal te muestra tu consistencia y evolución en el aprendizaje. Registra tus sesiones de estudio diarias, los temas revisados y tu rendimiento general, ayudándote a mantener una rutina de estudio constante."
+            pregunta: "¿Qué son las copas y cómo funcionan?",
+            respuesta:
+                "Las copas son recompensas al completar cursos. Permiten desbloquear contenido especial.",
         },
         {
-            pregunta: "¿Qué información muestran las gráficas de estadísticas?",
-            respuesta: "Nuestras gráficas comparativas te ofrecen insights valiosos sobre tu aprendizaje: la gráfica de habilidad muestra tu dominio en diferentes temas matemáticos, mientras que la gráfica de nivel de recordación visualiza cuánto retienes de lo aprendido, permitiéndote identificar áreas que necesitan repaso y monitorear tu mejora continua."
-        },
-        {
-            pregunta: "¿Los cursos tienen algún costo?",
-            respuesta: "Actualmente, todos los cursos de Cygnus son completamente gratuitos. Creemos en el acceso democratizado a la educación de calidad y nos enfocamos en proporcionar una experiencia de aprendizaje excepcional sin barreras económicas para nuestros estudiantes."
+            pregunta: "¿Puedo aprender sin conexión?",
+            respuesta:
+                "Por ahora no, pero estamos desarrollando una versión offline para el futuro.",
         },
     ];
 

@@ -170,6 +170,8 @@ export default function CursosPrincipal({ currentPage, onLoginClick, onNavigate 
     );
   }
 
+
+
   // === PÁGINA PRINCIPAL ===
   return (
     <div className="cursos-principal">

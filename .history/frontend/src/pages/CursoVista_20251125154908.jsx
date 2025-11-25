@@ -448,7 +448,7 @@ export default function CursoVista({ onNavigate, curso }) {
 
             {/* Evaluación final */}
             {notas.evaluacionFinal.completada && (
-              <div className="seccion-notas evaluacion-finalV">
+              <div className="seccion-notas evaluacion-final">
                 <h4>🎓 Evaluación Final</h4>
                 <div className="nota-final">
                   <div className="nota-info">
@@ -511,73 +511,73 @@ export default function CursoVista({ onNavigate, curso }) {
     );
   };
 
-  // ⭐ MODAL PARA EVALUACIÓN FINAL
-  const ModalEvaluacionFinal = () => {
-    // Calcular el número de preguntas usando la función existente
-    const preguntasEvaluacionFinal = obtenerPreguntasVisibles(
-      cursoActual?.evaluacionFinal,
-      true // esFinal = true
-    );
+ // ⭐ MODAL PARA EVALUACIÓN FINAL
+const ModalEvaluacionFinal = () => {
+  // Calcular el número de preguntas usando la función existente
+  const preguntasEvaluacionFinal = obtenerPreguntasVisibles(
+    cursoActual?.evaluacionFinal, 
+    true // esFinal = true
+  );
 
-    return (
-      <div className="modal-overlay">
-        <div className="modal-confirmacion">
-          <div className="modal-header">
-            <h2>🎓 Evaluación Final del Curso</h2>
-          </div>
+  return (
+    <div className="modal-overlay">
+      <div className="modal-confirmacion">
+        <div className="modal-header">
+          <h2>🎓 Evaluación Final del Curso</h2>
+        </div>
 
-          <div className="modal-body">
-            <div className="evaluacion-icono">📝</div>
-            <p>
-              Estás a punto de comenzar la evaluación final del curso{" "}
-              <strong>{cursoActual?.nombre}</strong>.
-            </p>
+        <div className="modal-body">
+          <div className="evaluacion-icono">📝</div>
+          <p>
+            Estás a punto de comenzar la evaluación final del curso{" "}
+            <strong>{cursoActual?.nombre}</strong>.
+          </p>
 
-            <div className="evaluacion-info">
-              <div className="info-item">
-                <span>📝 Preguntas:</span>
-                <span>{preguntasEvaluacionFinal}</span> {/* ✅ CORREGIDO */}
-              </div>
-              <div className="info-item">
-                <span>⏱️ Duración estimada:</span>
-                <span>{preguntasEvaluacionFinal * 2} minutos</span> {/* ✅ CORREGIDO */}
-              </div>
-              <div className="info-item">
-                <span>🎯 Puntuación mínima:</span>
-                <span>70% para aprobar</span>
-              </div>
+          <div className="evaluacion-info">
+            <div className="info-item">
+              <span>📝 Preguntas:</span>
+              <span>{preguntasEvaluacionFinal}</span> {/* ✅ CORREGIDO */}
             </div>
-
-            <div className="recomendaciones">
-              <h4>📋 Recomendaciones:</h4>
-              <ul>
-                <li>• Asegúrate de estar en un lugar tranquilo</li>
-                <li>• Evita cerrar la ventana durante la evaluación</li>
-                <li>• Lee cuidadosamente cada pregunta</li>
-                <li>• Revisa tus respuestas antes de finalizar</li>
-              </ul>
+            <div className="info-item">
+              <span>⏱️ Duración estimada:</span>
+              <span>{preguntasEvaluacionFinal * 2} minutos</span> {/* ✅ CORREGIDO */}
+            </div>
+            <div className="info-item">
+              <span>🎯 Puntuación mínima:</span>
+              <span>70% para aprobar</span>
             </div>
           </div>
 
-          <div className="modal-actions">
-            <button
-              className="btn-comenzar"
-              onClick={handleIniciarEvaluacionFinal}
-            >
-              🚀 Comenzar evaluación
-            </button>
-
-            <button
-              className="btn-secundario"
-              onClick={() => setMostrarModalEvaluacionFinal(false)}
-            >
-              Cancelar
-            </button>
+          <div className="recomendaciones">
+            <h4>📋 Recomendaciones:</h4>
+            <ul>
+              <li>• Asegúrate de estar en un lugar tranquilo</li>
+              <li>• Evita cerrar la ventana durante la evaluación</li>
+              <li>• Lee cuidadosamente cada pregunta</li>
+              <li>• Revisa tus respuestas antes de finalizar</li>
+            </ul>
           </div>
         </div>
+
+        <div className="modal-actions">
+          <button
+            className="btn-comenzar"
+            onClick={handleIniciarEvaluacionFinal}
+          >
+            🚀 Comenzar evaluación
+          </button>
+
+          <button
+            className="btn-secundario"
+            onClick={() => setMostrarModalEvaluacionFinal(false)}
+          >
+            Cancelar
+          </button>
+        </div>
       </div>
-    );
-  };
+    </div>
+  );
+};
 
   // ⭐ MODAL DE CURSO COMPLETADO ACTUALIZADO
   const ModalCursoCompletado = () => (

@@ -638,7 +638,7 @@ footer * {
 }
 
 .detalle-left {
-  flex: 0 0 620px; /* 🔥 ancho fijo para la columna izquierda */
+  flex: 0 0 20px; /* 🔥 ancho fijo para la columna izquierda */
 }
 
 .detalle-right {

@@ -17,7 +17,7 @@ body, html, #root { height: 100%; margin: 0; }
   width: 100%;
   min-height: 100vh;
   background: var(--color-dark);
-  color: var(--color-light); 
+  color: var(--color-light);
   display: flex;
   flex-direction: column;
   font-family: 'Outfit', system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
@@ -28,7 +28,7 @@ body, html, #root { height: 100%; margin: 0; }
   max-width: 1300px;
   margin: 0 auto;
   padding: 2.2rem 1.6rem;
-  background-color: var(--color-dark);
+  bac
 }
 
 /* HEADER / BIENVENIDA */
@@ -396,25 +396,4 @@ body, html, #root { height: 100%; margin: 0; }
   .progreso-general { grid-template-columns: repeat(2,1fr); gap: .8rem; }
   .pg-card { padding: .8rem; }
   .tarjeta-compacta { height: 420px; }
-}
-
-/* Estados de evaluación final */
-.compacta-eval.aprobada {
-  color: #10b981;
-  font-weight: 600;
-  background: rgba(16, 185, 129, 0.1);
-  padding: 4px 8px;
-  border-radius: 6px;
-  font-size: 0.85rem;
-  margin-top: 8px;
-}
-
-.compacta-eval.reprobada {
-  color: #ef4444;
-  font-weight: 600;
-  background: rgba(239, 68, 68, 0.1);
-  padding: 4px 8px;
-  border-radius: 6px;
-  font-size: 0.85rem;
-  margin-top: 8px;
 }

@@ -1,0 +1,521 @@
+/* === RESETEO GLOBAL === */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body,
+html {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  min-height: 100vh;
+  overflow-x: hidden;
+  font-family: 'Outfit', sans-serif;
+}
+
+/* === CONTENEDOR PRINCIPAL – SIN PADDING === */
+.perfil-container {
+  width: 100vw;
+  min-height: 100vh;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  overflow-x: hidden;
+  padding-bottom: 40px;
+}
+
+/* === TARJETA PRINCIPAL – 10px + ESQUINAS REDONDEADAS COMPLETAS === */
+.perfil-card {
+  background: linear-gradient(135deg, #3a0ca3, #240046);
+  border-radius: 24px; /* ← Todas las esquinas redondeadas */
+  padding: 32px;
+  width: 100%;
+  max-width: 1000px;
+  margin: 10px auto; /* ← 10px arriba y abajo */
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  color: white;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  overflow: hidden;
+}
+
+/* === ENCABEZADO === */
+.perfil-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 24px;
+  padding: 24px;
+  background-color: rgba(58, 12, 163, 0.3);
+  border-radius: 18px;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+}
+
+.perfil-avatar img {
+  width: 110px;
+  height: 110px;
+  border-radius: 50%;
+  border: 4px solid #9d4edd;
+  object-fit: cover;
+  box-shadow: 0 0 20px rgba(157, 78, 221, 0.4);
+}
+
+.perfil-info {
+  flex: 1;
+}
+
+.perfil-info h1 {
+  font-size: 1.9rem;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+
+.perfil-email {
+  font-size: 1rem;
+  color: #d1b3ff;
+  margin-bottom: 10px;
+}
+
+.perfil-progreso {
+  font-size: 0.95rem;
+  color: #c77dff;
+  font-weight: 600;
+}
+
+/* === ACCIONES DERECHA === */
+.perfil-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 14px;
+}
+
+.perfil-nivel {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background-color: #7b2cbf;
+  padding: 6px 14px;
+  border-radius: 30px;
+  font-size: 0.95rem;
+  color: white;
+}
+
+.nivel-numero {
+  background-color: #c77dff;
+  color: white;
+  font-weight: bold;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.95rem;
+}
+
+/* botón modificar perfil */
+.btn-modificar {
+  background-color: #9d4edd;
+  color: white;
+  border: none;
+  padding: 11px 22px;
+  border-radius: 28px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.95rem;
+  transition: all 0.3s ease;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
+}
+
+.btn-modificar:hover {
+  background-color: #c77dff;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 14px rgba(199, 125, 255, 0.3);
+}
+
+/* === SECCIONES === */
+.perfil-section {
+  width: 100%;
+}
+
+.perfil-section h2 {
+  font-size: 1.6rem;
+  margin-bottom: 22px;
+  text-align: center;
+  color: #d1b3ff;
+  font-weight: 600;
+}
+
+/* === CURSOS GRID === */
+.cursos-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 22px;
+  width: 100%;
+}
+
+/* === TARJETA CURSO === */
+.curso-card {
+  background-color: #4a148c;
+  border-radius: 16px;
+  padding: 0; /* padding contenido dividido para imagen + cuerpo */
+  text-align: left;
+  color: white;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
+  transition: transform 0.3s ease;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.curso-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.4);
+}
+
+/* IMAGEN DEL CURSO (arriba) */
+.curso-imagen-wrapper {
+  position: relative;
+  width: 100%;
+  height: 140px;
+  overflow: hidden;
+  background: linear-gradient(90deg, rgba(0,0,0,0.2), rgba(0,0,0,0.2));
+}
+
+.curso-imagen {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transform: scale(1);
+  transition: transform 0.4s ease;
+}
+
+.curso-card:hover .curso-imagen {
+  transform: scale(1.03);
+}
+
+/* LEVEL BADGE sobre la imagen (redondeado) */
+.curso-nivel-badge {
+  position: absolute;
+  right: 12px;
+  bottom: 12px;
+  background: rgba(0,0,0,0.45);
+  padding: 8px 12px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: white;
+  backdrop-filter: blur(4px);
+  border: 1px solid rgba(255,255,255,0.06);
+}
+
+.curso-nivel-text {
+  font-weight: 700;
+  font-size: 0.85rem;
+}
+
+/* CUERPO DEL CURSO */
+.curso-body {
+  padding: 18px 18px 22px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.curso-titulo {
+  font-size: 1.15rem;
+  margin-bottom: 6px;
+}
+
+.curso-descripcion {
+  font-size: 0.9rem;
+  color: #d1b3ff;
+  margin-bottom: 6px;
+}
+
+/* META (horas, modulos) */
+.curso-meta {
+  display: flex;
+  gap: 12px;
+  color: #f4e7ff;
+  font-size: 0.9rem;
+  margin-bottom: 8px;
+}
+
+.meta-item {
+  display: inline-flex;
+  gap: 6px;
+  align-items: center;
+}
+
+/* --- BARRA DE PROGRESO RENOMBRADA (NO CONFLICTO) --- */
+.perfil-progreso-barra {
+  width: 100%;
+  height: 8px;
+  background-color: rgba(255, 255, 255, 0.12);
+  border-radius: 6px;
+  overflow: hidden;
+  margin: 8px 0;
+  position: relative;
+}
+
+.perfil-progreso-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #9d4edd, #c77dff);
+  border-radius: 6px;
+  transition: width 0.4s ease;
+  width: 0%;
+}
+
+/* texto de progreso renombrado */
+.perfil-progreso-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.perfil-progreso-texto {
+  font-size: 0.88rem;
+  color: #c77dff;
+  font-weight: 600;
+}
+
+/* detalle modulo actual */
+.modulo-actual {
+  font-size: 0.85rem;
+  color: #e7d7ff;
+}
+
+/* detalles pequeños del progreso dentro de la tarjeta */
+.progreso-detalles {
+  margin-top: 6px;
+  color: #e8d9ff;
+  font-size: 0.86rem;
+}
+
+.progreso-detalle-item.completado {
+  color: #ffe9a1;
+}
+
+/* BOTÓN CONTINUAR / VER CURSO */
+.btn-continuar-curso {
+  margin-top: 10px;
+  background: linear-gradient(135deg, #7b2cbf, #9d4edd);
+  color: white;
+  border: none;
+  padding: 10px 12px;
+  border-radius: 12px;
+  cursor: pointer;
+  font-weight: 700;
+  align-self: flex-start;
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+.btn-continuar-curso:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 18px rgba(157, 78, 221, 0.18);
+}
+
+/* === SIN CURSOS (fallback) === */
+.sin-cursos {
+  text-align: center;
+  padding: 30px;
+  color: #f2e6ff;
+}
+
+.btn-explorar-cursos {
+  margin-top: 12px;
+  background: #9d4edd;
+  color: white;
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+}
+
+/* === MEDALLAS Y TARJETAS PEQUEÑAS === */
+.medallas-grid {
+  display: flex;
+  gap: 22px;
+  flex-wrap: wrap;
+  justify-content: center;
+  width: 100%;
+}
+
+.medalla-card {
+  background-color: rgba(58, 12, 163, 0.4);
+  border-radius: 16px;
+  padding: 22px;
+  width: 190px;
+  text-align: center;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease;
+  backdrop-filter: blur(6px);
+}
+
+/* COMENTARIOS y estilos reutilizados */
+.comentario {
+  background-color: rgba(58, 12, 163, 0.3);
+  padding: 16px;
+  border-radius: 14px;
+  margin-bottom: 14px;
+  font-size: 0.95rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.comentario strong {
+  color: #c77dff;
+}
+
+/* === RESPONSIVE === */
+@media (max-width: 768px) {
+  .perfil-card {
+    margin: 10px auto;
+    padding: 24px;
+    border-radius: 20px;
+  }
+
+  .perfil-header {
+    flex-direction: column;
+    text-align: center;
+    gap: 20px;
+    padding: 20px;
+  }
+
+  .perfil-info,
+  .perfil-actions {
+    width: 100%;
+    align-items: center;
+  }
+
+  .cursos-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .medalla-card {
+    width: 100%;
+    max-width: 220px;
+  }
+
+  .curso-imagen-wrapper {
+    height: 180px;
+  }
+}
+
+/* === TARJETA DE GRÁFICA === */
+.grafica-card {
+  background: linear-gradient(145deg, rgba(120, 0, 200, 0.4), rgba(60, 0, 130, 0.3));
+  padding: 30px;
+  border-radius: 20px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(4px);
+}
+
+/* === GRÁFICA MEJORADA === */
+.grafica-rango {
+  text-align: center;
+  color: #e9d7ff;
+  margin-bottom: 14px;
+  font-size: 0.9rem;
+}
+
+/* CONTENEDOR GENERAL */
+.grafica-wrapper {
+  display: flex;
+  gap: 14px;
+  align-items: flex-end;
+  padding: 10px 0;
+}
+
+/* EJE IZQUIERDO */
+.grafica-eje {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 240px;
+  padding-right: 10px;
+
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #ffe6ff;
+
+  /* Línea vertical estilo eje cartesiano */
+  border-right: 2px solid rgba(255, 230, 255, 0.25);
+
+  /* Ligero brillo */
+  text-shadow: 0 0 4px rgba(255, 170, 255, 0.6);
+}
+
+
+/* BARRAS */
+.grafica-barras {
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+  flex: 1;
+  height: 240px;
+  align-items: flex-end;
+}
+
+.grafica-dia {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+/* LA BARRA */
+.grafica-barra {
+  width: 30px;
+  background: linear-gradient(180deg, #c77dff, #7b2cbf);
+  border-radius: 10px 10px 4px 4px;
+  box-shadow: 0 0 15px rgba(199, 125, 255, 0.5);
+  transition: height 0.4s ease, transform 0.2s ease;
+}
+
+.grafica-barra:hover {
+  transform: scale(1.07);
+}
+
+/* TEXTO BAJO LAS BARRAS */
+.grafica-dia-txt {
+  font-size: 0.9rem;
+  color: #f3cdff;
+  font-weight: 600;
+}
+
+.grafica-horas-txt {
+  font-size: 0.85rem;
+  color: #ddd;
+}
+
+
+/* Línea del eje X (bajo los días) */
+.grafica-eje-x {
+  width: 100%;
+  height: 2px;
+  background: rgba(255, 230, 255, 0.25);
+  margin-top: 6px;
+  border-radius: 2px;
+}
+.grafica-sin-datos {
+  color: #ddd;
+  text-align: center;
+  width: 100%;
+  padding-top: 20px;
+}
+/* Pequeñas utilidades */
+.cargando-cursos { text-align:center; padding: 18px; color:#e7d7ff; }
+.spinner { width:30px; height:30px; border-radius:50%; border:4px solid rgba(255,255,255,0.12); border-top-color:#c77dff; animation: spin 1s linear infinite; margin: 0 auto 8px; }
+@keyframes spin { to { transform: rotate(360deg); } }

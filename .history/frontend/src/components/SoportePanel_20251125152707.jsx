@@ -90,7 +90,7 @@ export default function SoportePanel({ onClose, tipoVista, setTipoVista, usuario
         },
         {
             pregunta: "¿Qué es la tabla de progreso semanal y cómo interpretarla?",
-            respuesta: "La tabla de progreso semanal te muestra tu consistencia y evolución en el aprendizaje. Registra tus sesiones de estudio diarias, los temas revisados y tu rendimiento general, ayudándote a mantener una rutina de estudio constante."
+            respuesta: "La tabla de progreso semanal te muestra tu consistencia y evolución en el aprendizaje. Registra tus sesiones de estudio diarias, los temas revisados y tu rendimiento general. Las celdas coloreadas indican tu actividad: intensidad alta (verde), media (amarillo) o baja (rojo), ayudándote a mantener una rutina de estudio constante."
         },
         {
             pregunta: "¿Qué información muestran las gráficas de estadísticas?",

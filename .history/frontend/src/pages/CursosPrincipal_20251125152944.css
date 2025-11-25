@@ -531,29 +531,25 @@ footer * {
 }
 
 /* === DETALLE CURSO PRO === */
+
 .detalle-curso-pro {
   width: 100%;
   min-height: 100vh;
-  padding: 3rem 2rem 4rem;
   color: var(--color-light);
-  display: flex;
-  flex-direction: column;
+  padding: 3rem 2rem 4rem;
 }
 
-/* LAYOUT en 2 columnas */
 .detalle-layout {
   display: flex;
-  justify-content: center;
-  align-items: flex-start;
   flex-wrap: wrap;
   gap: 3rem;
   max-width: 1300px;
   margin: 0 auto;
 }
 
-/* Columna izquierda */
+/* COLUMNA IZQUIERDA */
 .detalle-left {
-  flex: 1 1 400px;
+  flex: 1 1 380px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -561,46 +557,45 @@ footer * {
 
 .detalle-img {
   width: 100%;
-  max-width: 460px;
+  max-width: 450px;
   border-radius: 14px;
-  box-shadow: 0 0 25px var(--color-hover-shadow);
   object-fit: cover;
+  box-shadow: 0 0 25px var(--color-hover-shadow);
 }
 
-/* Caja de info debajo de la imagen */
 .detalle-info-box {
   margin-top: 1.5rem;
   width: 100%;
   background: var(--color-glass);
   border: 1px solid var(--color-border-glass);
-  padding: 1.3rem 1.6rem;
+  padding: 1.2rem 1.5rem;
   border-radius: 12px;
-  box-shadow: 0 0 18px rgba(0,0,0,0.25);
-  line-height: 1.6;
+  box-shadow: 0 0 18px rgba(0, 0, 0, 0.25);
 }
 
-/* Columna derecha */
+/* COLUMNA DERECHA */
 .detalle-right {
-  flex: 1 1 480px;
+  flex: 1 1 500px;
 }
 
 .detalle-titulo {
   font-size: 2.4rem;
   color: var(--color-lavandaClaro);
+  text-shadow: 0 0 12px rgba(180, 120, 255, 0.4);
   margin-bottom: 1rem;
 }
 
 .detalle-descripcion-pro {
-  font-size: 1.1rem;
   color: var(--color-subtext);
+  font-size: 1.1rem;
   line-height: 1.7;
   margin-bottom: 2rem;
 }
 
-/* Módulos */
+/* === MÓDULOS PRO === */
 .modulos-detalle h3 {
   color: var(--color-dorad-ligh);
-  margin-bottom: 1.2rem;
+  margin-bottom: 1.3rem;
   font-size: 1.5rem;
 }
 
@@ -611,13 +606,20 @@ footer * {
 }
 
 .modulo-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
   background: var(--color-glass);
+  border: 1px solid var(--color-border-glass);
   padding: 1rem 1.3rem;
   border-radius: 12px;
-  border: 1px solid var(--color-border-glass);
-  display: flex;
-  gap: 1rem;
-  align-items: flex-start;
+  box-shadow: 0 0 12px rgba(0, 0, 0, 0.25);
+  transition: transform .3s, box-shadow .3s;
+}
+
+.modulo-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 0 20px var(--color-hover-shadow);
 }
 
 .modulo-icono {
@@ -625,22 +627,77 @@ footer * {
   color: var(--color-dorad-ligh);
 }
 
-.detalle-layout {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  flex-wrap: nowrap; /* 🔥 Fuerza columnas lado a lado */
-  gap: 3rem;
-  max-width: 1300px;
-  margin: 0 auto;
-  padding: 0 2rem;
+.modulo-titulo {
+  color: var(--color-lavandaClaro);
+  margin: 0;
+}
+
+.modulo-descripcion {
+  color: var(--color-subtext);
+  margin-top: 4px;
+  line-height: 1.4;
+}
+
+.lista-modulos {
+  padding-right: 1rem;
+  padding-left: 1rem;
+}
+
+.modulo-card {
   width: 100%;
+  box-sizing: border-box;
 }
 
-.detalle-left {
-  flex: 0 0 620px; /* 🔥 ancho fijo para la columna izquierda */
+.detalle-layout {
+  padding-left: 1rem;
+  padding-right: 3rem;
 }
 
-.detalle-right {
-  flex: 1; /* 🔥 ocupa todo el espacio restante */
+
+
+body {
+  min-height: 100vh;
+  flex-direction: column;
 }
+
+/* 🔹 Botón login MÁS SEPARADO del footer */
+.btn-login-detalle {
+  display: inline-block;
+  margin-top: 3rem;
+  margin-bottom: 4rem;
+  /* 🔹 Aumentado para más separación */
+  padding: 0.9rem 2rem;
+  border-radius: 25px;
+  border: none;
+  background: var(--color-primary);
+  color: var(--color-light);
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  box-shadow: 0 0 15px var(--color-hover-shadow);
+  transition: all 0.3s ease;
+}
+
+/* Para que la vista de DETALLE también empuje el footer abajo */
+.detalle-curso-pro {
+  min-height: 100vh;
+  flex-direction: column;
+}
+
+/* Footer pegado al final de la vista del curso */
+.detalle-curso-pro > footer {
+  margin-top: auto;
+}
+
+.cursos-principal,
+.detalle-curso-pro {
+  min-height: 100vh;
+  flex-direction: column;
+  margin-bottom: 50px;
+}
+
+footer {
+  margin-top: auto;
+}
+
+

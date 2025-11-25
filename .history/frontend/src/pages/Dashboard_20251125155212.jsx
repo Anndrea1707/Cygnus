@@ -7,7 +7,7 @@ import { recomendarCursos } from "../helpers/recomendaciones";
 
 function Dashboard({ usuario, onLogout, onNavigate }) {
   const [mostrarSoporte, setMostrarSoporte] = useState(false);
-  const [cursosConProgreso, setCursosConProgreso] = useState([]);
+  const [cursosConProgreso, setCursosConProgreso] = useState([]); 
   const [cursosCompletados, setCursosCompletados] = useState([]);
   const [loading, setLoading] = useState(true);
   const [todosLosCursos, setTodosLosCursos] = useState([]);
@@ -89,74 +89,74 @@ function Dashboard({ usuario, onLogout, onNavigate }) {
   );
 
   const TarjetaCompacta = ({ curso, tipo = "recomendado" }) => {
-    const progresoPct = Number(curso?.progreso?.progresoPorcentual || 0);
-    const evaluacionFinalCompletada = curso?.progreso?.evaluacionFinalCompletada;
-    const notaEvaluacionFinal = curso?.progreso?.notaEvaluacionFinal || 0;
-    const evaluacionAprobada = notaEvaluacionFinal >= 70;
+  const progresoPct = Number(curso?.progreso?.progresoPorcentual || 0);
+  const evaluacionFinalCompletada = curso?.progreso?.evaluacionFinalCompletada;
+  const notaEvaluacionFinal = curso?.progreso?.notaEvaluacionFinal || 0;
+  const evaluacionAprobada = notaEvaluacionFinal >= 70;
 
-    return (
-      <article className="tarjeta-compacta" aria-label={curso.nombre}>
-        <div className="compacta-imagen">
-          <img src={curso.imagen} alt={curso.nombre} />
-          {tipo !== "recomendado" && (
-            <span className={`compacta-badge ${progresoPct >= 100 ? "completado" : ""}`}>
-              {Math.round(progresoPct)}%
-            </span>
-          )}
+  return (
+    <article className="tarjeta-compacta" aria-label={curso.nombre}>
+      <div className="compacta-imagen">
+        <img src={curso.imagen} alt={curso.nombre} />
+        {tipo !== "recomendado" && (
+          <span className={`compacta-badge ${progresoPct >= 100 ? "completado" : ""}`}>
+            {Math.round(progresoPct)}%
+          </span>
+        )}
+      </div>
+
+      <div className="compacta-body">
+        <h3 className="compacta-titulo">{curso.nombre}</h3>
+        <p className="compacta-descripcion descripcion-cortada">{curso.descripcion}</p>
+        <div className="compacta-info">
+          <span className="tag-nivel">{curso.nivel}</span>
+          <span className="tag-modulos">{curso.modulos?.length || 0} módulos</span>
         </div>
 
-        <div className="compacta-body">
-          <h3 className="compacta-titulo">{curso.nombre}</h3>
-          <p className="compacta-descripcion descripcion-cortada">{curso.descripcion}</p>
-          <div className="compacta-info">
-            <span className="tag-nivel">{curso.nivel}</span>
-            <span className="tag-modulos">{curso.modulos?.length || 0} módulos</span>
-          </div>
-
-          {tipo === "progreso" && (
-            <>
-              <div className="compacta-progreso">
-                <div className="compacta-progressbar" aria-hidden>
-                  <div
-                    className="compacta-fill"
-                    style={{ width: `${Math.max(0, Math.min(100, progresoPct))}%` }}
-                  />
-                </div>
-                <div className="compacta-progresstext">{Math.round(progresoPct)}% completado</div>
+        {tipo === "progreso" && (
+          <>
+            <div className="compacta-progreso">
+              <div className="compacta-progressbar" aria-hidden>
+                <div
+                  className="compacta-fill"
+                  style={{ width: `${Math.max(0, Math.min(100, progresoPct))}%` }}
+                />
               </div>
+              <div className="compacta-progresstext">{Math.round(progresoPct)}% completado</div>
+            </div>
 
-              <div className="compacta-detalles">
-                <div>
-                  <span className="det-label">Módulo actual:</span>{" "}
-                  <span className="det-val">
-                    {Number(curso.progreso?.moduloActual ?? 0) + 1} de {curso.modulos?.length || 0}
-                  </span>
-                </div>
-                <div>
-                  <span className="det-label">Completados:</span>{" "}
-                  <span className="det-val">{curso.progreso?.modulosCompletados?.length || 0}</span>
-                </div>
+            <div className="compacta-detalles">
+              <div>
+                <span className="det-label">Módulo actual:</span>{" "}
+                <span className="det-val">
+                  {Number(curso.progreso?.moduloActual ?? 0) + 1} de {curso.modulos?.length || 0}
+                </span>
               </div>
+              <div>
+                <span className="det-label">Completados:</span>{" "}
+                <span className="det-val">{curso.progreso?.modulosCompletados?.length || 0}</span>
+              </div>
+            </div>
 
-              {/* ✅ CORREGIDO: Mostrar estado real de la evaluación final */}
-              {evaluacionFinalCompletada && (
-                <div className={`compacta-eval ${evaluacionAprobada ? 'aprobada' : 'reprobada'}`}>
-                  {evaluacionAprobada ? '✅ Evaluación final aprobada' : '❌ Evaluación final reprobada'}
-                </div>
-              )}
-            </>
-          )}
+            {/* ✅ CORREGIDO: Mostrar estado real de la evaluación final */}
+            {evaluacionFinalCompletada && (
+              <div className={`compacta-eval ${evaluacionAprobada ? 'aprobada' : 'reprobada'}`}>
+                {evaluacionAprobada ? '✅ Evaluación final aprobada' : '❌ Evaluación final reprobada'}
+              </div>
+            )}
+          </>
+        )}
 
-          <button
-            className="btn-accion"
-            onClick={() => (tipo === "progreso" ? continuarCurso(curso) : verCurso(curso))}
-          >
-            {tipo === "completado" ? "📘 Ver Curso" : tipo === "progreso" ? "🚀 Continuar Curso" : "🚀 Ver Curso"}
-          </button>
-        </div>
-      </article>
-    );
-  };
+        <button
+          className="btn-accion"
+          onClick={() => (tipo === "progreso" ? continuarCurso(curso) : verCurso(curso))}
+        >
+          {tipo === "completado" ? "📘 Ver Curso" : tipo === "progreso" ? "🚀 Continuar Curso" : "🚀 Ver Curso"}
+        </button>
+      </div>
+    </article>
+  );
+};
 
   return (
     <div className="dashboard-background">

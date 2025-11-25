@@ -97,7 +97,7 @@ export default function CursosPrincipal({ currentPage, onLoginClick, onNavigate 
           c.nivel?.toLowerCase().trim() === categoriaFiltro.toLowerCase().trim()
       );
 
-  {/* === DETALLE DE CURSO === */ }
+  // === DETALLE DE CURSO ===
   if (cursoSeleccionado) {
     return (
       <div className="detalle-curso-pro">
@@ -106,7 +106,7 @@ export default function CursosPrincipal({ currentPage, onLoginClick, onNavigate 
           ← Volver a los cursos
         </button>
 
-        {/* CONTENEDOR PRINCIPAL */}
+        {/* Contenedor principal */}
         <div className="detalle-layout">
 
           {/* COLUMNA IZQUIERDA */}
@@ -117,7 +117,6 @@ export default function CursosPrincipal({ currentPage, onLoginClick, onNavigate 
               className="detalle-img"
             />
 
-            {/* INFO debajo de la imagen */}
             <div className="detalle-info-box">
               <p><strong>⏱ Duración:</strong> {cursoSeleccionado.horas} horas</p>
               <p><strong>📘 Nivel:</strong> {cursoSeleccionado.nivel}</p>
@@ -136,14 +135,11 @@ export default function CursosPrincipal({ currentPage, onLoginClick, onNavigate 
 
           {/* COLUMNA DERECHA */}
           <div className="detalle-right">
-
             <h1 className="detalle-titulo">{cursoSeleccionado.titulo}</h1>
 
-            <p className="detalle-descripcion-pro">
-              {cursoSeleccionado.descripcion}
-            </p>
+            <p className="detalle-descripcion-pro">{cursoSeleccionado.descripcion}</p>
 
-            {/* Módulos */}
+            {/* Módulos estilo PRO */}
             <div className="modulos-detalle">
               <h3>Módulos del curso</h3>
 
@@ -158,7 +154,6 @@ export default function CursosPrincipal({ currentPage, onLoginClick, onNavigate 
                   </div>
                 ))}
               </div>
-
             </div>
 
             <button className="btn-login-detalle" onClick={onLoginClick}>
@@ -166,9 +161,14 @@ export default function CursosPrincipal({ currentPage, onLoginClick, onNavigate 
             </button>
           </div>
         </div>
+
+        <br />
+        <br />
+        <Footer />
       </div>
     );
   }
+
 
   // === PÁGINA PRINCIPAL ===
   return (

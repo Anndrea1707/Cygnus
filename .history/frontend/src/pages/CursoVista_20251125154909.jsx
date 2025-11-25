@@ -448,7 +448,7 @@ export default function CursoVista({ onNavigate, curso }) {
 
             {/* Evaluación final */}
             {notas.evaluacionFinal.completada && (
-              <div className="seccion-notas evaluacion-finalV">
+              <div className="seccion-notas evaluacion-final">
                 <h4>🎓 Evaluación Final</h4>
                 <div className="nota-final">
                   <div className="nota-info">

@@ -636,11 +636,3 @@ footer * {
   padding: 0 2rem;
   width: 100%;
 }
-
-.detalle-left {
-  flex: 0 0 620px; /* 🔥 ancho fijo para la columna izquierda */
-}
-
-.detalle-right {
-  flex: 1; /* 🔥 ocupa todo el espacio restante */
-}

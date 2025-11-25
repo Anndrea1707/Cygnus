@@ -775,7 +775,7 @@
 }
 
 .recomendaciones {
-    background: #daa5ea;
+    background: #0000;
     padding: 15px;
     border-radius: 8px;
     margin-top: 15px;
@@ -783,7 +783,7 @@
 
 .recomendaciones h4 {
     margin: 0 0 10px 0;
-    color: #0000;
+    color: #333;
 }
 
 .recomendaciones ul {
@@ -1029,7 +1029,7 @@
   font-size: 1.1rem;
 }
 
-.evaluacion-finalV {
+.evaluacion-final {
   background: #fff3cd;
   padding: 20px;
   border-radius: 10px;

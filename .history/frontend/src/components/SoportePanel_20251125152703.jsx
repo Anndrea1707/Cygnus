@@ -90,7 +90,7 @@ export default function SoportePanel({ onClose, tipoVista, setTipoVista, usuario
         },
         {
             pregunta: "¿Qué es la tabla de progreso semanal y cómo interpretarla?",
-            respuesta: "La tabla de progreso semanal te muestra tu consistencia y evolución en el aprendizaje. Registra tus sesiones de estudio diarias, los temas revisados y tu rendimiento general, ayudándote a mantener una rutina de estudio constante."
+            respuesta: "La tabla de progreso semanal te muestra tu consistencia y evolución en el aprendizaje. Registra tus sesiones de estudio diarias, los temas revisados y tu rendimiento general. Las celdas coloreadas indican tu actividad: intensidad alta (verde), media (amarillo) o baja (rojo), ayudándote a mantener una rutina de estudio constante."
         },
         {
             pregunta: "¿Qué información muestran las gráficas de estadísticas?",
@@ -100,6 +100,10 @@ export default function SoportePanel({ onClose, tipoVista, setTipoVista, usuario
             pregunta: "¿Los cursos tienen algún costo?",
             respuesta: "Actualmente, todos los cursos de Cygnus son completamente gratuitos. Creemos en el acceso democratizado a la educación de calidad y nos enfocamos en proporcionar una experiencia de aprendizaje excepcional sin barreras económicas para nuestros estudiantes."
         },
+        {
+            pregunta: "¿Puedo usar Cygnus en diferentes dispositivos?",
+            respuesta: "Sí, Cygnus es una plataforma web responsive que se adapta a computadoras, tablets y smartphones. Tu progreso se sincroniza automáticamente entre dispositivos, permitiéndote continuar tu aprendizaje desde donde lo dejaste, en cualquier momento y lugar."
+        }
     ];
 
     return (

@@ -72,35 +72,39 @@ export default function SoportePanel({ onClose, tipoVista, setTipoVista, usuario
     const toggleFAQ = (i) => setActiveIndex(activeIndex === i ? null : i);
 
     const faqs = [
-        {
-            pregunta: '¿Por qué el enfoque inicial en matemáticas?',
-            respuesta: 'Las matemáticas son fundamentales para el desarrollo del pensamiento lógico y representan una de las áreas con mayores dificultades de aprendizaje. Nuestro enfoque inicial nos permite perfeccionar los algoritmos de personalización y garantizar una experiencia de alta calidad antes de expandirnos a otras disciplinas académicas.'
-        },
-        {
-            pregunta: "¿Cómo se adapta el contenido a mi nivel?",
-            respuesta: "Nuestra plataforma utiliza un sistema inteligente que analiza tu desempeño en tiempo real. Basándonos en tus aciertos, tiempos de respuesta y patrones de aprendizaje, ajustamos automáticamente la dificultad de los ejercicios y recomendamos contenido específico para fortalecer tus áreas de oportunidad."
-        },
-        {
-            pregunta: "¿Qué modelos de personalización utiliza Cygnus?",
-            respuesta: "Implementamos dos modelos complementarios: el primero ajusta la dificultad del contenido según tu desempeño inmediato, y el segundo aplica la curva del olvido para programar repasos estratégicos en los momentos óptimos, maximizando tu retención a largo plazo."
-        },
-        {
-            pregunta: "¿Cómo funciona el sistema de recompensas y copas?",
-            respuesta: "Las copas son reconocimientos que obtienes al completar hitos significativos en tu aprendizaje. Inicialmente, funcionarán como logros visuales, pero en futuras actualizaciones planeamos convertirlas en un sistema de recompensas que permitirá desbloquear contenido exclusivo, personalizaciones de perfil y beneficios especiales dentro de la plataforma."
-        },
-        {
-            pregunta: "¿Qué es la tabla de progreso semanal y cómo interpretarla?",
-            respuesta: "La tabla de progreso semanal te muestra tu consistencia y evolución en el aprendizaje. Registra tus sesiones de estudio diarias, los temas revisados y tu rendimiento general, ayudándote a mantener una rutina de estudio constante."
-        },
-        {
-            pregunta: "¿Qué información muestran las gráficas de estadísticas?",
-            respuesta: "Nuestras gráficas comparativas te ofrecen insights valiosos sobre tu aprendizaje: la gráfica de habilidad muestra tu dominio en diferentes temas matemáticos, mientras que la gráfica de nivel de recordación visualiza cuánto retienes de lo aprendido, permitiéndote identificar áreas que necesitan repaso y monitorear tu mejora continua."
-        },
-        {
-            pregunta: "¿Los cursos tienen algún costo?",
-            respuesta: "Actualmente, todos los cursos de Cygnus son completamente gratuitos. Creemos en el acceso democratizado a la educación de calidad y nos enfocamos en proporcionar una experiencia de aprendizaje excepcional sin barreras económicas para nuestros estudiantes."
-        },
-    ];
+    {
+        pregunta: '¿Por qué el enfoque inicial en matemáticas?',
+        respuesta: 'Las matemáticas son fundamentales para el desarrollo del pensamiento lógico y representan una de las áreas con mayores dificultades de aprendizaje. Nuestro enfoque inicial nos permite perfeccionar los algoritmos de personalización y garantizar una experiencia de alta calidad antes de expandirnos a otras disciplinas académicas.'
+    },
+    {
+        pregunta: "¿Cómo se adapta el contenido a mi nivel?",
+        respuesta: "Nuestra plataforma utiliza un sistema inteligente que analiza tu desempeño en tiempo real. Basándonos en tus aciertos, tiempos de respuesta y patrones de aprendizaje, ajustamos automáticamente la dificultad de los ejercicios y recomendamos contenido específico para fortalecer tus áreas de oportunidad."
+    },
+    {
+        pregunta: "¿Qué modelos de personalización utiliza Cygnus?",
+        respuesta: "Implementamos dos modelos complementarios: el primero ajusta la dificultad del contenido según tu desempeño inmediato, y el segundo aplica la curva del olvido para programar repasos estratégicos en los momentos óptimos, maximizando tu retención a largo plazo."
+    },
+    {
+        pregunta: "¿Cómo funciona el sistema de recompensas y copas?",
+        respuesta: "Las copas son reconocimientos que obtienes al completar hitos significativos en tu aprendizaje. Inicialmente, funcionarán como logros visuales, pero en futuras actualizaciones planeamos convertirlas en un sistema de recompensas que permitirá desbloquear contenido exclusivo, personalizaciones de perfil y beneficios especiales dentro de la plataforma."
+    },
+    {
+        pregunta: "¿Qué es la tabla de progreso semanal y cómo interpretarla?",
+        respuesta: "La tabla de progreso semanal te muestra tu consistencia y evolución en el aprendizaje. Registra tus sesiones de estudio diarias, los temas revisados y tu rendimiento general. Las celdas coloreadas indican tu actividad: intensidad alta (verde), media (amarillo) o baja (rojo), ayudándote a mantener una rutina de estudio constante."
+    },
+    {
+        pregunta: "¿Qué información muestran las gráficas de estadísticas?",
+        respuesta: "Nuestras gráficas comparativas te ofrecen insights valiosos sobre tu aprendizaje: la gráfica de habilidad muestra tu dominio en diferentes temas matemáticos, mientras que la gráfica de nivel de recordación visualiza cuánto retienes de lo aprendido, permitiéndote identificar áreas que necesitan repaso y monitorear tu mejora continua."
+    },
+    {
+        pregunta: "¿Los cursos tienen algún costo?",
+        respuesta: "Actualmente, todos los cursos de Cygnus son completamente gratuitos. Creemos en el acceso democratizado a la educación de calidad y nos enfocamos en proporcionar una experiencia de aprendizaje excepcional sin barreras económicas para nuestros estudiantes."
+    },
+    {
+        pregunta: "¿Puedo usar Cygnus en diferentes dispositivos?",
+        respuesta: "Sí, Cygnus es una plataforma web responsive que se adapta a computadoras, tablets y smartphones. Tu progreso se sincroniza automáticamente entre dispositivos, permitiéndote continuar tu aprendizaje desde donde lo dejaste, en cualquier momento y lugar."
+    }
+];
 
     return (
         <>

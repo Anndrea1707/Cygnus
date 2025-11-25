@@ -775,7 +775,7 @@
 }
 
 .recomendaciones {
-    background: #daa5ea;
+    background: #f8f9fa;
     padding: 15px;
     border-radius: 8px;
     margin-top: 15px;
@@ -1029,7 +1029,7 @@
   font-size: 1.1rem;
 }
 
-.evaluacion-finalV {
+.evaluacion-final {
   background: #fff3cd;
   padding: 20px;
   border-radius: 10px;

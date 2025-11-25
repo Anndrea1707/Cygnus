@@ -397,24 +397,3 @@ body, html, #root { height: 100%; margin: 0; }
   .pg-card { padding: .8rem; }
   .tarjeta-compacta { height: 420px; }
 }
-
-/* Estados de evaluación final */
-.compacta-eval.aprobada {
-  color: #10b981;
-  font-weight: 600;
-  background: rgba(16, 185, 129, 0.1);
-  padding: 4px 8px;
-  border-radius: 6px;
-  font-size: 0.85rem;
-  margin-top: 8px;
-}
-
-.compacta-eval.reprobada {
-  color: #ef4444;
-  font-weight: 600;
-  background: rgba(239, 68, 68, 0.1);
-  padding: 4px 8px;
-  border-radius: 6px;
-  font-size: 0.85rem;
-  margin-top: 8px;
-}

@@ -624,23 +624,3 @@ footer * {
   font-size: 1.8rem;
   color: var(--color-dorad-ligh);
 }
-
-.detalle-layout {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  flex-wrap: nowrap; /* 🔥 Fuerza columnas lado a lado */
-  gap: 3rem;
-  max-width: 1300px;
-  margin: 0 auto;
-  padding: 0 2rem;
-  width: 100%;
-}
-
-.detalle-left {
-  flex: 0 0 620px; /* 🔥 ancho fijo para la columna izquierda */
-}
-
-.detalle-right {
-  flex: 1; /* 🔥 ocupa todo el espacio restante */
-}
