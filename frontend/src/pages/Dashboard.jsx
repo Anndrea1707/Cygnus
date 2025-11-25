@@ -7,15 +7,14 @@ import { recomendarCursos } from "../helpers/recomendaciones";
 
 function Dashboard({ usuario, onLogout, onNavigate }) {
   const [mostrarSoporte, setMostrarSoporte] = useState(false);
-  const [cursosConProgreso, setCursosConProgreso] = useState([]); // cursos con progreso <100
-  const [cursosCompletados, setCursosCompletados] = useState([]); // cursos con progreso >=100
+  const [cursosConProgreso, setCursosConProgreso] = useState([]); 
+  const [cursosCompletados, setCursosCompletados] = useState([]);
   const [loading, setLoading] = useState(true);
   const [todosLosCursos, setTodosLosCursos] = useState([]);
   const [recomendaciones, setRecomendaciones] = useState(null);
 
   const nombreUsuario = usuario?.apodo || usuario?.nombre_completo || "Usuario";
 
-  // Validar encuesta/prueba
   useEffect(() => {
     if (!usuario) return;
     if (!usuario.encuesta_inicial?.completada) {
@@ -28,23 +27,18 @@ function Dashboard({ usuario, onLogout, onNavigate }) {
     }
   }, [usuario, onNavigate]);
 
-  // Cargar cursos + progreso + recomendaciones
   useEffect(() => {
     const cargarDatos = async () => {
       if (!usuario?._id || !usuario.prueba_conocimiento?.completada) return;
       try {
         setLoading(true);
-
-        // 1) Obtener todos los cursos
         const respCursos = await fetch("http://localhost:4000/api/cursos");
         const cursosData = await respCursos.json();
         setTodosLosCursos(cursosData);
 
-        // 2) Generar recomendaciones
         const rec = recomendarCursos(cursosData, usuario);
         setRecomendaciones(rec);
 
-        // 3) Obtener progreso por curso (paralelo)
         const progresoArray = [];
         const completadosArray = [];
 
@@ -85,12 +79,8 @@ function Dashboard({ usuario, onLogout, onNavigate }) {
   const continuarCurso = (curso) => onNavigate("curso-vista", { curso });
   const verTodosLosCursos = () => onNavigate("cursosusuario");
 
-  // Estadísticas (usa cursosCompletados + cursosConProgreso)
   const totalConProgreso = cursosConProgreso.length + cursosCompletados.length;
   const countCompletados = cursosCompletados.length;
-  const countEnProgreso = cursosConProgreso.filter(
-    (c) => Number(c.progreso?.progresoPorcentual || 0) > 0
-  ).length;
   const promedioProgreso = Math.round(
     ([...cursosConProgreso, ...cursosCompletados].reduce(
       (acc, c) => acc + Number(c.progreso?.progresoPorcentual || 0),
@@ -98,7 +88,6 @@ function Dashboard({ usuario, onLogout, onNavigate }) {
     ) / Math.max(totalConProgreso, 1)) || 0
   );
 
-  // Componente tarjeta compacta (recomendado/progreso/completado)
   const TarjetaCompacta = ({ curso, tipo = "recomendado" }) => {
     const progresoPct = Number(curso?.progreso?.progresoPorcentual || 0);
     return (
@@ -114,11 +103,7 @@ function Dashboard({ usuario, onLogout, onNavigate }) {
 
         <div className="compacta-body">
           <h3 className="compacta-titulo">{curso.nombre}</h3>
-
-          <p className="compacta-descripcion descripcion-cortada">
-            {curso.descripcion}
-          </p>
-
+          <p className="compacta-descripcion descripcion-cortada">{curso.descripcion}</p>
           <div className="compacta-info">
             <span className="tag-nivel">{curso.nivel}</span>
             <span className="tag-modulos">{curso.modulos?.length || 0} módulos</span>
@@ -171,7 +156,6 @@ function Dashboard({ usuario, onLogout, onNavigate }) {
       <NavbarPrincipal usuario={usuario} onLogout={onLogout} onNavigate={onNavigate} currentPage="dashboard" />
 
       <main className="dashboard-content">
-        {/* HEADER */}
         <header className="dashboard-header">
           <h1 className="titulo-principal">Tu progreso</h1>
           <p className="subtitulo-principal">
@@ -204,14 +188,6 @@ function Dashboard({ usuario, onLogout, onNavigate }) {
               <div className="pg-label">Progreso promedio</div>
             </div>
           </div>
-
-          <div className="pg-card">
-            <div className="pg-icon">⚡</div>
-            <div className="pg-info">
-              <div className="pg-number">{countEnProgreso}</div>
-              <div className="pg-label">En progreso</div>
-            </div>
-          </div>
         </section>
 
         {/* RECOMENDADOS */}
@@ -220,9 +196,13 @@ function Dashboard({ usuario, onLogout, onNavigate }) {
             <div className="section-header">
               <h2>Recomendación Personalizada</h2>
               <p className="small">
-                <span className="habilidad-destacada">Tu habilidad es: {recomendaciones.habilidadActual}</span>
+                <span className="habilidad-destacada">
+                  Tu habilidad es: {Number(recomendaciones.habilidadActual).toFixed(1)}
+                </span>
                 <br />
-                <span className="nivel-recomendado">Nivel recomendado: <strong>{recomendaciones.nivelRecomendado}</strong></span>
+                <span className="nivel-recomendado">
+                  Nivel recomendado: <strong>{recomendaciones.nivelRecomendado}</strong>
+                </span>
               </p>
               <p className="descripcion-recomendacion">
                 En base a tu habilidad se asignará un nivel recomendado, el cual se usará para sugerirte cursos apropiados.
@@ -286,7 +266,6 @@ function Dashboard({ usuario, onLogout, onNavigate }) {
           )}
         </section>
 
-        {/* BOTÓN VER TODOS */}
         <div className="ver-todos-cursos final">
           <button className="btn-ver-todos" onClick={verTodosLosCursos}>
             📖 Ver Todos los Cursos Disponibles
@@ -294,7 +273,6 @@ function Dashboard({ usuario, onLogout, onNavigate }) {
         </div>
       </main>
 
-      {/* Soporte */}
       <button className="btn-ayuda-flotante" onClick={() => setMostrarSoporte(true)}>
         <img src="https://cdn-icons-png.flaticon.com/128/5726/5726775.png" alt="soporte" />
       </button>

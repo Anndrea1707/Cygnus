@@ -1,10 +1,10 @@
 /* === VARIABLES === */
 :root {
-  --color-dark: #071027;             /* fondo general muy oscuro */
-  --color-card: #0f1830;             /* fondo principal de tarjetas */
-  --color-card-contrast: #0b1224;    /* contraste interno */
-  --color-light: #f0f6ff;            /* textos principales */
-  --color-muted: #9fb0c6;            /* texto secundario */
+  --color-dark: #071027;
+  --color-card: #0f1830;
+  --color-card-contrast: #0b1224;
+  --color-light: #f0f6ff;
+  --color-muted: #9fb0c6;
   --primary-1: #667eea;
   --primary-2: #764ba2;
   --success-1: #28a745;
@@ -30,25 +30,23 @@ body, html, #root { height: 100%; margin: 0; }
   padding: 2.2rem 1.6rem;
 }
 
-/* HEADER / BIENVENIDA - centrados, uniformes */
+/* HEADER / BIENVENIDA */
 .dashboard-header {
   text-align: center;
   margin-bottom: 1.8rem;
 }
-
 .titulo-principal {
   color: var(--color-light);
-  font-size: 2.6rem;     /* uniforme para todos los títulos grandes */
+  font-size: 2.6rem;
   margin: 0 0 .25rem 0;
   font-weight: 800;
   letter-spacing: -0.5px;
 }
-
 .subtitulo-principal {
   color: var(--color-light);
   opacity: 0.95;
   margin: 0;
-  font-size: 1.2rem;     /* subtítulos uniformes */
+  font-size: 1.2rem;
   font-weight: 600;
   line-height: 1.6;
   max-width: 820px;
@@ -56,21 +54,22 @@ body, html, #root { height: 100%; margin: 0; }
   margin-right: auto;
 }
 
-/* ANIMACION PULSE para los cuadros de progreso */
+/* ANIMACION PULSE */
 @keyframes pulse-card {
   0% { transform: translateY(0) scale(1); box-shadow: 0 8px 22px rgba(2,6,23,0.55); }
   50% { transform: translateY(-6px) scale(1.02); box-shadow: 0 18px 44px rgba(2,6,23,0.65); }
   100% { transform: translateY(0) scale(1); box-shadow: 0 8px 22px rgba(2,6,23,0.55); }
 }
 
-/* PROGRESO GENERAL - fila horizontal con pulso */
+/* PROGRESO GENERAL */
 .progreso-general {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   gap: 1rem;
   margin: 1.4rem 0 2.2rem 0;
 }
 
+/* PG Cards */
 .pg-card {
   background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
   border-radius: 12px;
@@ -84,7 +83,6 @@ body, html, #root { height: 100%; margin: 0; }
   text-align: center;
   color: var(--color-light);
   animation: pulse-card 4.4s ease-in-out infinite;
-  will-change: transform, box-shadow;
 }
 
 .pg-icon {
@@ -111,43 +109,40 @@ body, html, #root { height: 100%; margin: 0; }
   font-weight: 600;
 }
 
-/* SECTION HEADER - todos iguales y centrados */
+/* SECTION HEADER */
 .section-header { text-align: center; margin-bottom: 1rem; }
-
 .section-header h2 {
   color: var(--color-light);
-  font-size: 2.6rem; /* mismo tamaño que titulo-principal para uniformidad */
+  font-size: 2.6rem;
   margin: 0 0 0.25rem 0;
   font-weight: 800;
 }
-
-.section-header .small { 
+.section-header .small {
   color: var(--color-muted);
-  font-size: 1.2rem; /* subtitulos uniformes igual que subtitle principal */
+  font-size: 1.2rem;
   margin: 0;
   font-weight: 600;
 }
 
-/* descripcion especial de recomendacion */
+/* descripcion recomendacion */
 .descripcion-recomendacion {
-  color: var(--color-light);
+  color: var(--color-muted);
   font-size: 1.05rem;
   max-width: 820px;
   margin: 0.5rem auto 1.25rem auto;
   text-align: center;
-  color: var(--color-muted);
 }
 
-/* Habilidad destacada */
+/* habilidad destacada */
 .habilidad-destacada {
   display: inline-block;
   font-size: 1.3rem;
-  color: var(--color-dorad-ligh);
   font-weight: 900;
   margin-bottom: 6px;
+  color : var(--color-dorad-ligh);
 }
 
-/* Nivel recomendado */
+/* nivel recomendado */
 .nivel-recomendado {
   display: block;
   font-size: 1rem;
@@ -157,26 +152,18 @@ body, html, #root { height: 100%; margin: 0; }
   opacity: 0.95;
 }
 
-/* GRID TARJETAS (3 columnas) */
+/* GRID TARJETAS - fijo y centrado */
 .grid-tarjetas {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  display: flex;
+  justify-content: center; /* centrado horizontal */
+  flex-wrap: wrap;         /* acomodar varias filas */
   gap: 1.25rem;
   margin-bottom: 2rem;
 }
 
-@media (max-width: 1024px) {
-  .grid-tarjetas { grid-template-columns: repeat(2, 1fr); }
-  .progreso-general { grid-template-columns: repeat(2, 1fr); }
-}
-
-@media (max-width: 768px) {
-  .grid-tarjetas { grid-template-columns: 1fr; }
-  .progreso-general { grid-template-columns: repeat(2, 1fr); }
-}
-
-/* TARJETA COMPACTA - oscura, alturas iguales, centrada */
+/* TARJETA COMPACTA */
 .tarjeta-compacta {
+  width: 300px;
   background: linear-gradient(180deg, var(--color-card), var(--color-card-contrast));
   border-radius: 12px;
   overflow: hidden;
@@ -193,7 +180,7 @@ body, html, #root { height: 100%; margin: 0; }
   box-shadow: 0 18px 44px rgba(2,6,23,0.7);
 }
 
-/* imagen más baja */
+/* imagen */
 .compacta-imagen {
   position: relative;
   height: 110px;
@@ -201,14 +188,13 @@ body, html, #root { height: 100%; margin: 0; }
   overflow: hidden;
   background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
 }
-
 .compacta-imagen img {
   width: 100%;
   height: 100%;
   object-fit: cover;
 }
 
-/* badge porcentaje */
+/* badge */
 .compacta-badge {
   position: absolute;
   top: 10px;
@@ -221,7 +207,6 @@ body, html, #root { height: 100%; margin: 0; }
   font-size: .85rem;
   box-shadow: 0 8px 18px rgba(102,126,234,0.12);
 }
-
 .compacta-badge.completado {
   background: linear-gradient(135deg, var(--success-1), #199a3f);
 }
@@ -236,7 +221,7 @@ body, html, #root { height: 100%; margin: 0; }
   flex-grow: 1;
 }
 
-/* Titulos y descripciones uniformes */
+/* titulos y descripcion */
 .compacta-titulo {
   color: var(--color-light);
   font-size: 1.14rem;
@@ -244,16 +229,13 @@ body, html, #root { height: 100%; margin: 0; }
   font-weight: 800;
   line-height: 1.15;
 }
-
 .compacta-descripcion {
   color: var(--color-light);
   opacity: 0.95;
-  font-size: 1.05rem; /* descripción ligeramente más grande y UNIFORME */
+  font-size: 1.05rem;
   margin: 0 0 8px 0;
   line-height: 1.25;
 }
-
-/* truncado a 2 líneas */
 .descripcion-cortada {
   display: -webkit-box;
   -webkit-line-clamp: 2;
@@ -262,7 +244,7 @@ body, html, #root { height: 100%; margin: 0; }
   text-overflow: ellipsis;
 }
 
-/* tags centrados */
+/* info y tags */
 .compacta-info {
   display:flex;
   gap:0.6rem;
@@ -270,7 +252,6 @@ body, html, #root { height: 100%; margin: 0; }
   justify-content:center;
   margin-bottom:8px;
 }
-
 .tag-nivel, .tag-modulos {
   background: rgba(255,255,255,0.03);
   color: var(--color-light);
@@ -279,7 +260,6 @@ body, html, #root { height: 100%; margin: 0; }
   font-size: .82rem;
   font-weight: 700;
 }
-
 .tag-nivel {
   background: linear-gradient(90deg, rgba(227,242,253,0.04), rgba(227,242,253,0.02));
   color: #cfe6ff;
@@ -291,7 +271,6 @@ body, html, #root { height: 100%; margin: 0; }
   margin-top: 8px;
   margin-bottom: 8px;
 }
-
 .compacta-progressbar {
   width: 100%;
   height: 8px;
@@ -299,13 +278,11 @@ body, html, #root { height: 100%; margin: 0; }
   border-radius: 8px;
   overflow: hidden;
 }
-
 .compacta-fill {
   height: 100%;
   background: linear-gradient(90deg, #4CAF50, #45a049);
   transition: width .35s ease;
 }
-
 .compacta-progresstext {
   font-size: .85rem;
   color: var(--color-light);
@@ -322,7 +299,6 @@ body, html, #root { height: 100%; margin: 0; }
   opacity: 0.95;
   margin-bottom: 8px;
 }
-
 .compacta-eval {
   font-size: .88rem;
   color: var(--success-1);
@@ -330,7 +306,7 @@ body, html, #root { height: 100%; margin: 0; }
   margin-bottom: 8px;
 }
 
-/* botón estético centrado */
+/* botones */
 .btn-accion {
   margin-top: auto;
   width: 100%;
@@ -343,7 +319,6 @@ body, html, #root { height: 100%; margin: 0; }
   background: linear-gradient(135deg, var(--primary-1), var(--primary-2));
   transition: transform .18s ease, box-shadow .18s ease;
 }
-
 .btn-accion:hover {
   transform: translateY(-3px);
   box-shadow: 0 12px 28px rgba(102,126,234,0.18);
@@ -372,13 +347,12 @@ body, html, #root { height: 100%; margin: 0; }
 
 .info-vacio { color: var(--color-muted); margin-bottom:1rem; }
 
-/* Ver todos */
+/* ver todos */
 .ver-todos-cursos.final {
   display:flex;
   justify-content:center;
   margin:2.2rem 0 3rem 0;
 }
-
 .btn-ver-todos {
   padding: 12px 26px;
   border-radius: 10px;
@@ -389,14 +363,13 @@ body, html, #root { height: 100%; margin: 0; }
   cursor: pointer;
   transition: all .18s ease;
 }
-
 .btn-ver-todos:hover {
   background: linear-gradient(135deg, rgba(102,126,234,0.12), rgba(118,75,162,0.08));
   color: #fff;
   transform: translateY(-3px);
 }
 
-/* Boton flotante */
+/* boton flotante */
 .btn-ayuda-flotante {
   position: fixed;
   bottom: 28px;
@@ -413,10 +386,9 @@ body, html, #root { height: 100%; margin: 0; }
   align-items:center;
   justify-content:center;
 }
-
 .btn-ayuda-flotante img { width: 34px; height: 34px; }
 
-/* responsive tweaks */
+/* responsive */
 @media (max-width: 480px) {
   .titulo-principal { font-size: 1.6rem; }
   .section-header h2 { font-size: 1.6rem; }
