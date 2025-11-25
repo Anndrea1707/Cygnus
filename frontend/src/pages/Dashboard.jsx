@@ -7,72 +7,72 @@ import { recomendarCursos } from "../helpers/recomendaciones";
 
 function Dashboard({ usuario, onLogout, onNavigate }) {
   const [mostrarSoporte, setMostrarSoporte] = useState(false);
-  const [cursosConProgreso, setCursosConProgreso] = useState([]);
+  const [cursosConProgreso, setCursosConProgreso] = useState([]); // cursos con progreso <100
+  const [cursosCompletados, setCursosCompletados] = useState([]); // cursos con progreso >=100
   const [loading, setLoading] = useState(true);
   const [todosLosCursos, setTodosLosCursos] = useState([]);
   const [recomendaciones, setRecomendaciones] = useState(null);
 
   const nombreUsuario = usuario?.apodo || usuario?.nombre_completo || "Usuario";
 
-  // ✅ VERIFICAR SI EL USUARIO DEBE COMPLETAR ENCUESTA O PRUEBA
+  // Validar encuesta/prueba
   useEffect(() => {
     if (!usuario) return;
-
-    // Si no ha completado la encuesta inicial, redirigir
     if (!usuario.encuesta_inicial?.completada) {
       onNavigate("encuesta-inicial");
       return;
     }
-
-    // Si no ha completado la prueba diagnóstica, redirigir
     if (!usuario.prueba_conocimiento?.completada) {
       onNavigate("prueba-diagnostica");
       return;
     }
   }, [usuario, onNavigate]);
 
-  // Cargar todos los cursos y el progreso del usuario
+  // Cargar cursos + progreso + recomendaciones
   useEffect(() => {
     const cargarDatos = async () => {
-      // ✅ Agregar esta validación al inicio
       if (!usuario?._id || !usuario.prueba_conocimiento?.completada) return;
-
       try {
         setLoading(true);
 
-        // 1. Cargar todos los cursos
-        const responseCursos = await fetch("http://localhost:4000/api/cursos");
-        const cursosData = await responseCursos.json();
+        // 1) Obtener todos los cursos
+        const respCursos = await fetch("http://localhost:4000/api/cursos");
+        const cursosData = await respCursos.json();
         setTodosLosCursos(cursosData);
 
-        // Generar recomendaciones basadas en habilidad
+        // 2) Generar recomendaciones
         const rec = recomendarCursos(cursosData, usuario);
         setRecomendaciones(rec);
 
-        // 2. Para cada curso, verificar si hay progreso
-        const cursosConProgresoArray = [];
+        // 3) Obtener progreso por curso (paralelo)
+        const progresoArray = [];
+        const completadosArray = [];
 
-        for (const curso of cursosData) {
-          try {
-            const responseProgreso = await fetch(
-              `http://localhost:4000/api/progreso/curso/${usuario._id}/${curso._id}`
-            );
-            const progresoData = await responseProgreso.json();
-
-            if (progresoData.success && progresoData.progreso) {
-              cursosConProgresoArray.push({
-                ...curso,
-                progreso: progresoData.progreso
-              });
+        await Promise.all(
+          (cursosData || []).map(async (curso) => {
+            try {
+              const respProg = await fetch(
+                `http://localhost:4000/api/progreso/curso/${usuario._id}/${curso._id}`
+              );
+              const progData = await respProg.json();
+              if (progData?.success && progData.progreso) {
+                const pct = Number(progData.progreso.progresoPorcentual || 0);
+                if (pct >= 100) {
+                  completadosArray.push({ ...curso, progreso: progData.progreso });
+                } else {
+                  progresoArray.push({ ...curso, progreso: progData.progreso });
+                }
+              }
+            } catch (err) {
+              console.error(`Error progreso curso ${curso._id}:`, err);
             }
-          } catch (error) {
-            console.error(`Error cargando progreso para curso ${curso.nombre}:`, error);
-          }
-        }
+          })
+        );
 
-        setCursosConProgreso(cursosConProgresoArray);
-      } catch (error) {
-        console.error("Error cargando datos:", error);
+        setCursosConProgreso(progresoArray);
+        setCursosCompletados(completadosArray);
+      } catch (err) {
+        console.error("Error cargando datos:", err);
       } finally {
         setLoading(false);
       }
@@ -81,180 +81,182 @@ function Dashboard({ usuario, onLogout, onNavigate }) {
     cargarDatos();
   }, [usuario]);
 
-  // Función para continuar un curso
-  const continuarCurso = (curso) => {
-    onNavigate("curso-vista", { curso });
-  };
+  const verCurso = (curso) => onNavigate("curso-vista", { curso });
+  const continuarCurso = (curso) => onNavigate("curso-vista", { curso });
+  const verTodosLosCursos = () => onNavigate("cursosusuario");
 
-  // Función para empezar un nuevo curso
-  const verTodosLosCursos = () => {
-    onNavigate("cursosusuario");
-  };
-
-  const TarjetaCursoRecomendado = ({ curso }) => (
-    <div className="tarjeta-curso-progreso">
-      <div className="curso-imagen-container">
-        <img src={curso.imagen} alt={curso.nombre} className="curso-imagen" />
-      </div>
-
-      <div className="curso-contenido">
-        <h3 className="curso-titulo">{curso.nombre}</h3>
-        <p className="curso-descripcion">{curso.descripcion}</p>
-
-        <div className="curso-info">
-          <span className="curso-nivel">{curso.nivel}</span>
-          <span className="curso-modulos">
-            {curso.modulos?.length || 0} módulos
-          </span>
-        </div>
-
-        <button
-          className="btn-continuar-curso"
-          onClick={() => onNavigate("curso-vista", { curso })}
-        >
-          🚀 Ver Curso
-        </button>
-      </div>
-    </div>
+  // Estadísticas (usa cursosCompletados + cursosConProgreso)
+  const totalConProgreso = cursosConProgreso.length + cursosCompletados.length;
+  const countCompletados = cursosCompletados.length;
+  const countEnProgreso = cursosConProgreso.filter(
+    (c) => Number(c.progreso?.progresoPorcentual || 0) > 0
+  ).length;
+  const promedioProgreso = Math.round(
+    ([...cursosConProgreso, ...cursosCompletados].reduce(
+      (acc, c) => acc + Number(c.progreso?.progresoPorcentual || 0),
+      0
+    ) / Math.max(totalConProgreso, 1)) || 0
   );
 
-  // Componente de tarjeta de curso con progreso
-  const TarjetaCursoProgreso = ({ curso }) => (
-    <div className="tarjeta-curso-progreso">
-      <div className="curso-imagen-container">
-        <img src={curso.imagen} alt={curso.nombre} className="curso-imagen" />
-        <div className="curso-progreso-badge">
-          {Math.round(curso.progreso.progresoPorcentual)}%
-        </div>
-      </div>
-
-      <div className="curso-contenido">
-        <h3 className="curso-titulo">{curso.nombre}</h3>
-        <p className="curso-descripcion">{curso.descripcion}</p>
-
-        <div className="curso-info">
-          <span className="curso-nivel">{curso.nivel}</span>
-          <span className="curso-modulos">
-            {curso.modulos?.length || 0} módulos
-          </span>
-        </div>
-
-        {/* Barra de progreso */}
-        <div className="progreso-container">
-          <div className="progreso-bar">
-            <div
-              className="progreso-fill"
-              style={{ width: `${curso.progreso.progresoPorcentual}%` }}
-            ></div>
-          </div>
-          <span className="progreso-texto">
-            {Math.round(curso.progreso.progresoPorcentual)}% completado
-          </span>
-        </div>
-
-        {/* Información detallada del progreso */}
-        <div className="progreso-detalles">
-          <div className="progreso-item">
-            <span className="progreso-label">Módulo actual:</span>
-            <span className="progreso-valor">
-              {curso.progreso.moduloActual + 1} de {curso.modulos?.length || 0}
+  // Componente tarjeta compacta (recomendado/progreso/completado)
+  const TarjetaCompacta = ({ curso, tipo = "recomendado" }) => {
+    const progresoPct = Number(curso?.progreso?.progresoPorcentual || 0);
+    return (
+      <article className="tarjeta-compacta" aria-label={curso.nombre}>
+        <div className="compacta-imagen">
+          <img src={curso.imagen} alt={curso.nombre} />
+          {tipo !== "recomendado" && (
+            <span className={`compacta-badge ${progresoPct >= 100 ? "completado" : ""}`}>
+              {Math.round(progresoPct)}%
             </span>
-          </div>
-
-          {curso.progreso.modulosCompletados && curso.progreso.modulosCompletados.length > 0 && (
-            <div className="progreso-item">
-              <span className="progreso-label">Módulos completados:</span>
-              <span className="progreso-valor">
-                {curso.progreso.modulosCompletados.length}
-              </span>
-            </div>
-          )}
-
-          {curso.progreso.evaluacionFinalCompletada && (
-            <div className="progreso-item completado">
-              <span className="progreso-label">✅ Evaluación final:</span>
-              <span className="progreso-valor">Completada</span>
-            </div>
           )}
         </div>
 
-        <button
-          className="btn-continuar-curso"
-          onClick={() => continuarCurso(curso)}
-        >
-          {curso.progreso.progresoPorcentual >= 100 ? '🎉 Ver Curso Completado' : '🚀 Continuar Curso'}
-        </button>
-      </div>
-    </div>
-  );
+        <div className="compacta-body">
+          <h3 className="compacta-titulo">{curso.nombre}</h3>
+
+          <p className="compacta-descripcion descripcion-cortada">
+            {curso.descripcion}
+          </p>
+
+          <div className="compacta-info">
+            <span className="tag-nivel">{curso.nivel}</span>
+            <span className="tag-modulos">{curso.modulos?.length || 0} módulos</span>
+          </div>
+
+          {tipo === "progreso" && (
+            <>
+              <div className="compacta-progreso">
+                <div className="compacta-progressbar" aria-hidden>
+                  <div
+                    className="compacta-fill"
+                    style={{ width: `${Math.max(0, Math.min(100, progresoPct))}%` }}
+                  />
+                </div>
+                <div className="compacta-progresstext">{Math.round(progresoPct)}% completado</div>
+              </div>
+
+              <div className="compacta-detalles">
+                <div>
+                  <span className="det-label">Módulo actual:</span>{" "}
+                  <span className="det-val">
+                    {Number(curso.progreso?.moduloActual ?? 0) + 1} de {curso.modulos?.length || 0}
+                  </span>
+                </div>
+                <div>
+                  <span className="det-label">Completados:</span>{" "}
+                  <span className="det-val">{curso.progreso?.modulosCompletados?.length || 0}</span>
+                </div>
+              </div>
+
+              {curso.progreso?.evaluacionFinalCompletada && (
+                <div className="compacta-eval">✅ Evaluación final completada</div>
+              )}
+            </>
+          )}
+
+          <button
+            className="btn-accion"
+            onClick={() => (tipo === "progreso" ? continuarCurso(curso) : verCurso(curso))}
+          >
+            {tipo === "completado" ? "📘 Ver Curso" : tipo === "progreso" ? "🚀 Continuar Curso" : "🚀 Ver Curso"}
+          </button>
+        </div>
+      </article>
+    );
+  };
 
   return (
     <div className="dashboard-background">
-      <NavbarPrincipal
-        usuario={usuario}
-        onLogout={onLogout}
-        onNavigate={onNavigate}
-        currentPage="dashboard"
-      />
+      <NavbarPrincipal usuario={usuario} onLogout={onLogout} onNavigate={onNavigate} currentPage="dashboard" />
 
-      <div className="dashboard-content">
-        <div className="dashboard-header">
-          <h2>🌟 Bienvenido, {nombreUsuario} 🌟</h2>
-          <p>
-            Nos alegra tenerte aquí. Desde este panel podrás acceder a todas tus
-            herramientas y secciones de Cygnus.
+      <main className="dashboard-content">
+        {/* HEADER */}
+        <header className="dashboard-header">
+          <h1 className="titulo-principal">Tu progreso</h1>
+          <p className="subtitulo-principal">
+            Bienvenido, <strong>{nombreUsuario}</strong>. Aquí tienes un resumen rápido de tu avance y recomendaciones.
           </p>
-        </div>
+        </header>
 
-        {/* Sección de recomendaciones personalizadas */}
+        {/* PROGRESO GENERAL */}
+        <section className="progreso-general" aria-label="Tu progreso general">
+          <div className="pg-card">
+            <div className="pg-icon">📚</div>
+            <div className="pg-info">
+              <div className="pg-number">{totalConProgreso}</div>
+              <div className="pg-label">Cursos con progreso</div>
+            </div>
+          </div>
+
+          <div className="pg-card">
+            <div className="pg-icon">✅</div>
+            <div className="pg-info">
+              <div className="pg-number">{countCompletados}</div>
+              <div className="pg-label">Cursos completados</div>
+            </div>
+          </div>
+
+          <div className="pg-card">
+            <div className="pg-icon">🎯</div>
+            <div className="pg-info">
+              <div className="pg-number">{promedioProgreso}%</div>
+              <div className="pg-label">Progreso promedio</div>
+            </div>
+          </div>
+
+          <div className="pg-card">
+            <div className="pg-icon">⚡</div>
+            <div className="pg-info">
+              <div className="pg-number">{countEnProgreso}</div>
+              <div className="pg-label">En progreso</div>
+            </div>
+          </div>
+        </section>
+
+        {/* RECOMENDADOS */}
         {recomendaciones && (
-          <section className="recomendaciones-section">
+          <section className="seccion-recomendados" aria-label="Recomendación personalizada">
             <div className="section-header">
-              <h3>🌟 Recomendación Personalizada</h3>
-
-              <p>
-                Tu habilidad actual es:
-                <strong> {recomendaciones.habilidadActual}</strong>
+              <h2>Recomendación Personalizada</h2>
+              <p className="small">
+                <span className="habilidad-destacada">Tu habilidad es: {recomendaciones.habilidadActual}</span>
+                <br />
+                <span className="nivel-recomendado">Nivel recomendado: <strong>{recomendaciones.nivelRecomendado}</strong></span>
               </p>
-
-              <p>
-                Te recomendamos cursos de nivel:
-                <strong> {recomendaciones.nivelRecomendado}</strong>
-              </p>
-
-              <p className="recomendacion-texto-extra">
-                Basado en tu habilidad, estos cursos son ideales para tu nivel de aprendizaje:
+              <p className="descripcion-recomendacion">
+                En base a tu habilidad se asignará un nivel recomendado, el cual se usará para sugerirte cursos apropiados.
               </p>
             </div>
 
             {recomendaciones.cursosRecomendados?.length > 0 ? (
-              <div className="grid-cursos-progreso">
-                {recomendaciones.cursosRecomendados.map(curso => (
-                  <TarjetaCursoRecomendado key={curso._id} curso={curso} />
+              <div className="grid-tarjetas">
+                {recomendaciones.cursosRecomendados.map((curso) => (
+                  <TarjetaCompacta key={curso._id} curso={curso} tipo="recomendado" />
                 ))}
               </div>
             ) : (
-              <p>No encontramos cursos compatibles con tu habilidad actual.</p>
+              <p className="info-vacio">No encontramos cursos compatibles con tu habilidad actual.</p>
             )}
           </section>
         )}
 
-        {/* Sección de cursos con progreso */}
-        <section className="cursos-progreso-section">
+        {/* EN PROGRESO */}
+        <section className="seccion-progreso" aria-label="Cursos en progreso">
           <div className="section-header">
-            <h3>📚 Tus Cursos en Progreso</h3>
-            <p>Continúa donde lo dejaste o revisa tus cursos completados</p>
+            <h2>📚 Tus Cursos en Progreso</h2>
+            <p className="small">Aquí verás los cursos que has dejado incompletos y puedes continuar.</p>
           </div>
 
           {loading ? (
             <div className="cargando-cursos">
-              <div className="spinner"></div>
+              <div className="spinner" />
               <p>Cargando tus cursos...</p>
             </div>
           ) : cursosConProgreso.length > 0 ? (
-            <div className="grid-cursos-progreso">
-              {cursosConProgreso.map(curso => (
-                <TarjetaCursoProgreso key={curso._id} curso={curso} />
+            <div className="grid-tarjetas">
+              {cursosConProgreso.map((curso) => (
+                <TarjetaCompacta key={curso._id} curso={curso} tipo="progreso" />
               ))}
             </div>
           ) : (
@@ -262,96 +264,42 @@ function Dashboard({ usuario, onLogout, onNavigate }) {
               <div className="sin-cursos-icono">📚</div>
               <h4>Aún no tienes cursos en progreso</h4>
               <p>¡Comienza tu primer curso y empieza tu journey de aprendizaje!</p>
-              <button
-                className="btn-empezar-cursos"
-                onClick={verTodosLosCursos}
-              >
-                🚀 Explorar Cursos Disponibles
-              </button>
-            </div>
-          )}
-
-          {/* Botón para ver todos los cursos */}
-          {cursosConProgreso.length > 0 && (
-            <div className="ver-todos-cursos">
-              <button
-                className="btn-ver-todos"
-                onClick={verTodosLosCursos}
-              >
-                📖 Ver Todos los Cursos Disponibles
-              </button>
             </div>
           )}
         </section>
 
-        {/* Estadísticas rápidas */}
-        {cursosConProgreso.length > 0 && (
-          <section className="estadisticas-rapidas">
-            <h3>📊 Tu Progreso General</h3>
-            <div className="stats-grid">
-              <div className="stat-card">
-                <div className="stat-icon">📚</div>
-                <div className="stat-info">
-                  <span className="stat-number">{cursosConProgreso.length}</span>
-                  <span className="stat-label">Cursos activos</span>
-                </div>
-              </div>
+        {/* COMPLETADOS */}
+        <section className="seccion-completados" aria-label="Cursos completados">
+          <div className="section-header">
+            <h2>🎉 Cursos Completados</h2>
+            <p className="small">Excelente trabajo, has logrado completar varios cursos.</p>
+          </div>
 
-              <div className="stat-card">
-                <div className="stat-icon">✅</div>
-                <div className="stat-info">
-                  <span className="stat-number">
-                    {cursosConProgreso.filter(curso => curso.progreso.progresoPorcentual >= 100).length}
-                  </span>
-                  <span className="stat-label">Cursos completados</span>
-                </div>
-              </div>
-
-              <div className="stat-card">
-                <div className="stat-icon">🎯</div>
-                <div className="stat-info">
-                  <span className="stat-number">
-                    {Math.round(
-                      cursosConProgreso.reduce((acc, curso) => acc + curso.progreso.progresoPorcentual, 0) /
-                      Math.max(cursosConProgreso.length, 1)
-                    )}%
-                  </span>
-                  <span className="stat-label">Progreso promedio</span>
-                </div>
-              </div>
-
-              <div className="stat-card">
-                <div className="stat-icon">⚡</div>
-                <div className="stat-info">
-                  <span className="stat-number">
-                    {cursosConProgreso.filter(curso =>
-                      curso.progreso.progresoPorcentual > 0 &&
-                      curso.progreso.progresoPorcentual < 100
-                    ).length}
-                  </span>
-                  <span className="stat-label">En progreso</span>
-                </div>
-              </div>
+          {cursosCompletados.length > 0 ? (
+            <div className="grid-tarjetas">
+              {cursosCompletados.map((curso) => (
+                <TarjetaCompacta key={curso._id} curso={curso} tipo="completado" />
+              ))}
             </div>
-          </section>
-        )}
-      </div>
+          ) : (
+            <p className="info-vacio">Aún no has completado cursos.</p>
+          )}
+        </section>
 
-      {/* === BOTÓN FLOTANTE DE AYUDA === */}
+        {/* BOTÓN VER TODOS */}
+        <div className="ver-todos-cursos final">
+          <button className="btn-ver-todos" onClick={verTodosLosCursos}>
+            📖 Ver Todos los Cursos Disponibles
+          </button>
+        </div>
+      </main>
+
+      {/* Soporte */}
       <button className="btn-ayuda-flotante" onClick={() => setMostrarSoporte(true)}>
-        <img
-          src="https://cdn-icons-png.flaticon.com/128/5726/5726775.png"
-          alt="soporte"
-        />
+        <img src="https://cdn-icons-png.flaticon.com/128/5726/5726775.png" alt="soporte" />
       </button>
 
-      {/* === PANEL LATERAL DE AYUDA === */}
-      {mostrarSoporte && (
-        <SoportePanel
-          onClose={() => setMostrarSoporte(false)}
-          usuario={usuario}
-        />
-      )}
+      {mostrarSoporte && <SoportePanel onClose={() => setMostrarSoporte(false)} usuario={usuario} />}
 
       <Footer />
     </div>
