@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import "./Evaluacion.css";
+import { obtenerRecomendacionPorcentual, verificarBloqueoEvaluacion } from "../helpers/recomendaciones";
 
 export default function EvaluacionModulo({ curso, modulo, moduloIndex, onNavigate, onEvaluacionCompletada }) {
     const [preguntaActual, setPreguntaActual] = useState(0);
@@ -13,77 +14,6 @@ export default function EvaluacionModulo({ curso, modulo, moduloIndex, onNavigat
     const [mostrarModalRecomendacion, setMostrarModalRecomendacion] = useState(false);
     const [recomendacionActual, setRecomendacionActual] = useState(null);
     const [bloqueoInfo, setBloqueoInfo] = useState(null);
-
-    // Función para obtener recomendación desde el backend
-    const obtenerRecomendacionDesdeBackend = async (porcentaje) => {
-        try {
-            const response = await fetch('http://localhost:4000/api/progreso/obtener-recomendacion', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ porcentaje })
-            });
-            const data = await response.json();
-            return data.recomendacion;
-        } catch (error) {
-            console.error('Error obteniendo recomendación:', error);
-            // Fallback por si falla el backend
-            return obtenerRecomendacionFallback(porcentaje);
-        }
-    };
-
-    // Función fallback por si el backend no responde
-    const obtenerRecomendacionFallback = (porcentaje) => {
-        if (porcentaje >= 0 && porcentaje <= 10) {
-            return { 
-                tipo: "repaso_intensivo",
-                mensaje: "Te recomendamos repasar el tema completamente", 
-                bloqueoMinutos: 60, 
-                puedeAvanzar: false 
-            };
-        } else if (porcentaje >= 11 && porcentaje <= 30) {
-            return { 
-                tipo: "repaso_fuerte",
-                mensaje: "Necesitas repasar los conceptos principales", 
-                bloqueoMinutos: 45, 
-                puedeAvanzar: false 
-            };
-        } else if (porcentaje >= 31 && porcentaje <= 60) {
-            return { 
-                tipo: "repaso_moderado",
-                mensaje: "Un repaso te ayudará a mejorar", 
-                bloqueoMinutos: 30, 
-                puedeAvanzar: false 
-            };
-        } else if (porcentaje >= 61 && porcentaje <= 69) {
-            return { 
-                tipo: "repaso_leve",
-                mensaje: "Estás cerca, un breve repaso te llevará al éxito", 
-                bloqueoMinutos: 15, 
-                puedeAvanzar: false 
-            };
-        } else if (porcentaje >= 70 && porcentaje <= 85) {
-            return { 
-                tipo: "felicitacion_repaso",
-                mensaje: "¡Felicidades por aprobar! Te recomendamos un poco más de repaso para consolidar tu conocimiento", 
-                bloqueoMinutos: 0, 
-                puedeAvanzar: true 
-            };
-        } else if (porcentaje >= 86 && porcentaje <= 100) {
-            return { 
-                tipo: "felicitacion_excelente",
-                mensaje: "¡Excelente desempeño! Has demostrado un gran dominio del tema", 
-                bloqueoMinutos: 0, 
-                puedeAvanzar: true 
-            };
-        } else {
-            return { 
-                tipo: "default",
-                mensaje: "Continúa con tu aprendizaje", 
-                bloqueoMinutos: 0, 
-                puedeAvanzar: false 
-            };
-        }
-    };
 
     // Verificar bloqueo al cargar el componente
     useEffect(() => {
@@ -126,7 +56,7 @@ export default function EvaluacionModulo({ curso, modulo, moduloIndex, onNavigat
 
             try {
                 const usuario = JSON.parse(localStorage.getItem("usuario"));
-
+                
                 console.log('🔄 Solicitando preguntas adaptativas para módulo...');
 
                 const response = await fetch('http://localhost:4000/api/modelos-matematicos/seleccionar-preguntas', {
@@ -170,9 +100,9 @@ export default function EvaluacionModulo({ curso, modulo, moduloIndex, onNavigat
         }
     }, [preguntasAdaptativas, bloqueoInfo]);
 
-    const preguntas = cargandoPreguntas ? [] :
-        (preguntasAdaptativas.length > 0 ? preguntasAdaptativas :
-            (modulo?.evaluacion?.preguntas || []));
+    const preguntas = cargandoPreguntas ? [] : 
+                     (preguntasAdaptativas.length > 0 ? preguntasAdaptativas : 
+                     (modulo?.evaluacion?.preguntas || []));
 
     // Inicializar el temporizador y las respuestas
     useEffect(() => {
@@ -218,16 +148,16 @@ export default function EvaluacionModulo({ curso, modulo, moduloIndex, onNavigat
                     <div className="bloqueo-icono">⏰</div>
                     <h2>Evaluación Temporalmente Bloqueada</h2>
                     <p>Has realizado un intento recientemente. Por favor, espera antes de intentar nuevamente.</p>
-
+                    
                     <div className="tiempo-bloqueo">
                         <strong>Tiempo restante: {bloqueoInfo.tiempoRestante} minutos</strong>
                     </div>
-
+                    
                     <div className="recomendacion-bloqueo">
                         <p>{bloqueoInfo.recomendacion}</p>
                     </div>
 
-                    <button
+                    <button 
                         className="btn-volver-curso"
                         onClick={() => onNavigate("curso-vista", { curso })}
                     >
@@ -272,7 +202,7 @@ export default function EvaluacionModulo({ curso, modulo, moduloIndex, onNavigat
         // ✅ CORREGIR: USAR SOLO LAS RESPUESTAS QUE CORRESPONDEN A LAS PREGUNTAS EXISTENTES
         respuestas.slice(0, preguntas.length).forEach((respuesta, index) => {
             const pregunta = preguntas[index];
-
+            
             if (!pregunta) {
                 console.error(`❌ Pregunta ${index} no encontrada`);
                 return;
@@ -295,15 +225,8 @@ export default function EvaluacionModulo({ curso, modulo, moduloIndex, onNavigat
 
         setPuntaje(puntajeCalculado);
 
-        // ✅ OBTENER RECOMENDACIÓN DESDE EL BACKEND
-        let recomendacion;
-        try {
-            recomendacion = await obtenerRecomendacionDesdeBackend(notaFinal);
-        } catch (error) {
-            console.error('Error obteniendo recomendación, usando fallback:', error);
-            recomendacion = obtenerRecomendacionFallback(notaFinal);
-        }
-        
+        // ✅ OBTENER RECOMENDACIÓN Y BLOQUEO
+        const recomendacion = obtenerRecomendacionPorcentual(notaFinal);
         setRecomendacionActual(recomendacion);
 
         // ✅ AGREGAR LOG PARA DEBUG
@@ -402,22 +325,22 @@ export default function EvaluacionModulo({ curso, modulo, moduloIndex, onNavigat
         const correctasCount = respuestasValidas.filter((respuesta, i) => {
             const pregunta = preguntas[i];
             if (!pregunta) return false;
-
+            
             const opcionCorrecta = typeof pregunta.opcionCorrecta === "string"
                 ? parseInt(pregunta.opcionCorrecta)
                 : pregunta.opcionCorrecta;
-
+                
             return respuesta === opcionCorrecta;
         }).length;
 
         const incorrectasCount = respuestasValidas.filter((respuesta, i) => {
             const pregunta = preguntas[i];
             if (!pregunta) return false;
-
+            
             const opcionCorrecta = typeof pregunta.opcionCorrecta === "string"
                 ? parseInt(pregunta.opcionCorrecta)
                 : pregunta.opcionCorrecta;
-
+                
             return respuesta !== opcionCorrecta;
         }).length;
 
@@ -476,7 +399,7 @@ export default function EvaluacionModulo({ curso, modulo, moduloIndex, onNavigat
                             >
                                 🏠 Volver al curso
                             </button>
-
+                            
                             {recomendacionActual?.puedeAvanzar && (
                                 <button
                                     className="btn-continuar"

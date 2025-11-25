@@ -1,89 +1,20 @@
+// EvaluacionFinal.jsx - CON sistema de bloqueos y recomendaciones
 import React, { useState, useEffect } from "react";
 import "./Evaluacion.css";
+import { obtenerRecomendacionPorcentual, verificarBloqueoEvaluacion } from "../helpers/recomendaciones";
 
-export default function EvaluacionModulo({ curso, modulo, moduloIndex, onNavigate, onEvaluacionCompletada }) {
+export default function EvaluacionFinal({ curso, evaluacion, onNavigate, onEvaluacionCompletada }) {
     const [preguntaActual, setPreguntaActual] = useState(0);
     const [respuestas, setRespuestas] = useState([]);
     const [tiempoRestante, setTiempoRestante] = useState(null);
     const [evaluacionCompletada, setEvaluacionCompletada] = useState(false);
     const [puntaje, setPuntaje] = useState(0);
-    const [mostrarModalFinal, setMostrarModalFinal] = useState(false);
+    const [certificadoGenerado, setCertificadoGenerado] = useState(false);
     const [preguntasAdaptativas, setPreguntasAdaptativas] = useState([]);
     const [cargandoPreguntas, setCargandoPreguntas] = useState(true);
     const [mostrarModalRecomendacion, setMostrarModalRecomendacion] = useState(false);
     const [recomendacionActual, setRecomendacionActual] = useState(null);
     const [bloqueoInfo, setBloqueoInfo] = useState(null);
-
-    // Función para obtener recomendación desde el backend
-    const obtenerRecomendacionDesdeBackend = async (porcentaje) => {
-        try {
-            const response = await fetch('http://localhost:4000/api/progreso/obtener-recomendacion', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ porcentaje })
-            });
-            const data = await response.json();
-            return data.recomendacion;
-        } catch (error) {
-            console.error('Error obteniendo recomendación:', error);
-            // Fallback por si falla el backend
-            return obtenerRecomendacionFallback(porcentaje);
-        }
-    };
-
-    // Función fallback por si el backend no responde
-    const obtenerRecomendacionFallback = (porcentaje) => {
-        if (porcentaje >= 0 && porcentaje <= 10) {
-            return { 
-                tipo: "repaso_intensivo",
-                mensaje: "Te recomendamos repasar el tema completamente", 
-                bloqueoMinutos: 60, 
-                puedeAvanzar: false 
-            };
-        } else if (porcentaje >= 11 && porcentaje <= 30) {
-            return { 
-                tipo: "repaso_fuerte",
-                mensaje: "Necesitas repasar los conceptos principales", 
-                bloqueoMinutos: 45, 
-                puedeAvanzar: false 
-            };
-        } else if (porcentaje >= 31 && porcentaje <= 60) {
-            return { 
-                tipo: "repaso_moderado",
-                mensaje: "Un repaso te ayudará a mejorar", 
-                bloqueoMinutos: 30, 
-                puedeAvanzar: false 
-            };
-        } else if (porcentaje >= 61 && porcentaje <= 69) {
-            return { 
-                tipo: "repaso_leve",
-                mensaje: "Estás cerca, un breve repaso te llevará al éxito", 
-                bloqueoMinutos: 15, 
-                puedeAvanzar: false 
-            };
-        } else if (porcentaje >= 70 && porcentaje <= 85) {
-            return { 
-                tipo: "felicitacion_repaso",
-                mensaje: "¡Felicidades por aprobar! Te recomendamos un poco más de repaso para consolidar tu conocimiento", 
-                bloqueoMinutos: 0, 
-                puedeAvanzar: true 
-            };
-        } else if (porcentaje >= 86 && porcentaje <= 100) {
-            return { 
-                tipo: "felicitacion_excelente",
-                mensaje: "¡Excelente desempeño! Has demostrado un gran dominio del tema", 
-                bloqueoMinutos: 0, 
-                puedeAvanzar: true 
-            };
-        } else {
-            return { 
-                tipo: "default",
-                mensaje: "Continúa con tu aprendizaje", 
-                bloqueoMinutos: 0, 
-                puedeAvanzar: false 
-            };
-        }
-    };
 
     // Verificar bloqueo al cargar el componente
     useEffect(() => {
@@ -96,8 +27,7 @@ export default function EvaluacionModulo({ curso, modulo, moduloIndex, onNavigat
                     body: JSON.stringify({
                         usuarioId: usuario._id,
                         cursoId: curso._id || curso.id,
-                        moduloIndex: moduloIndex,
-                        tipo: "modulo"
+                        tipo: "final"
                     })
                 });
 
@@ -114,12 +44,12 @@ export default function EvaluacionModulo({ curso, modulo, moduloIndex, onNavigat
         };
 
         verificarEstadoBloqueo();
-    }, [curso, moduloIndex]);
+    }, [curso]);
 
     // useEffect para cargar preguntas adaptativas
     useEffect(() => {
         const cargarPreguntasAdaptativas = async () => {
-            if (!modulo?.evaluacion?.preguntas || !curso) {
+            if (!evaluacion?.preguntas || !curso) {
                 setCargandoPreguntas(false);
                 return;
             }
@@ -127,15 +57,15 @@ export default function EvaluacionModulo({ curso, modulo, moduloIndex, onNavigat
             try {
                 const usuario = JSON.parse(localStorage.getItem("usuario"));
 
-                console.log('🔄 Solicitando preguntas adaptativas para módulo...');
+                console.log('🔄 Solicitando preguntas adaptativas para evaluación final...');
 
                 const response = await fetch('http://localhost:4000/api/modelos-matematicos/seleccionar-preguntas', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        preguntas: modulo.evaluacion.preguntas,
+                        preguntas: evaluacion.preguntas,
                         usuario: usuario,
-                        tipoEvaluacion: 'modulo', // 10 preguntas para módulo
+                        tipoEvaluacion: 'final', // 15 preguntas para final
                         cursoId: curso._id || curso.id
                     })
                 });
@@ -143,14 +73,25 @@ export default function EvaluacionModulo({ curso, modulo, moduloIndex, onNavigat
                 const data = await response.json();
                 if (data.success && data.preguntasSeleccionadas.length > 0) {
                     console.log('✅ Preguntas adaptativas cargadas:', data.preguntasSeleccionadas.length);
+                    console.log('📊 Distribución de dificultades seleccionadas:', data.distribucionDificultades);
+
+                    // Debug: mostrar dificultades de las preguntas seleccionadas
+                    const dificultades = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
+                    data.preguntasSeleccionadas.forEach(p => {
+                        if (p.dificultad >= 1 && p.dificultad <= 5) {
+                            dificultades[p.dificultad]++;
+                        }
+                    });
+                    console.log('🎯 Dificultades en preguntas seleccionadas:', dificultades);
+
                     setPreguntasAdaptativas(data.preguntasSeleccionadas);
                 } else {
                     console.log('⚠️ Usando preguntas normales (fallback)');
-                    setPreguntasAdaptativas(modulo.evaluacion.preguntas);
+                    setPreguntasAdaptativas(evaluacion.preguntas);
                 }
             } catch (error) {
                 console.error('❌ Error cargando preguntas adaptativas:', error);
-                setPreguntasAdaptativas(modulo.evaluacion.preguntas);
+                setPreguntasAdaptativas(evaluacion.preguntas);
             } finally {
                 setCargandoPreguntas(false);
             }
@@ -159,7 +100,7 @@ export default function EvaluacionModulo({ curso, modulo, moduloIndex, onNavigat
         if (!bloqueoInfo?.bloqueado) {
             cargarPreguntasAdaptativas();
         }
-    }, [modulo, curso, bloqueoInfo]);
+    }, [evaluacion, curso, bloqueoInfo]);
 
     // ✅ INICIALIZAR respuestas cuando se cargan las preguntas adaptativas
     useEffect(() => {
@@ -172,15 +113,13 @@ export default function EvaluacionModulo({ curso, modulo, moduloIndex, onNavigat
 
     const preguntas = cargandoPreguntas ? [] :
         (preguntasAdaptativas.length > 0 ? preguntasAdaptativas :
-            (modulo?.evaluacion?.preguntas || []));
+            (evaluacion?.preguntas || []));
 
-    // Inicializar el temporizador y las respuestas
+    // 🚨 MODIFICAR: Inicializar inmediatamente sin modal
     useEffect(() => {
         if (preguntas.length > 0 && !bloqueoInfo?.bloqueado) {
-            // Inicializar array de respuestas
+            // Inicializar sin esperar por modal
             setRespuestas(new Array(preguntas.length).fill(null));
-
-            // Iniciar temporizador
             setTiempoRestante(preguntas.length * 2 * 60);
 
             const timer = setInterval(() => {
@@ -196,14 +135,16 @@ export default function EvaluacionModulo({ curso, modulo, moduloIndex, onNavigat
 
             return () => clearInterval(timer);
         }
-    }, [preguntas, bloqueoInfo]);
+    }, [preguntas, bloqueoInfo]); // 🚨 Dependencia de preguntas
+
+    // const modalInicioEvaluacion = mostrarModalInicio && ( ... )
 
     // ✅ AGREGAR loading state
     if (cargandoPreguntas) {
         return (
             <div className="evaluacion-cargando">
                 <div className="cargando-contenido">
-                    <h2>🔄 Cargando evaluación adaptativa...</h2>
+                    <h2>🔄 Cargando evaluación final adaptativa...</h2>
                     <p>Seleccionando las mejores preguntas para ti</p>
                 </div>
             </div>
@@ -216,7 +157,7 @@ export default function EvaluacionModulo({ curso, modulo, moduloIndex, onNavigat
             <div className="evaluacion-bloqueada">
                 <div className="bloqueo-contenido">
                     <div className="bloqueo-icono">⏰</div>
-                    <h2>Evaluación Temporalmente Bloqueada</h2>
+                    <h2>Evaluación Final Temporalmente Bloqueada</h2>
                     <p>Has realizado un intento recientemente. Por favor, espera antes de intentar nuevamente.</p>
 
                     <div className="tiempo-bloqueo">
@@ -241,7 +182,7 @@ export default function EvaluacionModulo({ curso, modulo, moduloIndex, onNavigat
     const formatearTiempo = (segundos) => {
         const minutos = Math.floor(segundos / 60);
         const segs = segundos % 60;
-        return `${minutos}:${segs < 10 ? '0' : ''}${segs}`;
+        return `${minutos}:${segs < 10 ? "0" : ""}${segs}`;
     };
 
     const manejarRespuesta = (opcionIndex) => {
@@ -265,7 +206,7 @@ export default function EvaluacionModulo({ curso, modulo, moduloIndex, onNavigat
     };
 
     const finalizarEvaluacion = async () => {
-        if (!curso || !modulo || preguntas.length === 0) return;
+        if (!curso || !evaluacion || preguntas.length === 0) return;
 
         let correctas = 0;
 
@@ -283,7 +224,7 @@ export default function EvaluacionModulo({ curso, modulo, moduloIndex, onNavigat
                 return;
             }
 
-            const opcionCorrecta = typeof pregunta.opcionCorrecta === 'string'
+            const opcionCorrecta = typeof pregunta.opcionCorrecta === "string"
                 ? parseInt(pregunta.opcionCorrecta)
                 : pregunta.opcionCorrecta;
 
@@ -293,21 +234,14 @@ export default function EvaluacionModulo({ curso, modulo, moduloIndex, onNavigat
         const puntajeCalculado = (correctas / preguntas.length) * 100;
         const notaFinal = puntajeCalculado;
 
-        setPuntaje(puntajeCalculado);
+        setPuntaje(notaFinal);
 
-        // ✅ OBTENER RECOMENDACIÓN DESDE EL BACKEND
-        let recomendacion;
-        try {
-            recomendacion = await obtenerRecomendacionDesdeBackend(notaFinal);
-        } catch (error) {
-            console.error('Error obteniendo recomendación, usando fallback:', error);
-            recomendacion = obtenerRecomendacionFallback(notaFinal);
-        }
-        
+        // ✅ OBTENER RECOMENDACIÓN Y BLOQUEO
+        const recomendacion = obtenerRecomendacionPorcentual(notaFinal);
         setRecomendacionActual(recomendacion);
 
         // ✅ AGREGAR LOG PARA DEBUG
-        console.log('📊 Resultados evaluación módulo:', {
+        console.log('📊 Resultados evaluación final:', {
             totalPreguntas: preguntas.length,
             totalRespuestas: respuestas.length,
             respuestasValidas: respuestas.slice(0, preguntas.length).length,
@@ -316,77 +250,68 @@ export default function EvaluacionModulo({ curso, modulo, moduloIndex, onNavigat
             recomendacion: recomendacion
         });
 
-        // ⭐ REGISTRAR EVALUACIÓN EN BACKEND CON INFORMACIÓN DE BLOQUEO
         try {
             const usuario = JSON.parse(localStorage.getItem("usuario"));
             const cursoId = curso._id || curso.id;
 
-            const response = await fetch("http://localhost:4000/api/progreso/completar-modulo", {
+            // Registrar evaluación final con información de bloqueo
+            const responseEvaluacion = await fetch("http://localhost:4000/api/progreso/evaluacion-final", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
                     usuarioId: usuario._id,
                     cursoId: cursoId,
-                    moduloIndex: moduloIndex,
-                    nota: notaFinal,
+                    notaFinal: notaFinal,
                     minutosBloqueo: recomendacion.bloqueoMinutos
                 })
             });
 
-            const result = await response.json();
-            if (result.success) {
-                console.log("✅ Evaluación guardada:", result);
+            const resultEvaluacion = await responseEvaluacion.json();
 
-                // ✅ ACTUALIZAR LOCALSTORAGE CON LA NUEVA HABILIDAD
+            if (resultEvaluacion.success) {
+                // Actualizar localStorage con habilidad_nueva
                 const usuarioActual = JSON.parse(localStorage.getItem("usuario"));
-                const usuarioActualizado = {
-                    ...usuarioActual,
-                    habilidad_nueva: result.habilidad_nueva
-                };
-                localStorage.setItem("usuario", JSON.stringify(usuarioActualizado));
+                if (usuarioActual && resultEvaluacion.habilidad_nueva) {
+                    const usuarioActualizado = {
+                        ...usuarioActual,
+                        habilidad_nueva: resultEvaluacion.habilidad_nueva
+                    };
+                    localStorage.setItem("usuario", JSON.stringify(usuarioActualizado));
+                }
 
-                // Mostrar modal de recomendación si no puede avanzar
+                // Solo marcar curso como completado si aprobó
+                if (notaFinal >= 70) {
+                    // Marcar curso como completado
+                    const responseCompletado = await fetch("http://localhost:4000/api/progreso/completar-curso", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({
+                            usuarioId: usuario._id,
+                            cursoId: cursoId
+                        })
+                    });
+
+                    const resultCompletado = await responseCompletado.json();
+                    if (resultCompletado.success) {
+                        setCertificadoGenerado(true);
+                    }
+                }
+
+                // Mostrar modal de recomendación si no aprobó
                 if (!recomendacion.puedeAvanzar) {
                     setMostrarModalRecomendacion(true);
                 }
             }
 
         } catch (error) {
-            console.error("Error enviando evaluación:", error);
+            console.error("Error registrando evaluación final:", error);
         }
 
         setEvaluacionCompletada(true);
     };
 
-    // Función para manejar continuar
-    const manejarContinuar = () => {
-        const esUltimoModulo = moduloIndex === curso.modulos.length - 1;
-
-        if (esUltimoModulo) {
-            // Mostrar modal de confirmación
-            setMostrarModalFinal(true);
-        } else {
-            // Continuar con la navegación normal
-            if (onEvaluacionCompletada) {
-                onEvaluacionCompletada(moduloIndex);
-            }
-        }
-    };
-
-    // En EvaluacionModulo.jsx - modificar la función irAEvaluacionFinal
-    const irAEvaluacionFinal = () => {
-        setMostrarModalFinal(false);
-
-        // Navegar directamente a EvaluacionFinal
-        onNavigate("evaluacion-final", {
-            curso,
-            evaluacion: curso.evaluacionFinal
-        });
-    };
-
-    const volverAlCurso = () => {
-        setMostrarModalFinal(false);
-        onNavigate("curso-vista", { curso });
+    const manejarFinalizarCurso = () => {
+        if (onEvaluacionCompletada) onEvaluacionCompletada();
     };
 
     const cerrarModalRecomendacion = () => {
@@ -396,6 +321,7 @@ export default function EvaluacionModulo({ curso, modulo, moduloIndex, onNavigat
 
     const pregunta = preguntas[preguntaActual];
 
+    // 🚨 ELIMINAR la referencia al modal en el return
     if (evaluacionCompletada) {
         // ✅ CALCULAR CORRECTAMENTE LAS ESTADÍSTICAS
         const respuestasValidas = respuestas.slice(0, preguntas.length);
@@ -425,8 +351,8 @@ export default function EvaluacionModulo({ curso, modulo, moduloIndex, onNavigat
             <>
                 <div className="evaluacion-completada">
                     <div className="evaluacion-header">
-                        <h1>🎯 Evaluación Completada</h1>
-                        <p>Módulo: {modulo.nombre}</p>
+                        <h1>🎓 Evaluación Final Completada</h1>
+                        <p>Curso: {curso.nombre}</p>
                     </div>
 
                     <div className="resultado-container">
@@ -469,25 +395,30 @@ export default function EvaluacionModulo({ curso, modulo, moduloIndex, onNavigat
                             </div>
                         )}
 
+                        {certificadoGenerado && (
+                            <div className="certificado-section">
+                                <div className="certificado-icono">🏆</div>
+                                <h3>¡Felicidades! Has aprobado el curso</h3>
+                                <p>Tu certificado está listo para descargar</p>
+                                <button className="btn-certificado" onClick={() => alert("Certificado generado")}>
+                                    📄 Descargar Certificado
+                                </button>
+                            </div>
+                        )}
+
                         <div className="acciones-resultado">
                             <button
-                                className="btn-volver-curso"
-                                onClick={() => onNavigate("curso-vista", { curso })}
+                                className="btn-revisar"
+                                onClick={() => setEvaluacionCompletada(false)}
                             >
-                                🏠 Volver al curso
+                                📝 Revisar respuestas
                             </button>
-
-                            {recomendacionActual?.puedeAvanzar && (
-                                <button
-                                    className="btn-continuar"
-                                    onClick={manejarContinuar}
-                                >
-                                    {moduloIndex === curso.modulos.length - 1 ?
-                                        '🎓 Ir a evaluación final' :
-                                        '🚀 Continuar al siguiente módulo'
-                                    }
-                                </button>
-                            )}
+                            <button
+                                className="btn-continuar"
+                                onClick={manejarFinalizarCurso}
+                            >
+                                🏠 Volver a cursos
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -503,8 +434,8 @@ export default function EvaluacionModulo({ curso, modulo, moduloIndex, onNavigat
                                 <div className="recomendacion-icono">⏰</div>
                                 <p>{recomendacionActual?.mensaje}</p>
                                 <div className="bloqueo-info">
-                                    <p>La evaluación estará disponible nuevamente en <strong>{recomendacionActual?.bloqueoMinutos} minutos</strong>.</p>
-                                    <p>Utiliza este tiempo para repasar los conceptos del módulo.</p>
+                                    <p>La evaluación final estará disponible nuevamente en <strong>{recomendacionActual?.bloqueoMinutos} minutos</strong>.</p>
+                                    <p>Utiliza este tiempo para repasar todos los conceptos del curso.</p>
                                 </div>
                             </div>
                             <div className="modal-actions">
@@ -518,46 +449,6 @@ export default function EvaluacionModulo({ curso, modulo, moduloIndex, onNavigat
                         </div>
                     </div>
                 )}
-
-                {/* Modal para evaluación final */}
-                {mostrarModalFinal && (
-                    <div className="modal-overlay">
-                        <div className="modal-confirmacion">
-                            <div className="modal-header">
-                                <h2>🎓 ¡Módulos Completados!</h2>
-                            </div>
-                            <div className="modal-body">
-                                <p>Has completado todos los módulos del curso <strong>{curso.nombre}</strong>.</p>
-                                <p>¿Deseas continuar con la evaluación final?</p>
-                                <div className="evaluacion-info">
-                                    <div className="info-item">
-                                        <span>📝 Preguntas:</span>
-                                        <span>{curso.evaluacionFinal?.preguntas?.length || 0}</span>
-                                    </div>
-                                    <div className="info-item">
-                                        <span>⏱️ Duración:</span>
-                                        <span>{curso.evaluacionFinal ? `${curso.evaluacionFinal.preguntas.length * 2} minutos` : 'No disponible'}</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div className="modal-actions">
-                                <button
-                                    className="btn-volver"
-                                    onClick={volverAlCurso}
-                                >
-                                    Volver al curso
-                                </button>
-                                <button
-                                    className="btn-continuar"
-                                    onClick={irAEvaluacionFinal}
-                                    disabled={!curso.evaluacionFinal || !curso.evaluacionFinal.preguntas || curso.evaluacionFinal.preguntas.length === 0}
-                                >
-                                    Ir a evaluación final
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                )}
             </>
         );
     }
@@ -565,8 +456,8 @@ export default function EvaluacionModulo({ curso, modulo, moduloIndex, onNavigat
     if (!pregunta) {
         return (
             <div className="evaluacion-error">
-                <h2>Error al cargar la evaluación</h2>
-                <button onClick={() => onNavigate("curso-contenido", { curso, moduloIndex, contenidoIndex: 0 })}>
+                <h2>Error al cargar la evaluación final</h2>
+                <button onClick={() => onNavigate("curso-vista", { curso })}>
                     ← Volver al curso
                 </button>
             </div>
@@ -574,13 +465,15 @@ export default function EvaluacionModulo({ curso, modulo, moduloIndex, onNavigat
     }
 
     return (
-        <div className="evaluacion">
-            {/* Header de la evaluación */}
+        <div className="evaluacion evaluacion-final">
+            {/* 🚨 ELIMINADO: {modalInicioEvaluacion} */}
+
+            {/* Header */}
             <header className="evaluacion-header">
 
                 <div className="evaluacion-info">
-                    <h1>📝 Evaluación del Módulo</h1>
-                    <p>{modulo.nombre}</p>
+                    <h1>🎓 Evaluación Final</h1>
+                    <p>{curso.nombre}</p>
                 </div>
 
                 <div className="temporizador">
@@ -601,9 +494,10 @@ export default function EvaluacionModulo({ curso, modulo, moduloIndex, onNavigat
                 </div>
             </div>
 
-            {/* Pregunta actual */}
+            {/* Pregunta */}
             <main className="evaluacion-contenido">
                 <div className="pregunta-card">
+
                     <div className="pregunta-header">
                         <span className="dificultad-badge">
                             Dificultad: {pregunta.dificultad}/5
@@ -616,16 +510,13 @@ export default function EvaluacionModulo({ curso, modulo, moduloIndex, onNavigat
                         {pregunta.opciones.map((opcion, index) => (
                             <div
                                 key={index}
-                                className={`opcion-item ${respuestas[preguntaActual] === index ? 'seleccionada' : ''
-                                    }`}
+                                className={`opcion-item ${respuestas[preguntaActual] === index ? "seleccionada" : ""}`}
                                 onClick={() => manejarRespuesta(index)}
                             >
-                                <div className="opcion-indice">
-                                    {String.fromCharCode(65 + index)} {/* A, B, C, D */}
-                                </div>
+                                <div className="opcion-indice">{String.fromCharCode(65 + index)}</div>
                                 <div className="opcion-texto">{opcion}</div>
                                 <div className="opcion-check">
-                                    {respuestas[preguntaActual] === index && '✓'}
+                                    {respuestas[preguntaActual] === index && "✓"}
                                 </div>
                             </div>
                         ))}
@@ -633,7 +524,7 @@ export default function EvaluacionModulo({ curso, modulo, moduloIndex, onNavigat
                 </div>
             </main>
 
-            {/* Navegación */}
+            {/* Footer navegación */}
             <footer className="evaluacion-navegacion">
                 <button
                     className="btn-anterior-pregunta"

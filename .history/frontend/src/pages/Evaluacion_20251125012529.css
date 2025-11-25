@@ -418,165 +418,164 @@
         color: #666;
         font-size: 1.1rem;
     }
-
     /* Estilos adicionales para el sistema de bloqueos y recomendaciones */
 
-    /* Pantalla de evaluación bloqueada */
-    .evaluacion-bloqueada {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        min-height: 70vh;
-        padding: 2rem;
-    }
+/* Pantalla de evaluación bloqueada */
+.evaluacion-bloqueada {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 70vh;
+    padding: 2rem;
+}
 
+.bloqueo-contenido {
+    text-align: center;
+    max-width: 500px;
+    background: white;
+    padding: 3rem;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    border-left: 5px solid #ff6b6b;
+}
+
+.bloqueo-icono {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+}
+
+.tiempo-bloqueo {
+    background: #fff3cd;
+    border: 1px solid #ffeaa7;
+    border-radius: 8px;
+    padding: 1rem;
+    margin: 1.5rem 0;
+    font-size: 1.2rem;
+}
+
+.recomendacion-bloqueo {
+    background: #e3f2fd;
+    border: 1px solid #bbdefb;
+    border-radius: 8px;
+    padding: 1rem;
+    margin: 1.5rem 0;
+    font-style: italic;
+}
+
+/* Modal de recomendación */
+.modal-recomendacion {
+    max-width: 500px;
+    background: white;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+}
+
+.modal-recomendacion .modal-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 1.5rem;
+    text-align: center;
+}
+
+.modal-recomendacion .modal-body {
+    padding: 2rem;
+    text-align: center;
+}
+
+.recomendacion-icono {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+}
+
+.bloqueo-info {
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 1rem;
+    margin-top: 1rem;
+    border-left: 4px solid #ffc107;
+}
+
+/* Estados de puntaje circular */
+.puntaje-circular.aprobado {
+    border-color: #28a745;
+    background: linear-gradient(135deg, #28a745, #20c997);
+}
+
+.puntaje-circular.reprobado {
+    border-color: #dc3545;
+    background: linear-gradient(135deg, #dc3545, #e83e8c);
+}
+
+/* Recomendación en resultados */
+.recomendacion-resultado {
+    background: #f8f9fa;
+    border-radius: 10px;
+    padding: 1.5rem;
+    margin: 1.5rem 0;
+    border-left: 4px solid #6c757d;
+}
+
+.recomendacion-resultado.aprobado {
+    background: #d4edda;
+    border-left-color: #28a745;
+}
+
+.recomendacion-resultado.reprobado {
+    background: #f8d7da;
+    border-left-color: #dc3545;
+}
+
+.tiempo-bloqueo-info {
+    background: #fff3cd;
+    border: 1px solid #ffeaa7;
+    border-radius: 6px;
+    padding: 0.75rem;
+    margin-top: 1rem;
+    font-size: 0.9rem;
+}
+
+/* Botones mejorados */
+.btn-volver-curso {
+    background: #6c757d;
+    color: white;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
+.btn-volver-curso:hover {
+    background: #5a6268;
+    transform: translateY(-2px);
+}
+
+.btn-primary {
+    background: #007bff;
+    color: white;
+    border: none;
+    padding: 0.75rem 2rem;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+    background: #0056b3;
+    transform: translateY(-2px);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
     .bloqueo-contenido {
-        text-align: center;
-        max-width: 500px;
-        background: white;
-        padding: 3rem;
-        border-radius: 15px;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-        border-left: 5px solid #ff6b6b;
-    }
-
-    .bloqueo-icono {
-        font-size: 4rem;
-        margin-bottom: 1rem;
-    }
-
-    .tiempo-bloqueo {
-        background: #fff3cd;
-        border: 1px solid #ffeaa7;
-        border-radius: 8px;
-        padding: 1rem;
-        margin: 1.5rem 0;
-        font-size: 1.2rem;
-    }
-
-    .recomendacion-bloqueo {
-        background: #e3f2fd;
-        border: 1px solid #bbdefb;
-        border-radius: 8px;
-        padding: 1rem;
-        margin: 1.5rem 0;
-        font-style: italic;
-    }
-
-    /* Modal de recomendación */
-    .modal-recomendacion {
-        max-width: 500px;
-        background: white;
-        border-radius: 15px;
-        overflow: hidden;
-        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
-    }
-
-    .modal-recomendacion .modal-header {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white;
-        padding: 1.5rem;
-        text-align: center;
-    }
-
-    .modal-recomendacion .modal-body {
+        margin: 1rem;
         padding: 2rem;
-        text-align: center;
     }
-
-    .recomendacion-icono {
-        font-size: 3rem;
-        margin-bottom: 1rem;
+    
+    .modal-recomendacion {
+        margin: 1rem;
     }
-
-    .bloqueo-info {
-        background: #f8f9fa;
-        border-radius: 8px;
-        padding: 1rem;
-        margin-top: 1rem;
-        border-left: 4px solid #ffc107;
-    }
-
-    /* Estados de puntaje circular */
-    .puntaje-circular.aprobado {
-        border-color: #28a745;
-        background: linear-gradient(135deg, #28a745, #20c997);
-    }
-
-    .puntaje-circular.reprobado {
-        border-color: #dc3545;
-        background: linear-gradient(135deg, #dc3545, #e83e8c);
-    }
-
-    /* Recomendación en resultados */
-    .recomendacion-resultado {
-        background: #f8f9fa;
-        border-radius: 10px;
-        padding: 1.5rem;
-        margin: 1.5rem 0;
-        border-left: 4px solid #6c757d;
-    }
-
-    .recomendacion-resultado.aprobado {
-        background: #d4edda;
-        border-left-color: #28a745;
-    }
-
-    .recomendacion-resultado.reprobado {
-        background: #f8d7da;
-        border-left-color: #dc3545;
-    }
-
-    .tiempo-bloqueo-info {
-        background: #fff3cd;
-        border: 1px solid #ffeaa7;
-        border-radius: 6px;
-        padding: 0.75rem;
-        margin-top: 1rem;
-        font-size: 0.9rem;
-    }
-
-    /* Botones mejorados */
-    .btn-volver-curso {
-        background: #6c757d;
-        color: white;
-        border: none;
-        padding: 0.75rem 1.5rem;
-        border-radius: 8px;
-        cursor: pointer;
-        font-size: 1rem;
-        transition: all 0.3s ease;
-    }
-
-    .btn-volver-curso:hover {
-        background: #5a6268;
-        transform: translateY(-2px);
-    }
-
-    .btn-primary {
-        background: #007bff;
-        color: white;
-        border: none;
-        padding: 0.75rem 2rem;
-        border-radius: 8px;
-        cursor: pointer;
-        font-size: 1rem;
-        transition: all 0.3s ease;
-    }
-
-    .btn-primary:hover {
-        background: #0056b3;
-        transform: translateY(-2px);
-    }
-
-    /* Responsive */
-    @media (max-width: 768px) {
-        .bloqueo-contenido {
-            margin: 1rem;
-            padding: 2rem;
-        }
-
-        .modal-recomendacion {
-            margin: 1rem;
-        }
-    }
+}

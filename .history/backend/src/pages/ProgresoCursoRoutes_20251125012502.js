@@ -4,12 +4,6 @@ const Usuario = require("./Usuario");
 const Curso = require("./ModeloCursos");
 const router = express.Router();
 
-// ⭐ NUEVO: Importar funciones de recomendaciones
-const {
-    obtenerRecomendacionPorcentual,
-    verificarBloqueoEvaluacion
-} = require("../helpers/recomendacionesEvaluacion");
-
 /* ============================================================
    🔹 UTIL: Calcular porcentaje total de progreso MEJORADO
    ============================================================ */
@@ -48,6 +42,7 @@ function calcularProgreso(progreso, curso) {
 
     return porcentaje;
 }
+
 
 /* ============================================================
    🔹 UTIL: Calcular nueva habilidad MEJORADO CON DESAUMENTOS
@@ -112,91 +107,6 @@ async function calcularNuevaHabilidad(usuarioId, cursoNivel, nota, tipo = "modul
         return null;
     }
 }
-
-/* ============================================================
-   🔹 UTIL: Normalizar módulos completados (SOLO completados si aprobaron)
-   ============================================================ */
-function normalizarModulosCompletadosBackend(modulosCompletados = []) {
-    const map = new Map();
-    for (const m of modulosCompletados) {
-        // SOLO marcar como completado si tiene nota >= 70
-        const estaCompletado = m.completado && (m.notaEvaluacion || 0) >= 70;
-
-        if (typeof m.moduloIndex !== "number") continue;
-        map.set(m.moduloIndex, {
-            moduloIndex: m.moduloIndex,
-            completado: estaCompletado,
-            fechaCompletado: m.fechaCompletado || null,
-            notaEvaluacion: typeof m.notaEvaluacion === "number" ? m.notaEvaluacion : 0,
-            aprobado: estaCompletado,
-            ultimoIntento: m.ultimoIntento || null,
-            bloqueadoHasta: m.bloqueadoHasta || null
-        });
-    }
-    return Array.from(map.values()).sort((a, b) => a.moduloIndex - b.moduloIndex);
-}
-
-/* ============================================================
-   📌 12. NUEVO: VERIFICAR BLOQUEO DE EVALUACIÓN
-   ============================================================ */
-router.post("/verificar-bloqueo-evaluacion", async (req, res) => {
-    try {
-        const { usuarioId, cursoId, moduloIndex, tipo } = req.body;
-
-        const progreso = await ProgresoCurso.findOne({ usuarioId, cursoId });
-        if (!progreso) {
-            return res.json({
-                success: true,
-                bloqueado: false,
-                mensaje: "No hay progreso registrado"
-            });
-        }
-
-        let ultimoIntento = null;
-        let bloqueadoHasta = null;
-        let nota = 0;
-
-        if (tipo === "modulo" && moduloIndex !== undefined) {
-            const modulo = progreso.modulosCompletados.find(m => m.moduloIndex === moduloIndex);
-            if (modulo) {
-                ultimoIntento = modulo.ultimoIntento;
-                bloqueadoHasta = modulo.bloqueadoHasta;
-                nota = modulo.notaEvaluacion || 0;
-            }
-        } else if (tipo === "final") {
-            ultimoIntento = progreso.evaluacionFinalUltimoIntento;
-            bloqueadoHasta = progreso.evaluacionFinalBloqueadoHasta;
-            nota = progreso.notaEvaluacionFinal || 0;
-        }
-
-        // Verificar si está bloqueado
-        const ahora = new Date();
-        if (bloqueadoHasta && ahora < new Date(bloqueadoHasta)) {
-            const tiempoRestanteMs = new Date(bloqueadoHasta) - ahora;
-            const tiempoRestanteMinutos = Math.ceil(tiempoRestanteMs / (1000 * 60));
-
-            const recomendacion = obtenerRecomendacionPorcentual(nota);
-
-            return res.json({
-                success: true,
-                bloqueado: true,
-                tiempoRestante: tiempoRestanteMinutos,
-                recomendacion: recomendacion.mensaje,
-                desbloqueo: bloqueadoHasta
-            });
-        }
-
-        res.json({
-            success: true,
-            bloqueado: false,
-            mensaje: "Evaluación disponible"
-        });
-
-    } catch (error) {
-        console.error("Error verificando bloqueo:", error);
-        res.status(500).json({ success: false, error: error.message });
-    }
-});
 
 /* ============================================================
    📌 1. OBTENER PROGRESO DE UN CURSO - MEJORADO
@@ -297,14 +207,11 @@ router.post("/contenido-visto", async (req, res) => {
 });
 
 /* ============================================================
-   📌 3. COMPLETAR MÓDULO (guardar nota, fecha) — idempotente CON BLOQUEO
-   ============================================================ */
-/* ============================================================
-   📌 3. COMPLETAR MÓDULO (guardar nota, fecha) — idempotente CON BLOQUEO
+   📌 3. COMPLETAR MÓDULO (guardar nota, fecha) — idempotente
    ============================================================ */
 router.post("/completar-modulo", async (req, res) => {
     try {
-        const { usuarioId, cursoId, moduloIndex, nota, minutosBloqueo } = req.body;
+        const { usuarioId, cursoId, moduloIndex, nota } = req.body;
 
         if (usuarioId == null || !cursoId || moduloIndex == null) {
             return res.status(400).json({ success: false, error: "Faltan datos obligatorios" });
@@ -326,48 +233,28 @@ router.post("/completar-modulo", async (req, res) => {
         // Buscar si el módulo ya está registrado como completado
         const idx = progreso.modulosCompletados.findIndex(m => m.moduloIndex === moduloIndex);
 
-        const ahora = new Date();
-        let bloqueadoHasta = null;
-
-        // Calcular fecha de desbloqueo si hay bloqueo
-        if (minutosBloqueo > 0) {
-            bloqueadoHasta = new Date(ahora.getTime() + minutosBloqueo * 60 * 1000);
-        }
-
-        // ✅ DETERMINAR SI ESTÁ COMPLETADO (SOLO SI APROBÓ)
-        const estaCompletado = nota >= 70;
-
         if (idx === -1) {
             progreso.modulosCompletados.push({
                 moduloIndex,
-                completado: estaCompletado, // ✅ SOLO true si aprobó
-                fechaCompletado: estaCompletado ? ahora : null,
-                notaEvaluacion: nota || 0,
-                ultimoIntento: ahora,
-                bloqueadoHasta: bloqueadoHasta,
-                aprobado: estaCompletado // ✅ Nueva propiedad
+                completado: true,
+                fechaCompletado: new Date(),
+                notaEvaluacion: nota || 0
             });
         } else {
-            // Actualizar información
-            progreso.modulosCompletados[idx].completado = estaCompletado;
-            progreso.modulosCompletados[idx].fechaCompletado = estaCompletado ? ahora : progreso.modulosCompletados[idx].fechaCompletado;
+            // Actualizar información (no duplicar)
+            progreso.modulosCompletados[idx].completado = true;
+            progreso.modulosCompletados[idx].fechaCompletado = new Date();
             progreso.modulosCompletados[idx].notaEvaluacion = nota || progreso.modulosCompletados[idx].notaEvaluacion || 0;
-            progreso.modulosCompletados[idx].ultimoIntento = ahora;
-            progreso.modulosCompletados[idx].bloqueadoHasta = bloqueadoHasta;
-            progreso.modulosCompletados[idx].aprobado = estaCompletado;
         }
 
-        // ✅ NORMALIZAR LOS MÓDULOS COMPLETADOS ANTES DE GUARDAR
-        progreso.modulosCompletados = normalizarModulosCompletadosBackend(progreso.modulosCompletados);
-
-        // Avanzar moduloActual solo si existe uno siguiente Y si aprobó
-        const recomendacion = obtenerRecomendacionPorcentual(nota);
-        if (recomendacion.puedeAvanzar && moduloIndex + 1 < totalModulos) {
+        // Avanzar moduloActual solo si existe uno siguiente
+        if (moduloIndex + 1 < totalModulos) {
             progreso.moduloActual = moduloIndex + 1;
             progreso.contenidoActual = 0;
         } else {
-            // Si no puede avanzar, mantener en el mismo módulo
-            progreso.moduloActual = moduloIndex;
+            // Si era el último módulo, dejamos moduloActual en el último (no más allá)
+            progreso.moduloActual = totalModulos - 1;
+            progreso.contenidoActual = (curso.modulos[progreso.moduloActual].contenido?.length || 1) - 1;
         }
 
         // ✅ ACTUALIZAR HABILIDAD_NUEVA CON LÓGICA MEJORADA (ANTES de guardar)
@@ -375,7 +262,7 @@ router.post("/completar-modulo", async (req, res) => {
 
         // Recalcular progreso
         progreso.progresoPorcentual = calcularProgreso(progreso, curso);
-        progreso.ultimaActualizacion = ahora;
+        progreso.ultimaActualizacion = new Date();
 
         await progreso.save();
 
@@ -383,10 +270,8 @@ router.post("/completar-modulo", async (req, res) => {
             success: true,
             progreso,
             habilidad_nueva: nuevaHabilidad,
-            recomendacion: recomendacion,
-            puedeAvanzar: recomendacion.puedeAvanzar,
-            siguienteModulo: recomendacion.puedeAvanzar ? Math.min(moduloIndex + 1, totalModulos - 1) : moduloIndex,
-            mensaje: `Módulo ${moduloIndex + 1} ${estaCompletado ? 'aprobado' : 'reprobado'}.`
+            siguienteModulo: Math.min(moduloIndex + 1, totalModulos - 1),
+            mensaje: `Módulo ${moduloIndex + 1} completado.`
         });
     } catch (error) {
         console.log("Error completando módulo:", error);
@@ -395,11 +280,11 @@ router.post("/completar-modulo", async (req, res) => {
 });
 
 /* ============================================================
-   📌 4. REGISTRAR EVALUACIÓN FINAL - MEJORADO CON BLOQUEO
+   📌 4. REGISTRAR EVALUACIÓN FINAL - MEJORADO (CON save() PARA ACTIVAR MIDDLEWARE)
    ============================================================ */
 router.post("/evaluacion-final", async (req, res) => {
     try {
-        const { usuarioId, cursoId, notaFinal, minutosBloqueo } = req.body;
+        const { usuarioId, cursoId, notaFinal } = req.body;
 
         const curso = await Curso.findById(cursoId);
         if (!curso) return res.status(404).json({ success: false, error: "Curso no encontrado" });
@@ -415,43 +300,23 @@ router.post("/evaluacion-final", async (req, res) => {
             });
         }
 
-        const ahora = new Date();
-        let bloqueadoHasta = null;
-
-        // Calcular fecha de desbloqueo si hay bloqueo
-        if (minutosBloqueo > 0) {
-            bloqueadoHasta = new Date(ahora.getTime() + minutosBloqueo * 60 * 1000);
-        }
-
         progreso.evaluacionFinalCompletada = true;
-        progreso.notaEvaluacionFinal = notaFinal;
-        progreso.evaluacionFinalUltimoIntento = ahora;
-        progreso.evaluacionFinalBloqueadoHasta = bloqueadoHasta;
-
-        // Solo marcar como completado si aprobó
-        if (notaFinal >= 70) {
-            progreso.progresoPorcentual = 100;
-            progreso.cursoCompletado = true;
-            progreso.fechaCompletado = ahora;
-            progreso.estado = "completado";
-        } else {
-            progreso.progresoPorcentual = 90; // Máximo sin aprobar evaluación final
-        }
-
-        progreso.ultimaActualizacion = ahora;
+        progreso.notaEvaluacionFinal = notaFinal;  
+        progreso.progresoPorcentual = 100;
+        progreso.cursoCompletado = true;
+        progreso.fechaCompletado = new Date();
+        progreso.estado = "completado";
+        progreso.ultimaActualizacion = new Date();
 
         await progreso.save();
 
         const nuevaHabilidad = await calcularNuevaHabilidad(usuarioId, curso.nivel, notaFinal, "evaluacion_final");
-        const recomendacion = obtenerRecomendacionPorcentual(notaFinal);
 
         res.json({
             success: true,
             progreso,
             habilidad_nueva: nuevaHabilidad,
-            recomendacion: recomendacion,
-            aprobado: notaFinal >= 70,
-            mensaje: notaFinal >= 70 ? "¡Curso completado exitosamente!" : "Evaluación final registrada"
+            mensaje: "¡Curso completado exitosamente!"
         });
 
     } catch (error) {
@@ -481,21 +346,12 @@ router.get("/puede-evaluacion-final/:usuarioId/:cursoId/:totalModulos", async (r
         const modulosCompletados = progreso.modulosCompletados.filter(m => m.completado).length;
         const todosModulosCompletados = modulosCompletados >= totalModulos;
 
-        // Verificar si la evaluación final está bloqueada
-        const ahora = new Date();
-        const evaluacionFinalBloqueada = progreso.evaluacionFinalBloqueadoHasta &&
-            ahora < new Date(progreso.evaluacionFinalBloqueadoHasta);
-
         res.json({
             success: true,
-            puedeHacerEvaluacion: todosModulosCompletados &&
-                !progreso.evaluacionFinalCompletada &&
-                !evaluacionFinalBloqueada,
+            puedeHacerEvaluacion: todosModulosCompletados && !progreso.evaluacionFinalCompletada,
             modulosCompletados,
             totalModulos: parseInt(totalModulos),
-            evaluacionFinalCompletada: progreso.evaluacionFinalCompletada,
-            evaluacionFinalBloqueada: evaluacionFinalBloqueada,
-            desbloqueo: progreso.evaluacionFinalBloqueadoHasta
+            evaluacionFinalCompletada: progreso.evaluacionFinalCompletada
         });
 
     } catch (error) {
@@ -598,8 +454,6 @@ router.post("/reiniciar", async (req, res) => {
                 modulosCompletados: [],
                 contenidosVistos: [],
                 evaluacionFinalCompletada: false,
-                evaluacionFinalUltimoIntento: null,
-                evaluacionFinalBloqueadoHasta: null,
                 progresoPorcentual: 0,
                 cursoCompletado: false,
                 fechaCompletado: null,
@@ -757,33 +611,4 @@ router.get("/notas-detalladas/:usuarioId/:cursoId", async (req, res) => {
         });
     }
 });
-
-/* ============================================================
-   📌 13. NUEVO: OBTENER RECOMENDACIÓN POR PORCENTAJE
-   ============================================================ */
-router.post("/obtener-recomendacion", async (req, res) => {
-    try {
-        const { porcentaje } = req.body;
-
-        if (porcentaje === undefined || porcentaje === null) {
-            return res.status(400).json({
-                success: false,
-                error: "Porcentaje es requerido"
-            });
-        }
-
-        const recomendacion = obtenerRecomendacionPorcentual(porcentaje);
-
-        res.json({
-            success: true,
-            recomendacion,
-            porcentaje
-        });
-
-    } catch (error) {
-        console.error("Error obteniendo recomendación:", error);
-        res.status(500).json({ success: false, error: error.message });
-    }
-});
-
 module.exports = router;

@@ -5,9 +5,9 @@ const Curso = require("./ModeloCursos");
 const router = express.Router();
 
 // ⭐ NUEVO: Importar funciones de recomendaciones
-const {
-    obtenerRecomendacionPorcentual,
-    verificarBloqueoEvaluacion
+const { 
+    obtenerRecomendacionPorcentual, 
+    verificarBloqueoEvaluacion 
 } = require("../helpers/recomendacionesEvaluacion");
 
 /* ============================================================
@@ -114,29 +114,6 @@ async function calcularNuevaHabilidad(usuarioId, cursoNivel, nota, tipo = "modul
 }
 
 /* ============================================================
-   🔹 UTIL: Normalizar módulos completados (SOLO completados si aprobaron)
-   ============================================================ */
-function normalizarModulosCompletadosBackend(modulosCompletados = []) {
-    const map = new Map();
-    for (const m of modulosCompletados) {
-        // SOLO marcar como completado si tiene nota >= 70
-        const estaCompletado = m.completado && (m.notaEvaluacion || 0) >= 70;
-
-        if (typeof m.moduloIndex !== "number") continue;
-        map.set(m.moduloIndex, {
-            moduloIndex: m.moduloIndex,
-            completado: estaCompletado,
-            fechaCompletado: m.fechaCompletado || null,
-            notaEvaluacion: typeof m.notaEvaluacion === "number" ? m.notaEvaluacion : 0,
-            aprobado: estaCompletado,
-            ultimoIntento: m.ultimoIntento || null,
-            bloqueadoHasta: m.bloqueadoHasta || null
-        });
-    }
-    return Array.from(map.values()).sort((a, b) => a.moduloIndex - b.moduloIndex);
-}
-
-/* ============================================================
    📌 12. NUEVO: VERIFICAR BLOQUEO DE EVALUACIÓN
    ============================================================ */
 router.post("/verificar-bloqueo-evaluacion", async (req, res) => {
@@ -174,9 +151,9 @@ router.post("/verificar-bloqueo-evaluacion", async (req, res) => {
         if (bloqueadoHasta && ahora < new Date(bloqueadoHasta)) {
             const tiempoRestanteMs = new Date(bloqueadoHasta) - ahora;
             const tiempoRestanteMinutos = Math.ceil(tiempoRestanteMs / (1000 * 60));
-
+            
             const recomendacion = obtenerRecomendacionPorcentual(nota);
-
+            
             return res.json({
                 success: true,
                 bloqueado: true,
@@ -299,9 +276,6 @@ router.post("/contenido-visto", async (req, res) => {
 /* ============================================================
    📌 3. COMPLETAR MÓDULO (guardar nota, fecha) — idempotente CON BLOQUEO
    ============================================================ */
-/* ============================================================
-   📌 3. COMPLETAR MÓDULO (guardar nota, fecha) — idempotente CON BLOQUEO
-   ============================================================ */
 router.post("/completar-modulo", async (req, res) => {
     try {
         const { usuarioId, cursoId, moduloIndex, nota, minutosBloqueo } = req.body;
@@ -334,31 +308,23 @@ router.post("/completar-modulo", async (req, res) => {
             bloqueadoHasta = new Date(ahora.getTime() + minutosBloqueo * 60 * 1000);
         }
 
-        // ✅ DETERMINAR SI ESTÁ COMPLETADO (SOLO SI APROBÓ)
-        const estaCompletado = nota >= 70;
-
         if (idx === -1) {
             progreso.modulosCompletados.push({
                 moduloIndex,
-                completado: estaCompletado, // ✅ SOLO true si aprobó
-                fechaCompletado: estaCompletado ? ahora : null,
+                completado: true,
+                fechaCompletado: ahora,
                 notaEvaluacion: nota || 0,
                 ultimoIntento: ahora,
-                bloqueadoHasta: bloqueadoHasta,
-                aprobado: estaCompletado // ✅ Nueva propiedad
+                bloqueadoHasta: bloqueadoHasta
             });
         } else {
-            // Actualizar información
-            progreso.modulosCompletados[idx].completado = estaCompletado;
-            progreso.modulosCompletados[idx].fechaCompletado = estaCompletado ? ahora : progreso.modulosCompletados[idx].fechaCompletado;
+            // Actualizar información (no duplicar)
+            progreso.modulosCompletados[idx].completado = true;
+            progreso.modulosCompletados[idx].fechaCompletado = ahora;
             progreso.modulosCompletados[idx].notaEvaluacion = nota || progreso.modulosCompletados[idx].notaEvaluacion || 0;
             progreso.modulosCompletados[idx].ultimoIntento = ahora;
             progreso.modulosCompletados[idx].bloqueadoHasta = bloqueadoHasta;
-            progreso.modulosCompletados[idx].aprobado = estaCompletado;
         }
-
-        // ✅ NORMALIZAR LOS MÓDULOS COMPLETADOS ANTES DE GUARDAR
-        progreso.modulosCompletados = normalizarModulosCompletadosBackend(progreso.modulosCompletados);
 
         // Avanzar moduloActual solo si existe uno siguiente Y si aprobó
         const recomendacion = obtenerRecomendacionPorcentual(nota);
@@ -386,7 +352,7 @@ router.post("/completar-modulo", async (req, res) => {
             recomendacion: recomendacion,
             puedeAvanzar: recomendacion.puedeAvanzar,
             siguienteModulo: recomendacion.puedeAvanzar ? Math.min(moduloIndex + 1, totalModulos - 1) : moduloIndex,
-            mensaje: `Módulo ${moduloIndex + 1} ${estaCompletado ? 'aprobado' : 'reprobado'}.`
+            mensaje: `Módulo ${moduloIndex + 1} completado.`
         });
     } catch (error) {
         console.log("Error completando módulo:", error);
@@ -427,7 +393,7 @@ router.post("/evaluacion-final", async (req, res) => {
         progreso.notaEvaluacionFinal = notaFinal;
         progreso.evaluacionFinalUltimoIntento = ahora;
         progreso.evaluacionFinalBloqueadoHasta = bloqueadoHasta;
-
+        
         // Solo marcar como completado si aprobó
         if (notaFinal >= 70) {
             progreso.progresoPorcentual = 100;
@@ -437,7 +403,7 @@ router.post("/evaluacion-final", async (req, res) => {
         } else {
             progreso.progresoPorcentual = 90; // Máximo sin aprobar evaluación final
         }
-
+        
         progreso.ultimaActualizacion = ahora;
 
         await progreso.save();
@@ -483,14 +449,14 @@ router.get("/puede-evaluacion-final/:usuarioId/:cursoId/:totalModulos", async (r
 
         // Verificar si la evaluación final está bloqueada
         const ahora = new Date();
-        const evaluacionFinalBloqueada = progreso.evaluacionFinalBloqueadoHasta &&
-            ahora < new Date(progreso.evaluacionFinalBloqueadoHasta);
+        const evaluacionFinalBloqueada = progreso.evaluacionFinalBloqueadoHasta && 
+                                      ahora < new Date(progreso.evaluacionFinalBloqueadoHasta);
 
         res.json({
             success: true,
-            puedeHacerEvaluacion: todosModulosCompletados &&
-                !progreso.evaluacionFinalCompletada &&
-                !evaluacionFinalBloqueada,
+            puedeHacerEvaluacion: todosModulosCompletados && 
+                                !progreso.evaluacionFinalCompletada && 
+                                !evaluacionFinalBloqueada,
             modulosCompletados,
             totalModulos: parseInt(totalModulos),
             evaluacionFinalCompletada: progreso.evaluacionFinalCompletada,
@@ -755,34 +721,6 @@ router.get("/notas-detalladas/:usuarioId/:cursoId", async (req, res) => {
             success: false,
             message: 'Error del servidor'
         });
-    }
-});
-
-/* ============================================================
-   📌 13. NUEVO: OBTENER RECOMENDACIÓN POR PORCENTAJE
-   ============================================================ */
-router.post("/obtener-recomendacion", async (req, res) => {
-    try {
-        const { porcentaje } = req.body;
-
-        if (porcentaje === undefined || porcentaje === null) {
-            return res.status(400).json({
-                success: false,
-                error: "Porcentaje es requerido"
-            });
-        }
-
-        const recomendacion = obtenerRecomendacionPorcentual(porcentaje);
-
-        res.json({
-            success: true,
-            recomendacion,
-            porcentaje
-        });
-
-    } catch (error) {
-        console.error("Error obteniendo recomendación:", error);
-        res.status(500).json({ success: false, error: error.message });
     }
 });
 
