@@ -1,0 +1,582 @@
+    /* Variables de diseño */
+    :root {
+        --color-lavandaClaro: #d163f2;
+        --color-primary: #a44bbe;
+        --color-primary-dark: #7d148b;
+        --color-dark: #09152c;
+        --color-dark-overlay: rgba(9, 21, 44, 0.566);
+        --color-dark-transparent: rgba(9, 21, 44, 0.808);
+        --color-light: #ffffff;
+        --color-light-transparent: rgba(255, 255, 255, 0.85);
+        --color-light-text: #d8d8d8;
+        --color-muted: #ddd;
+        --color-glass: rgba(255, 255, 255, 0.08);
+        --color-border-glass: rgba(255, 255, 255, 0.1);
+        --color-hover-shadow: rgba(164, 75, 190, 0.5);
+        --color-subtext: #cfcfcf;
+        --color-success: #10b981;
+        --color-warning: #f59e0b;
+        --color-error: #ef4444;
+    }
+
+    /* Ajustes globales solo para evaluación */
+    .evaluacion,
+    .evaluacion-final,
+    .evaluacion-completada {
+        position: relative;
+        width: 100%;
+        min-height: 100vh;
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        overflow-x: hidden;
+        background-attachment: fixed;
+    }
+
+    /* Header */
+    .evaluacion-header {
+        background: var(--color-dark-transparent);
+        backdrop-filter: blur(10px);
+        padding: 1rem 2rem;
+        border-bottom: 1px solid var(--color-border-glass);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+
+    .btn-volver-evaluacion {
+        background: var(--color-glass);
+        border: 1px solid var(--color-border-glass);
+        color: var(--color-light);
+        padding: 0.5rem 1rem;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+
+    .btn-volver-evaluacion:hover {
+        background: var(--color-primary);
+        border-color: var(--color-primary);
+    }
+
+    .evaluacion-info {
+        text-align: center;
+        flex: 1;
+    }
+
+    .evaluacion-info h1 {
+        color: var(--color-light);
+        margin: 0;
+        font-size: 1.5rem;
+    }
+
+    .evaluacion-info p {
+        color: var(--color-light-text);
+        margin: 0.25rem 0 0 0;
+    }
+
+    .temporizador {
+        background: var(--color-glass);
+        border: 1px solid var(--color-border-glass);
+        color: var(--color-light);
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        font-weight: 600;
+        font-size: 1.1rem;
+    }
+
+    /* Progreso */
+    .evaluacion-progreso {
+        padding: 1rem 2rem;
+        background: var(--color-dark-transparent);
+        border-bottom: 1px solid var(--color-border-glass);
+    }
+
+    .progreso-bar {
+        height: 6px;
+        background: var(--color-glass);
+        border-radius: 3px;
+        overflow: hidden;
+        margin-bottom: 0.5rem;
+    }
+
+    .progreso-fill {
+        height: 100%;
+        background: linear-gradient(90deg, var(--color-primary), var(--color-lavandaClaro));
+        border-radius: 3px;
+        transition: width 0.3s ease;
+    }
+
+    .progreso-texto {
+        color: var(--color-light-text);
+        font-size: 0.875rem;
+        text-align: center;
+    }
+
+    /* Contenido */
+    .evaluacion-contenido {
+        flex: 1;
+        padding: 2rem;
+        max-width: 800px;
+        margin: 0 auto;
+        width: 100%;
+    }
+
+    .pregunta-card {
+        background: var(--color-dark-transparent);
+        backdrop-filter: blur(10px);
+        border-radius: 12px;
+        border: 1px solid var(--color-border-glass);
+        padding: 2rem;
+    }
+
+    .pregunta-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+    }
+
+    .dificultad-badge {
+        background: var(--color-glass);
+        color: var(--color-light);
+        padding: 0.25rem 0.75rem;
+        border-radius: 12px;
+        font-size: 0.75rem;
+        font-weight: 600;
+    }
+
+    .pregunta-texto {
+        color: var(--color-light);
+        font-size: 1.25rem;
+        line-height: 1.5;
+        margin-bottom: 2rem;
+    }
+
+    /* Opciones */
+    .opciones-lista {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+
+    .opcion-item {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 1rem 1.5rem;
+        background: var(--color-glass);
+        border: 1px solid var(--color-border-glass);
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+
+    .opcion-item:hover {
+        background: var(--color-primary);
+        border-color: var(--color-primary);
+        transform: translateX(4px);
+    }
+
+    .opcion-item.seleccionada {
+        background: var(--color-primary);
+        border-color: var(--color-lavandaClaro);
+        box-shadow: 0 0 0 2px var(--color-hover-shadow);
+    }
+
+    .opcion-indice {
+        background: var(--color-dark);
+        color: var(--color-light);
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 600;
+        flex-shrink: 0;
+    }
+
+    .opcion-texto {
+        color: var(--color-light);
+        flex: 1;
+        line-height: 1.4;
+    }
+
+    .opcion-check {
+        color: var(--color-light);
+        font-weight: 600;
+        flex-shrink: 0;
+    }
+
+    /* Navegación */
+    .evaluacion-navegacion {
+        background: var(--color-dark-transparent);
+        backdrop-filter: blur(10px);
+        padding: 1rem 2rem;
+        border-top: 1px solid var(--color-border-glass);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .btn-anterior-pregunta,
+    .btn-siguiente-pregunta,
+    .btn-finalizar-evaluacion {
+        background: var(--color-glass);
+        border: 1px solid var(--color-border-glass);
+        color: var(--color-light);
+        padding: 0.75rem 1.5rem;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.3s;
+        min-width: 140px;
+    }
+
+    .btn-anterior-pregunta:disabled,
+    .btn-siguiente-pregunta:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+
+    .btn-anterior-pregunta:hover:not(:disabled),
+    .btn-siguiente-pregunta:hover:not(:disabled) {
+        background: var(--color-primary);
+        border-color: var(--color-primary);
+    }
+
+    .btn-finalizar-evaluacion {
+        background: linear-gradient(135deg, var(--color-primary), var(--color-lavandaClaro));
+        border: none;
+        font-weight: 600;
+    }
+
+    .btn-finalizar-evaluacion:hover:not(:disabled) {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px var(--color-hover-shadow);
+    }
+
+    .contador-preguntas {
+        color: var(--color-light);
+        font-weight: 600;
+    }
+
+    /* Resultado */
+    .evaluacion-completada {
+        min-height: 100vh;
+        background: linear-gradient(135deg, var(--color-dark) 0%, var(--color-primary-dark) 100%);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 2rem;
+        text-align: center;
+    }
+
+    /* Modal finalización */
+    .modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.8);
+        backdrop-filter: blur(5px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 10000;
+        padding: 1rem;
+    }
+
+    .modal-confirmacion {
+        background: var(--color-dark-transparent);
+        backdrop-filter: blur(20px);
+        border: 1px solid var(--color-border-glass);
+        border-radius: 16px;
+        padding: 2.5rem;
+        max-width: 500px;
+        width: 100%;
+        text-align: center;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+    }
+
+    .modal-header h2 {
+        color: var(--color-light);
+        margin-bottom: 1rem;
+        font-size: 1.5rem;
+    }
+
+    .modal-body {
+        color: var(--color-light-text);
+        margin-bottom: 2rem;
+        line-height: 1.6;
+    }
+
+    .modal-actions {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .modal-actions .btn-volver {
+        background: var(--color-glass);
+        border: 1px solid var(--color-border-glass);
+        color: var(--color-light);
+        padding: 0.75rem 1.5rem;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.3s;
+        flex: 1;
+        min-width: 120px;
+    }
+
+    .modal-actions .btn-volver:hover {
+        background: var(--color-primary);
+        border-color: var(--color-primary);
+    }
+
+    .modal-actions .btn-continuar {
+        background: linear-gradient(135deg, var(--color-primary), var(--color-lavandaClaro));
+        border: none;
+        color: var(--color-light);
+        padding: 0.75rem 1.5rem;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s;
+        flex: 1;
+        min-width: 120px;
+    }
+
+    .modal-actions .btn-continuar:hover:not(:disabled) {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px var(--color-hover-shadow);
+    }
+
+    .modal-actions .btn-continuar:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+
+    /* Animaciones */
+    @keyframes pulse {
+        0% {
+            box-shadow: 0 0 6px var(--color-hover-shadow);
+        }
+
+        50% {
+            box-shadow: 0 0 18px var(--color-hover-shadow);
+        }
+
+        100% {
+            box-shadow: 0 0 6px var(--color-hover-shadow);
+        }
+    }
+
+    .puntaje-circular.aprobado {
+        animation: pulse 2s infinite;
+    }
+
+    /* Temporizador */
+    .temporizador.urgente {
+        background: var(--color-error);
+        animation: pulse 1s infinite;
+    }
+
+    .temporizador.advertencia {
+        background: var(--color-warning);
+    }
+
+    /* En Evaluacion.css - AGREGAR: */
+    .evaluacion-cargando {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 60vh;
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .cargando-contenido {
+        background: white;
+        padding: 2rem;
+        border-radius: 10px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .cargando-contenido h2 {
+        color: #3f51b5;
+        margin-bottom: 1rem;
+    }
+
+    .cargando-contenido p {
+        color: #666;
+        font-size: 1.1rem;
+    }
+
+    /* Estilos adicionales para el sistema de bloqueos y recomendaciones */
+
+    /* Pantalla de evaluación bloqueada */
+    .evaluacion-bloqueada {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 70vh;
+        padding: 2rem;
+    }
+
+    .bloqueo-contenido {
+        text-align: center;
+        max-width: 500px;
+        background: white;
+        padding: 3rem;
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        border-left: 5px solid #ff6b6b;
+    }
+
+    .bloqueo-icono {
+        font-size: 4rem;
+        margin-bottom: 1rem;
+    }
+
+    .tiempo-bloqueo {
+        background: #fff3cd;
+        border: 1px solid #ffeaa7;
+        border-radius: 8px;
+        padding: 1rem;
+        margin: 1.5rem 0;
+        font-size: 1.2rem;
+    }
+
+    .recomendacion-bloqueo {
+        background: #e3f2fd;
+        border: 1px solid #bbdefb;
+        border-radius: 8px;
+        padding: 1rem;
+        margin: 1.5rem 0;
+        font-style: italic;
+    }
+
+    /* Modal de recomendación */
+    .modal-recomendacion {
+        max-width: 500px;
+        background: white;
+        border-radius: 15px;
+        overflow: hidden;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+    }
+
+    .modal-recomendacion .modal-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 1.5rem;
+        text-align: center;
+    }
+
+    .modal-recomendacion .modal-body {
+        padding: 2rem;
+        text-align: center;
+    }
+
+    .recomendacion-icono {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+    }
+
+    .bloqueo-info {
+        background: #f8f9fa;
+        border-radius: 8px;
+        padding: 1rem;
+        margin-top: 1rem;
+        border-left: 4px solid #ffc107;
+    }
+
+    /* Estados de puntaje circular */
+    .puntaje-circular.aprobado {
+        border-color: #28a745;
+        background: linear-gradient(135deg, #28a745, #20c997);
+    }
+
+    .puntaje-circular.reprobado {
+        border-color: #dc3545;
+        background: linear-gradient(135deg, #dc3545, #e83e8c);
+    }
+
+    /* Recomendación en resultados */
+    .recomendacion-resultado {
+        background: #f8f9fa;
+        border-radius: 10px;
+        padding: 1.5rem;
+        margin: 1.5rem 0;
+        border-left: 4px solid #6c757d;
+    }
+
+    .recomendacion-resultado.aprobado {
+        background: #d4edda;
+        border-left-color: #28a745;
+    }
+
+    .recomendacion-resultado.reprobado {
+        background: #f8d7da;
+        border-left-color: #dc3545;
+    }
+
+    .tiempo-bloqueo-info {
+        background: #fff3cd;
+        border: 1px solid #ffeaa7;
+        border-radius: 6px;
+        padding: 0.75rem;
+        margin-top: 1rem;
+        font-size: 0.9rem;
+    }
+
+    /* Botones mejorados */
+    .btn-volver-curso {
+        background: #6c757d;
+        color: white;
+        border: none;
+        padding: 0.75rem 1.5rem;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+    }
+
+    .btn-volver-curso:hover {
+        background: #5a6268;
+        transform: translateY(-2px);
+    }
+
+    .btn-primaryR {
+        background: #007bff;
+        color: white;
+        border: none;
+        padding: 0.75rem 2rem;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+    }
+
+    .btn-primary:hover {
+        background: #0056b3;
+        transform: translateY(-2px);
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+        .bloqueo-contenido {
+            margin: 1rem;
+            padding: 2rem;
+        }
+
+        .modal-recomendacion {
+            margin: 1rem;
+        }
+    }
