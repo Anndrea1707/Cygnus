@@ -1,0 +1,758 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap');
+
+/* 🔧 Ajustes globales */
+html,
+body {
+  overflow-x: hidden;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: inherit;
+  margin: 0;
+  padding: 0;
+}
+
+.cursos-principal {
+  background-color: var(--color-dark);
+  color: var(--color-light);
+  font-family: 'Inter', sans-serif;
+  min-height: 100vh;
+  overflow-x: hidden;
+  width: 100%;
+}
+
+/* === HERO === */
+.hero-cursosHome {
+  padding: 6rem 1.5rem;
+  text-align: center;
+
+  background:
+    linear-gradient(rgba(10, 10, 20, 0.501), rgba(10, 10, 20, 0.479)),
+    url("../imagenes/FondoGalaxia.jpg");
+
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+
+  box-shadow: 0 0 30px var(--color-hover-shadow);
+}
+
+.hero-contenidoHome h1 {
+  font-size: 2.8rem;
+  color: #e8dfff;
+  /* lavanda claro */
+  text-shadow: 0 0 18px rgba(180, 120, 255, 0.5);
+}
+
+.hero-contenidoHome p {
+  color: #d8d0ff;
+  font-weight: 300;
+  text-shadow: 0 0 10px rgba(150, 100, 255, 0.4);
+}
+
+.btn-principal {
+  background: var(--color-primary);
+  color: var(--color-light);
+  border: none;
+  padding: 0.9rem 2rem;
+  border-radius: 2rem;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 0 15px var(--color-hover-shadow);
+  transition: all 0.3s ease;
+}
+
+.btn-principal:hover {
+  background: var(--color-primary-dark);
+  transform: scale(1.05);
+}
+
+/* === SECCIÓN CURSOS === */
+.seccion-cursos {
+  text-align: center;
+  padding: 4rem 2rem;
+}
+
+.titulo-seccion {
+  color: var(--color-lavandaClaro);
+  margin-bottom: 2.5rem;
+  font-size: 1.8rem;
+}
+
+.grid-cursos {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
+  gap: 2rem;
+  padding: 0 1rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.tarjeta-curso {
+  background: var(--color-glass);
+  border: 1px solid var(--color-border-glass);
+  border-radius: 16px;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.25);
+}
+
+.tarjeta-curso:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 0 25px var(--color-hover-shadow);
+}
+
+.imagen-curso {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+}
+
+.contenido-curso {
+  padding: 1.5rem;
+}
+
+.contenido-curso h3 {
+  color: var(--color-lavandaClaro);
+  margin-bottom: 0.5rem;
+}
+
+.contenido-curso p {
+  color: var(--color-subtext);
+  font-size: 0.95rem;
+  margin-bottom: 1rem;
+  min-height: 65px;
+  /* altura fija para que todas las tarjetas queden iguales */
+}
+
+.etiqueta-nivel {
+  background: var(--color-dorad-ligh);
+  color: var(--color-dark);
+  font-size: 0.8rem;
+  padding: 0.3rem 0.8rem;
+  border-radius: 10px;
+}
+
+.btn-detalles {
+  display: block;
+  margin-top: 1.5rem;
+  border: 1px solid var(--color-primary);
+  background: transparent;
+  color: var(--color-primary);
+  padding: 0.6rem 1.5rem;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-detalles:hover {
+  background: var(--color-primary);
+  color: var(--color-light);
+}
+
+/* === NUEVO: FILTRO DE CATEGORÍAS === */
+.filtro-categorias {
+  margin-bottom: 2rem;
+}
+
+.btn-categoria {
+  margin: 0.3rem;
+  padding: 0.6rem 1.2rem;
+  border-radius: 20px;
+  border: 1px solid var(--color-primary);
+  background: transparent;
+  color: var(--color-primary);
+  cursor: pointer;
+  transition: 0.3s;
+  font-weight: 500;
+}
+
+.btn-categoria:hover,
+.btn-categoria.activo {
+  background: var(--color-primary);
+  color: var(--color-light);
+}
+
+/* === DETALLE DEL CURSO (VERSIÓN FINAL CORREGIDA) === */
+.detalle-curso {
+  width: 100vw;
+  max-width: 100%;
+  margin: 0;
+  padding: 4rem 2rem 0;
+  background: var(--color-dark);
+  color: var(--color-light);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-sizing: border-box;
+  overflow-x: hidden;
+}
+
+/* 🔹 Botón volver */
+.btn-volver {
+  align-self: flex-start;
+  background: transparent;
+  color: var(--color-lavandaClaro);
+  border: none;
+  font-weight: 600;
+  font-size: 0.95rem;
+  margin-bottom: 2rem;
+  margin-left: 2rem;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.btn-volver:hover {
+  color: var(--color-dorad-ligh);
+  text-decoration: underline;
+}
+
+/* 🔹 Contenedor principal del detalle */
+.detalle-contenido {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 3rem;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem;
+  line-height: 1.7;
+  /* 💜 Más espacio entre líneas */
+}
+
+.detalle-imagen {
+  flex: 1 1 420px;
+  max-width: 450px;
+  height: 270px;
+  object-fit: cover;
+  border-radius: 14px;
+  box-shadow: 0 0 18px var(--color-hover-shadow);
+}
+
+.detalle-info {
+  flex: 1 1 500px;
+  min-width: 300px;
+}
+
+.detalle-info h2 {
+  font-size: 2.2rem;
+  color: var(--color-lavandaClaro);
+  margin-bottom: 1rem;
+  line-height: 1.3;
+  /* más espacio entre líneas */
+}
+
+.detalle-info p {
+  color: var(--color-subtext);
+  margin-bottom: 1.5rem;
+  line-height: 1.6;
+}
+
+/* 🔹 Datos del curso */
+.detalle-info ul {
+  list-style: none;
+  padding: 0;
+  margin-bottom: 1rem;
+}
+
+.detalle-info ul li {
+  margin-bottom: 0.4rem;
+}
+
+/* 🔹 Sección de contenido del curso */
+.detalle-info h3 {
+  color: var(--color-dorad-ligh);
+  margin: 1.8rem 0 0.8rem;
+}
+
+/* 🔹 Lista de módulos */
+.detalle-info .modulos-lista {
+  list-style: disc;
+  margin-left: 1.5rem;
+  margin-bottom: 1.5rem;
+  color: var(--color-light);
+}
+
+/* 🔹 Nota inferior */
+.detalle-info em {
+  display: block;
+  color: var(--color-subtext);
+  font-size: 0.9rem;
+  margin-top: 0.8rem;
+}
+
+/* 🔹 Botón para iniciar sesión */
+.btn-login-detalle {
+  display: inline-block;
+  margin-top: 2rem;
+  margin-bottom: 3.5rem;
+  padding: 0.9rem 2rem;
+  border-radius: 25px;
+  border: none;
+  background: var(--color-primary);
+  color: var(--color-light);
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  box-shadow: 0 0 15px var(--color-hover-shadow);
+  transition: all 0.3s ease;
+}
+
+.btn-login-detalle:hover {
+  background: var(--color-primary-dark);
+  transform: scale(1.05);
+}
+
+/* === FOOTER (versión final pantalla completa) === */
+footer {
+  position: relative;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100vw;
+  /* ocupa todo el ancho visible */
+  max-width: 100vw;
+  margin: 0;
+}
+
+/* Aseguramos que nada dentro lo limite */
+footer * {
+  max-width: 100%;
+  margin: 0 auto;
+}
+
+/* Para evitar espacios laterales por padding del body */
+body,
+html {
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+}
+
+
+/* === POR QUÉ NOSOTROS === */
+.por-que-nosotros {
+  text-align: center;
+  margin-top: 5rem;
+}
+
+.por-que-nosotros h2 {
+  color: var(--color-lavandaClaro);
+  margin-bottom: 2rem;
+}
+
+.tarjetas-info {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1.5rem;
+  padding: 0 1rem;
+}
+
+.tarjeta-info {
+  background: var(--color-glass);
+  border: 1px solid var(--color-border-glass);
+  border-radius: 16px;
+  padding: 1.5rem;
+  width: 260px;
+  height: 180px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+  transition: 0.3s;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.tarjeta-info:hover {
+  box-shadow: 0 0 15px var(--color-hover-shadow);
+}
+
+/* === CTA FINAL === */
+.cta-final {
+  text-align: center;
+  margin-top: 5rem;
+  padding: 3rem 1rem;
+  background: linear-gradient(90deg, var(--color-primary-dark), var(--color-dark));
+  box-shadow: inset 0 0 25px var(--color-hover-shadow);
+}
+
+.cta-final h2 {
+  color: var(--color-dorad-ligh);
+  margin-bottom: 1.5rem;
+}
+
+/* ✅ Evita desbordes */
+body,
+html {
+  overflow-x: hidden !important;
+}
+
+.cursos-principal {
+  width: 100vw;
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+/* === ANIMACIONES === */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.contador-cursos {
+  display: flex;
+  justify-content: center;
+  gap: 5rem;
+  margin: 4rem 0;
+  text-align: center;
+  background: transparent !important;
+  box-shadow: none !important;
+  border-radius: 0 !important;
+  padding: 0 !important;
+}
+
+.contador-cursos h3 {
+  color: var(--color-lavandaClaro);
+  font-size: 1.2rem;
+}
+
+.contador-numero {
+  display: block;
+  font-size: 4rem;
+  font-weight: 700;
+  color: var(--color-dorad-ligh);
+  margin: 0.5rem 0;
+  text-shadow: 0 0 10px var(--color-hover-shadow);
+}
+
+.contador-texto {
+  color: var(--color-subtext);
+  font-size: 1rem;
+}
+
+/*Banner motivacional*/
+.banner-motivacional {
+  text-align: center;
+  padding: 4rem 1.5rem;
+  background: linear-gradient(90deg, var(--color-primary-dark), var(--color-dark));
+  margin-top: 5rem;
+  box-shadow: inset 0 0 30px var(--color-hover-shadow);
+}
+
+.banner-motivacional h2 {
+  color: var(--color-dorad-ligh);
+  font-size: 2rem;
+  margin-bottom: 1rem;
+}
+
+.banner-motivacional p {
+  color: var(--color-subtext);
+  margin-bottom: 2rem;
+}
+
+
+.contador-item h3 {
+  color: var(--color-lavandaClaro);
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.contador-numero {
+  font-size: 4rem;
+  font-weight: 900;
+  color: var(--color-dorad-ligh);
+  text-shadow: 0 0 20px rgba(255, 215, 100, 0.25);
+}
+
+@media (max-width: 768px) {
+  .contador-cursos {
+    flex-direction: column;
+    gap: 2rem;
+  }
+}
+
+.contenido-curso p {
+  font-size: 14px;
+  color: #fcfcfc;
+  margin-bottom: 8px;
+
+  /* 🔥 Limitar texto */
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  /* número de líneas */
+  text-overflow: ellipsis;
+}
+
+.etiqueta-nivel {
+  display: inline-block;
+  margin-top: 8px;
+  padding: 4px 10px;
+  border-radius: 8px;
+
+  font-size: 13px;
+  font-weight: bold;
+  text-transform: capitalize;
+
+  background: rgba(147, 99, 188, 0.923);
+  color: var(--color-dorad-ligh);
+}
+
+.etiqueta-nivel.basico {
+  background: #d4f8d4;
+  color: #137c28;
+}
+
+.etiqueta-nivel.intermedio {
+  background: #fff4b8;
+  color: #8a6f15;
+}
+
+.etiqueta-nivel.avanzado {
+  background: #ffd6d6;
+  color: #b11919;
+}
+
+/* === DETALLE CURSO PRO === */
+
+.detalle-curso-pro {
+  width: 100%;
+  min-height: 100vh;
+  background: var(--color-dark);
+  color: var(--color-light);
+  padding: 3rem 2rem 4rem;
+}
+
+.detalle-layout {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3rem;
+  max-width: 1300px;
+  margin: 0 auto;
+}
+
+/* COLUMNA IZQUIERDA */
+.detalle-left {
+  flex: 1 1 380px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.detalle-img {
+  width: 100%;
+  max-width: 450px;
+  border-radius: 14px;
+  object-fit: cover;
+  box-shadow: 0 0 25px var(--color-hover-shadow);
+}
+
+.detalle-info-box {
+  margin-top: 1.5rem;
+  width: 100%;
+  background: var(--color-glass);
+  border: 1px solid var(--color-border-glass);
+  padding: 1.2rem 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 0 18px rgba(0, 0, 0, 0.25);
+}
+
+/* COLUMNA DERECHA */
+.detalle-right {
+  flex: 1 1 500px;
+}
+
+.detalle-titulo {
+  font-size: 2.4rem;
+  color: var(--color-lavandaClaro);
+  text-shadow: 0 0 12px rgba(180, 120, 255, 0.4);
+  margin-bottom: 1rem;
+}
+
+.detalle-descripcion-pro {
+  color: var(--color-subtext);
+  font-size: 1.1rem;
+  line-height: 1.7;
+  margin-bottom: 2rem;
+}
+
+/* === MÓDULOS PRO === */
+.modulos-detalle h3 {
+  color: var(--color-dorad-ligh);
+  margin-bottom: 1.3rem;
+  font-size: 1.5rem;
+}
+
+.lista-modulos {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.modulo-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  background: var(--color-glass);
+  border: 1px solid var(--color-border-glass);
+  padding: 1rem 1.3rem;
+  border-radius: 12px;
+  box-shadow: 0 0 12px rgba(0, 0, 0, 0.25);
+  transition: transform .3s, box-shadow .3s;
+}
+
+.modulo-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 0 20px var(--color-hover-shadow);
+}
+
+.modulo-icono {
+  font-size: 1.8rem;
+  color: var(--color-dorad-ligh);
+}
+
+.modulo-titulo {
+  color: var(--color-lavandaClaro);
+  margin: 0;
+}
+
+.modulo-descripcion {
+  color: var(--color-subtext);
+  margin-top: 4px;
+  line-height: 1.4;
+}
+
+.detalle-curso-pro {
+  padding-bottom: 6rem;
+  /* espacio para respirar arriba del footer */
+  margin-bottom: 2rem;
+}
+
+.lista-modulos {
+  padding-right: 1rem;
+  padding-left: 1rem;
+}
+
+.modulo-card {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.detalle-layout {
+  padding-left: 1rem;
+  padding-right: 3rem;
+}
+
+/* 🔹 Contenedor interno del footer sin márgenes */
+footer>* {
+  max-width: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+/* === AJUSTES ESPECÍFICOS PARA LA ESTRUCTURA HTML === */
+/* Si el footer está dentro de .detalle-curso */
+.detalle-curso>footer {
+  margin-top: auto;
+  /* 🔹 Empuja el footer hacia abajo */
+  width: 100%;
+}
+
+/* === VERSIÓN ALTERNATIVA SI EL FOOTER ESTÁ FUERA === */
+body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
+}
+
+.main-content {
+  flex: 1;
+  width: 100%;
+}
+
+/* 🔹 Botón login MÁS SEPARADO del footer */
+.btn-login-detalle {
+  display: inline-block;
+  margin-top: 3rem;
+  margin-bottom: 4rem;
+  /* 🔹 Aumentado para más separación */
+  padding: 0.9rem 2rem;
+  border-radius: 25px;
+  border: none;
+  background: var(--color-primary);
+  color: var(--color-light);
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  box-shadow: 0 0 15px var(--color-hover-shadow);
+  transition: all 0.3s ease;
+}
+
+/* === FOOTER CORREGIDO - SIN ESPACIOS === */
+footer {
+  position: relative;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100vw;
+  max-width: 100vw;
+  margin: 0;
+  padding: 0;
+  /* 🔹 Asegurar sin padding */
+  background: var(--color-dark);
+  margin-top: auto;
+  /* 🔹 NUEVO: Empuja hacia abajo */
+}
+
+/* 🔹 ELIMINAR cualquier margen/padding del contenedor del footer */
+footer>* {
+  max-width: 100%;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+/* 🔹 Reset específico para eliminar espacios no deseados */
+.detalle-curso-pro>footer {
+  margin-top: 0;
+  width: 100%;
+}
+
+/* === CORRECCIÓN PARA EL ESPACIO EN BLANCO INFERIOR === */
+html,
+body {
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+  height: 100%;
+}
