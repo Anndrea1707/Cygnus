@@ -76,7 +76,7 @@ function TomarPrueba({ usuario, onPruebaCompletada }) {
         setEnviando(true);
 
         try {
-            const response = await fetch('/api/pruebas/calificar', {
+            const response = await fetch('http://localhost:4000/api/pruebas/calificar', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

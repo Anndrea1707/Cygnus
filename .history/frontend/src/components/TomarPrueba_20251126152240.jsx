@@ -16,7 +16,7 @@ function TomarPrueba({ usuario, onPruebaCompletada }) {
             onPruebaCompletada();
             return;
         }
-
+        
         cargarPrueba();
     }, [usuario, onPruebaCompletada]);
 
@@ -33,7 +33,7 @@ function TomarPrueba({ usuario, onPruebaCompletada }) {
 
             console.log("🔍 Cargando prueba diagnóstica única...");
 
-            const response = await fetch("/api/pruebas/actual");
+const response = await fetch("/api/pruebas/actual");
 
             console.log("📡 Status de respuesta:", response.status);
 
@@ -76,7 +76,7 @@ function TomarPrueba({ usuario, onPruebaCompletada }) {
         setEnviando(true);
 
         try {
-            const response = await fetch('/api/pruebas/calificar', {
+            const response = await fetch('http://localhost:4000/api/pruebas/calificar', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
