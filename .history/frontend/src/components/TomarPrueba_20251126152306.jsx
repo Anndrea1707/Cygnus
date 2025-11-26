@@ -35,7 +35,8 @@ function TomarPrueba({ usuario, onPruebaCompletada }) {
 
             const response = await fetch("/api/pruebas/actual");
 
-            console.log("📡 Status de respuesta:", response.status);
+            console.log("📡 Status de respuesta:", responseconst response = await fetch('http://localhost:4000/api/pruebas/calificar', {
+.status);
 
             if (response.status === 404) {
                 setError("No hay prueba diagnóstica disponible en este momento.");
@@ -76,7 +77,7 @@ function TomarPrueba({ usuario, onPruebaCompletada }) {
         setEnviando(true);
 
         try {
-            const response = await fetch('/api/pruebas/calificar', {
+            const response = await fetch('http://localhost:4000/api/pruebas/calificar', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
