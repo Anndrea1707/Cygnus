@@ -1,11 +1,6 @@
 import React, { useState } from "react";
 import "./Encuesta.css";
 
-// ========================================
-// 🔧 URL REAL DEL BACKEND EN RENDER
-// ========================================
-const BASE_URL = "https://cygnus-xjo4.onrender.com";
-
 function Encuesta({ usuario, onEncuestaCompletada }) {
   const [meses, setMeses] = useState("");
   const [olvido, setOlvido] = useState("");
@@ -41,7 +36,7 @@ function Encuesta({ usuario, onEncuestaCompletada }) {
 
     try {
       const resp = await fetch(
-        `${BASE_URL}/api/encuesta/${usuario._id}`,
+        `https://cygnus-xjo4.onrender.com/api/encuesta/${usuario._id}`,
         {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
@@ -69,7 +64,7 @@ function Encuesta({ usuario, onEncuestaCompletada }) {
       }
     } catch (error) {
       console.error(error);
-      alert("Error de conexión con el servidor");
+      alert("Error de conexión con el servidor.");
     }
   };
 
@@ -91,6 +86,8 @@ function Encuesta({ usuario, onEncuestaCompletada }) {
 
             <input
               type="number"
+              inputMode="numeric"
+              pattern="[0-9]*"
               min="0"
               max="120"
               className="input-numero"
@@ -107,11 +104,11 @@ function Encuesta({ usuario, onEncuestaCompletada }) {
 
           {/* 2 */}
           <div className="pregunta">
-            <label>2. ¿Qué tanto sientes que olvidaste los temas de matemáticas? (0% = nada, 100% = todo)</label>
+            <label>2. ¿Qué tanto sientes que olvidaste los temas? (0% = nada, 100% = todo)</label>
 
             <select value={olvido} onChange={(e) => setOlvido(e.target.value)}>
               <option value="">Selecciona un porcentaje</option>
-              {[0,10,20,30,40,50,60,70,80,90,100].map((n) => (
+              {[0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100].map((n) => (
                 <option key={n} value={n}>{n}%</option>
               ))}
             </select>
@@ -119,8 +116,7 @@ function Encuesta({ usuario, onEncuestaCompletada }) {
 
           {/* 3 */}
           <div className="pregunta">
-            <label>3. ¿Qué tan cómodo te sientes con matemáticas?</label>
-
+            <label>3. ¿Qué tan cómodo te sientes?</label>
             <select value={comodidad} onChange={(e) => setComodidad(e.target.value)}>
               <option value="">Selecciona una opción</option>
               <option>Me cuesta bastante</option>
@@ -133,7 +129,6 @@ function Encuesta({ usuario, onEncuestaCompletada }) {
           {/* 4 */}
           <div className="pregunta">
             <label>4. ¿Cómo prefieres aprender?</label>
-
             <select value={estilo} onChange={(e) => setEstilo(e.target.value)}>
               <option value="">Selecciona una opción</option>
               <option>Explicaciones paso a paso</option>
@@ -146,7 +141,6 @@ function Encuesta({ usuario, onEncuestaCompletada }) {
           {/* 5 */}
           <div className="pregunta">
             <label>5. ¿Cuánto tiempo deseas estudiar por sesión?</label>
-
             <select value={tiempo} onChange={(e) => setTiempo(e.target.value)}>
               <option value="">Selecciona una opción</option>
               <option>10–15 minutos</option>
@@ -158,7 +152,6 @@ function Encuesta({ usuario, onEncuestaCompletada }) {
           {/* 6 */}
           <div className="pregunta">
             <label>6. ¿Cuál es tu objetivo principal?</label>
-
             <select value={objetivo} onChange={(e) => setObjetivo(e.target.value)}>
               <option value="">Selecciona una opción</option>
               <option>Reforzar para mis estudios</option>
@@ -176,11 +169,9 @@ function Encuesta({ usuario, onEncuestaCompletada }) {
           >
             Guardar respuestas
           </button>
-
         </div>
       </div>
 
-      {/* MODAL */}
       {mostrarModal && (
         <div className="modal-overlay">
           <div className="modal-exito">
