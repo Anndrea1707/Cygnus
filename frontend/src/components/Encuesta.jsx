@@ -1,6 +1,11 @@
 import React, { useState } from "react";
 import "./Encuesta.css";
 
+// ========================================
+// 🔧 URL REAL DEL BACKEND EN RENDER
+// ========================================
+const BASE_URL = "https://cygnus-xjo4.onrender.com";
+
 function Encuesta({ usuario, onEncuestaCompletada }) {
   const [meses, setMeses] = useState("");
   const [olvido, setOlvido] = useState("");
@@ -10,7 +15,6 @@ function Encuesta({ usuario, onEncuestaCompletada }) {
   const [objetivo, setObjetivo] = useState("");
   const [mostrarModal, setMostrarModal] = useState(false);
 
-  // 🔥 VALIDACIÓN CORREGIDA
   const formularioCompleto =
     meses.trim() !== "" &&
     olvido.trim() !== "" &&
@@ -36,19 +40,22 @@ function Encuesta({ usuario, onEncuestaCompletada }) {
     const tasa_olvido = olvidoNum / 100;
 
     try {
-      const resp = await fetch(`/api/encuesta/usuario/${usuario._id}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          area_interes: "matematicas",
-          tiempo_area: tiempo_meses,
-          tasa_olvido: tasa_olvido,
-          comodidad_area: comodidad,
-          estilo_aprendizaje: estilo,
-          tiempo_estudio: tiempo,
-          objetivo,
-        }),
-      });
+      const resp = await fetch(
+        `${BASE_URL}/api/encuesta/${usuario._id}`,
+        {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            area_interes: "matematicas",
+            tiempo_area: tiempo_meses,
+            tasa_olvido: tasa_olvido,
+            comodidad_area: comodidad,
+            estilo_aprendizaje: estilo,
+            tiempo_estudio: tiempo,
+            objetivo,
+          }),
+        }
+      );
 
       const result = await resp.json();
 
@@ -62,7 +69,7 @@ function Encuesta({ usuario, onEncuestaCompletada }) {
       }
     } catch (error) {
       console.error(error);
-      alert("Error de conexión");
+      alert("Error de conexión con el servidor");
     }
   };
 
@@ -81,10 +88,9 @@ function Encuesta({ usuario, onEncuestaCompletada }) {
           {/* 1 */}
           <div className="pregunta">
             <label>1. ¿Hace cuánto NO ves o NO repasas matemáticas? (en meses)</label>
+
             <input
               type="number"
-              inputMode="numeric"
-              pattern="[0-9]*"
               min="0"
               max="120"
               className="input-numero"
@@ -105,7 +111,7 @@ function Encuesta({ usuario, onEncuestaCompletada }) {
 
             <select value={olvido} onChange={(e) => setOlvido(e.target.value)}>
               <option value="">Selecciona un porcentaje</option>
-              {[0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100].map((n) => (
+              {[0,10,20,30,40,50,60,70,80,90,100].map((n) => (
                 <option key={n} value={n}>{n}%</option>
               ))}
             </select>
@@ -114,48 +120,52 @@ function Encuesta({ usuario, onEncuestaCompletada }) {
           {/* 3 */}
           <div className="pregunta">
             <label>3. ¿Qué tan cómodo te sientes con matemáticas?</label>
+
             <select value={comodidad} onChange={(e) => setComodidad(e.target.value)}>
               <option value="">Selecciona una opción</option>
-              <option value="muy_bajo">Me cuesta bastante</option>
-              <option value="medio">A veces entiendo, a veces no</option>
-              <option value="bien">Me va bien</option>
-              <option value="excelente">Me va excelente</option>
+              <option>Me cuesta bastante</option>
+              <option>A veces entiendo, a veces no</option>
+              <option>Me va bien</option>
+              <option>Me va excelente</option>
             </select>
           </div>
 
           {/* 4 */}
           <div className="pregunta">
             <label>4. ¿Cómo prefieres aprender?</label>
+
             <select value={estilo} onChange={(e) => setEstilo(e.target.value)}>
               <option value="">Selecciona una opción</option>
-              <option value="paso_a_paso">Explicaciones paso a paso</option>
-              <option value="guiados">Ejercicios guiados</option>
-              <option value="rapido">Práctica rápida</option>
-              <option value="retos">Retos avanzados</option>
+              <option>Explicaciones paso a paso</option>
+              <option>Ejercicios guiados</option>
+              <option>Práctica rápida</option>
+              <option>Retos avanzados</option>
             </select>
           </div>
 
           {/* 5 */}
           <div className="pregunta">
             <label>5. ¿Cuánto tiempo deseas estudiar por sesión?</label>
+
             <select value={tiempo} onChange={(e) => setTiempo(e.target.value)}>
               <option value="">Selecciona una opción</option>
-              <option value="corto">10–15 minutos</option>
-              <option value="medio">20–30 minutos</option>
-              <option value="largo">40+ minutos</option>
+              <option>10–15 minutos</option>
+              <option>20–30 minutos</option>
+              <option>40+ minutos</option>
             </select>
           </div>
 
           {/* 6 */}
           <div className="pregunta">
             <label>6. ¿Cuál es tu objetivo principal?</label>
+
             <select value={objetivo} onChange={(e) => setObjetivo(e.target.value)}>
               <option value="">Selecciona una opción</option>
-              <option value="reforzar">Reforzar para mis estudios</option>
-              <option value="examenes">Prepararme para exámenes</option>
-              <option value="cero">Aprender desde cero</option>
-              <option value="mejorar">Mejorar habilidades</option>
-              <option value="otro">Otro</option>
+              <option>Reforzar para mis estudios</option>
+              <option>Prepararme para exámenes</option>
+              <option>Aprender desde cero</option>
+              <option>Mejorar habilidades</option>
+              <option>Otro</option>
             </select>
           </div>
 
@@ -166,9 +176,11 @@ function Encuesta({ usuario, onEncuestaCompletada }) {
           >
             Guardar respuestas
           </button>
+
         </div>
       </div>
 
+      {/* MODAL */}
       {mostrarModal && (
         <div className="modal-overlay">
           <div className="modal-exito">
