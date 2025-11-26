@@ -37,7 +37,7 @@ export default function AdminUsuarios({ usuario, onNavigate, onLogout }) {
     try {
       const [A, F] = await Promise.all([
         api.get("/api/adminusuarios/avatar"),
-        api.get("/api/adminusuarios/fondo")
+api.get("/api/adminusuarios/fondo")
       ]);
       setAvatares(A.data);
       setFondos(F.data);
@@ -88,7 +88,7 @@ export default function AdminUsuarios({ usuario, onNavigate, onLogout }) {
         form.append("nombre", nombreFondo);
       }
 
-      await api.post(`/api/adminusuarios/${modalTipo}`, form, {
+      await axios.post(`/api/adminusuarios/${modalTipo}`, form, {
         headers: { "Content-Type": "multipart/form-data" },
       });
 
@@ -124,7 +124,7 @@ export default function AdminUsuarios({ usuario, onNavigate, onLogout }) {
   const confirmarEliminar = async () => {
     setEliminarModal(false);
     try {
-      await api.delete(`/api/adminusuarios/${recursoAEliminar.tipo}/${recursoAEliminar.id}`);
+      await axios.delete(`/api/adminusuarios/${recursoAEliminar.tipo}/${recursoAEliminar.id}`);
       cargarRecursos();
     } catch (err) {
       alert("Error al eliminar");

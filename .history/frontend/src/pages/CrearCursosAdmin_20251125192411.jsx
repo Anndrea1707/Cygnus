@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import api from "../api/axios";
+import axios from "axios";
 import "./CrearCursosAdmin.css";
 
 const CrearCursosAdmin = ({ onNavigate, cursoEditar }) => {
@@ -495,7 +495,7 @@ const CrearCursosAdmin = ({ onNavigate, cursoEditar }) => {
                 setModalCallback(() => () => onNavigate("cursosadmin"));
                 setMostrarModal(true);
             } else {
-                await api.post("/api/cursos", cursoData);
+await api.post("/api/cursos", cursoData);
                 setModalIcono("🚀");
                 setModalTitulo("Curso creado");
                 setModalMensaje("¡Curso creado exitosamente!");

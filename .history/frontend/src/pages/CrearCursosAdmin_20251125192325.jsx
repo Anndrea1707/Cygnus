@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import api from "../api/axios";
+import axios from "axios";
 import "./CrearCursosAdmin.css";
 
 const CrearCursosAdmin = ({ onNavigate, cursoEditar }) => {
@@ -235,7 +235,7 @@ const CrearCursosAdmin = ({ onNavigate, cursoEditar }) => {
         const formData = new FormData();
         formData.append("imagen", file);
         try {
-            const res = await api.post("/api/cursos/upload", formData);
+            const res = await axios.post("http://localhost:4000/api/cursos/upload", formData);
             setRecursoState(res.data.url);
         } catch (error) {
             setModalIcono("❌");
@@ -487,7 +487,7 @@ const CrearCursosAdmin = ({ onNavigate, cursoEditar }) => {
         console.log("💾 Guardando curso:", cursoData);
         try {
             if (esEdicion && cursoId) {
-                await api.put(`/api/cursos/${cursoId}`, cursoData);
+                await axios.put(`http://localhost:4000/api/cursos/${cursoId}`, cursoData);
                 // Mostrar modal de éxito y navegar al cerrar
                 setModalIcono("🚀");
                 setModalTitulo("Curso actualizado");
@@ -495,7 +495,7 @@ const CrearCursosAdmin = ({ onNavigate, cursoEditar }) => {
                 setModalCallback(() => () => onNavigate("cursosadmin"));
                 setMostrarModal(true);
             } else {
-                await api.post("/api/cursos", cursoData);
+                await axios.post("http://localhost:4000/api/cursos", cursoData);
                 setModalIcono("🚀");
                 setModalTitulo("Curso creado");
                 setModalMensaje("¡Curso creado exitosamente!");

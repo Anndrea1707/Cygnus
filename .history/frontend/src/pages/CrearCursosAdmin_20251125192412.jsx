@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import api from "../api/axios";
+import axios from "axios";
 import "./CrearCursosAdmin.css";
 
 const CrearCursosAdmin = ({ onNavigate, cursoEditar }) => {

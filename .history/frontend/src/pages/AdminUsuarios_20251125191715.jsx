@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
-import api from "../api/axios";
-import NavbarPrincipal from "../components/NavbarPrincipal";
+import api from "../api/axios";import NavbarPrincipal from "../components/NavbarPrincipal";
 import Footer from "../components/Footer";
 import "./AdminUsuarios.css";
 
@@ -29,15 +28,15 @@ export default function AdminUsuarios({ usuario, onNavigate, onLogout }) {
         MODALES
   ============================ */
   const [mostrarModal, setMostrarModal] = useState(false);
-  const [modalTipo, setModalTipo] = useState("");
+  const [modalTipo, setModalTipo] = useState(""); 
   const [eliminarModal, setEliminarModal] = useState(false);
   const [recursoAEliminar, setRecursoAEliminar] = useState({ tipo: "", id: "" });
 
   const cargarRecursos = async () => {
     try {
       const [A, F] = await Promise.all([
-        api.get("/api/adminusuarios/avatar"),
-        api.get("/api/adminusuarios/fondo")
+        axios.get("/api/adminusuarios/avatar"),
+        axios.get("/api/adminusuarios/fondo"),
       ]);
       setAvatares(A.data);
       setFondos(F.data);
@@ -88,7 +87,7 @@ export default function AdminUsuarios({ usuario, onNavigate, onLogout }) {
         form.append("nombre", nombreFondo);
       }
 
-      await api.post(`/api/adminusuarios/${modalTipo}`, form, {
+      await axios.post(`/api/adminusuarios/${modalTipo}`, form, {
         headers: { "Content-Type": "multipart/form-data" },
       });
 
@@ -124,7 +123,7 @@ export default function AdminUsuarios({ usuario, onNavigate, onLogout }) {
   const confirmarEliminar = async () => {
     setEliminarModal(false);
     try {
-      await api.delete(`/api/adminusuarios/${recursoAEliminar.tipo}/${recursoAEliminar.id}`);
+      await axios.delete(`/api/adminusuarios/${recursoAEliminar.tipo}/${recursoAEliminar.id}`);
       cargarRecursos();
     } catch (err) {
       alert("Error al eliminar");
@@ -135,7 +134,7 @@ export default function AdminUsuarios({ usuario, onNavigate, onLogout }) {
 
   return (
     <div className="admin-page-wrapper">
-
+      
       {/* 🔥 CORRECCIÓN: AQUÍ ESTÁ EL FIX */}
       <NavbarPrincipal
         usuario={usuario}

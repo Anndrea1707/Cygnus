@@ -124,7 +124,8 @@ export default function AdminUsuarios({ usuario, onNavigate, onLogout }) {
   const confirmarEliminar = async () => {
     setEliminarModal(false);
     try {
-      await api.delete(`/api/adminusuarios/${recursoAEliminar.tipo}/${recursoAEliminar.id}`);
+      await api.delete(`/api/adminusuarios/${recursoAEliminar.tipo}/${recursoAEliminar.id}`)
+;
       cargarRecursos();
     } catch (err) {
       alert("Error al eliminar");
