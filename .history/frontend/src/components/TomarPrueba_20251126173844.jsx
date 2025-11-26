@@ -68,6 +68,7 @@ function TomarPrueba({ usuario, onPruebaCompletada }) {
     };
 
     const enviarPrueba = async () => {
+        // Validar que todas las preguntas estén respondidas
         if (respuestas.some(resp => resp === null)) {
             alert("Por favor responde todas las preguntas antes de enviar");
             return;
@@ -76,8 +77,7 @@ function TomarPrueba({ usuario, onPruebaCompletada }) {
         setEnviando(true);
 
         try {
-            // 🔥 CORREGIR: Usar BASE_URL
-            const response = await fetch(`${BASE_URL}/api/pruebas/calificar`, {
+            const response = await fetch('/api/pruebas/calificar', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
