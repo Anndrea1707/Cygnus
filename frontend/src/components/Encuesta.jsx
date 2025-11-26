@@ -10,13 +10,14 @@ function Encuesta({ usuario, onEncuestaCompletada }) {
   const [objetivo, setObjetivo] = useState("");
   const [mostrarModal, setMostrarModal] = useState(false);
 
+  // 🔥 VALIDACIÓN CORREGIDA
   const formularioCompleto =
-    meses !== "" &&
-    olvido !== "" &&
-    comodidad &&
-    estilo &&
-    tiempo &&
-    objetivo;
+    meses.trim() !== "" &&
+    olvido.trim() !== "" &&
+    comodidad.trim() !== "" &&
+    estilo.trim() !== "" &&
+    tiempo.trim() !== "" &&
+    objetivo.trim() !== "";
 
   const cerrarModal = () => {
     setMostrarModal(false);
@@ -31,8 +32,8 @@ function Encuesta({ usuario, onEncuestaCompletada }) {
     const mesesNum = Number(meses);
     const olvidoNum = Number(olvido);
 
-    const tiempo_meses = Number(meses);  // ⭐ Enviar en MESES
-    const tasa_olvido = olvidoNum / 100; // ⭐ Convertir porcentaje a decimal
+    const tiempo_meses = mesesNum;
+    const tasa_olvido = olvidoNum / 100;
 
     try {
       const resp = await fetch(`/api/encuesta/${usuario._id}`, {
@@ -40,8 +41,8 @@ function Encuesta({ usuario, onEncuestaCompletada }) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           area_interes: "matematicas",
-          tiempo_area: tiempo_meses,    // ⭐ En MESES
-          tasa_olvido: tasa_olvido,     // ⭐ En decimal (0-1)
+          tiempo_area: tiempo_meses,
+          tasa_olvido: tasa_olvido,
           comodidad_area: comodidad,
           estilo_aprendizaje: estilo,
           tiempo_estudio: tiempo,
@@ -80,7 +81,6 @@ function Encuesta({ usuario, onEncuestaCompletada }) {
           {/* 1 */}
           <div className="pregunta">
             <label>1. ¿Hace cuánto NO ves o NO repasas matemáticas? (en meses)</label>
-
             <input
               type="number"
               inputMode="numeric"
@@ -101,7 +101,7 @@ function Encuesta({ usuario, onEncuestaCompletada }) {
 
           {/* 2 */}
           <div className="pregunta">
-            <label>2. ¿Qué tanto sientes que olvidaste los temás de matemáticas? (0% = nada, 100% = todo)</label>
+            <label>2. ¿Qué tanto sientes que olvidaste los temas de matemáticas? (0% = nada, 100% = todo)</label>
 
             <select value={olvido} onChange={(e) => setOlvido(e.target.value)}>
               <option value="">Selecciona un porcentaje</option>
@@ -116,10 +116,10 @@ function Encuesta({ usuario, onEncuestaCompletada }) {
             <label>3. ¿Qué tan cómodo te sientes con matemáticas?</label>
             <select value={comodidad} onChange={(e) => setComodidad(e.target.value)}>
               <option value="">Selecciona una opción</option>
-              <option>Me cuesta bastante</option>
-              <option>A veces entiendo, a veces no</option>
-              <option>Me va bien</option>
-              <option>Me va excelente</option>
+              <option value="muy_bajo">Me cuesta bastante</option>
+              <option value="medio">A veces entiendo, a veces no</option>
+              <option value="bien">Me va bien</option>
+              <option value="excelente">Me va excelente</option>
             </select>
           </div>
 
@@ -128,10 +128,10 @@ function Encuesta({ usuario, onEncuestaCompletada }) {
             <label>4. ¿Cómo prefieres aprender?</label>
             <select value={estilo} onChange={(e) => setEstilo(e.target.value)}>
               <option value="">Selecciona una opción</option>
-              <option>Explicaciones paso a paso</option>
-              <option>Ejercicios guiados</option>
-              <option>Práctica rápida</option>
-              <option>Retos avanzados</option>
+              <option value="paso_a_paso">Explicaciones paso a paso</option>
+              <option value="guiados">Ejercicios guiados</option>
+              <option value="rapido">Práctica rápida</option>
+              <option value="retos">Retos avanzados</option>
             </select>
           </div>
 
@@ -140,9 +140,9 @@ function Encuesta({ usuario, onEncuestaCompletada }) {
             <label>5. ¿Cuánto tiempo deseas estudiar por sesión?</label>
             <select value={tiempo} onChange={(e) => setTiempo(e.target.value)}>
               <option value="">Selecciona una opción</option>
-              <option>10–15 minutos</option>
-              <option>20–30 minutos</option>
-              <option>40+ minutos</option>
+              <option value="corto">10–15 minutos</option>
+              <option value="medio">20–30 minutos</option>
+              <option value="largo">40+ minutos</option>
             </select>
           </div>
 
@@ -151,11 +151,11 @@ function Encuesta({ usuario, onEncuestaCompletada }) {
             <label>6. ¿Cuál es tu objetivo principal?</label>
             <select value={objetivo} onChange={(e) => setObjetivo(e.target.value)}>
               <option value="">Selecciona una opción</option>
-              <option>Reforzar para mis estudios</option>
-              <option>Prepararme para exámenes</option>
-              <option>Aprender desde cero</option>
-              <option>Mejorar habilidades</option>
-              <option>Otro</option>
+              <option value="reforzar">Reforzar para mis estudios</option>
+              <option value="examenes">Prepararme para exámenes</option>
+              <option value="cero">Aprender desde cero</option>
+              <option value="mejorar">Mejorar habilidades</option>
+              <option value="otro">Otro</option>
             </select>
           </div>
 
