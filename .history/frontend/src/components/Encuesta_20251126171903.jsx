@@ -31,19 +31,22 @@ function Encuesta({ usuario, onEncuestaCompletada }) {
   };
 
   const guardarEncuesta = async () => {
+    console.log("🔍 URL que se está usando:", `${BASE_URL}/api/encuesta/usuario/${usuario._id}`);
+  console.log("🔍 Datos enviados:", {
+    tiempo_area: Number(meses),
+    tasa_olvido: Number(olvido) / 100,
+    comodidad_area: comodidad,
+    estilo_aprendizaje: estilo,
+    tiempo_estudio: tiempo,
+    objetivo,
+  });
     if (!formularioCompleto) return;
 
-    // 🔍 DEBUGGING - ANTES del try-catch
-    console.log("🔍 URL que se está usando:", `${BASE_URL}/api/encuesta/usuario/${usuario._id}`);
-    console.log("🔍 Datos enviados:", {
-      tiempo_area: Number(meses),
-      tasa_olvido: Number(olvido) / 100,
-      comodidad_area: comodidad,
-      estilo_aprendizaje: estilo,
-      tiempo_estudio: tiempo,
-      objetivo,
-    });
-    console.log("🔍 Usuario ID:", usuario._id);
+    const mesesNum = Number(meses);
+    const olvidoNum = Number(olvido);
+
+    const tiempo_meses = mesesNum;
+    const tasa_olvido = olvidoNum / 100;
 
     try {
       const resp = await fetch(
@@ -53,8 +56,8 @@ function Encuesta({ usuario, onEncuestaCompletada }) {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             area_interes: "matematicas",
-            tiempo_area: Number(meses),
-            tasa_olvido: Number(olvido) / 100,
+            tiempo_area: tiempo_meses,
+            tasa_olvido: tasa_olvido,
             comodidad_area: comodidad,
             estilo_aprendizaje: estilo,
             tiempo_estudio: tiempo,
@@ -63,26 +66,19 @@ function Encuesta({ usuario, onEncuestaCompletada }) {
         }
       );
 
-      console.log("🔍 Status de respuesta:", resp.status);
-      console.log("🔍 Respuesta OK?", resp.ok);
-
-      if (!resp.ok) {
-        const errorText = await resp.text();
-        console.error("❌ Error del servidor:", errorText);
-        throw new Error(`Error ${resp.status}: ${errorText}`);
-      }
-
       const result = await resp.json();
-      console.log("✅ Respuesta exitosa:", result);
 
-      if (result.usuario) {
-        localStorage.setItem("usuario", JSON.stringify(result.usuario));
+      if (resp.ok) {
+        if (result.usuario) {
+          localStorage.setItem("usuario", JSON.stringify(result.usuario));
+        }
+        setMostrarModal(true);
+      } else {
+        alert(result?.mensaje || "Error al guardar los datos");
       }
-      setMostrarModal(true);
-
     } catch (error) {
-      console.error("❌ Error completo:", error);
-      alert(`Error de conexión: ${error.message}`);
+      console.error(error);
+      alert("Error de conexión con el servidor");
     }
   };
 

@@ -31,60 +31,60 @@ function Encuesta({ usuario, onEncuestaCompletada }) {
   };
 
   const guardarEncuesta = async () => {
-    if (!formularioCompleto) return;
+  if (!formularioCompleto) return;
 
-    // 🔍 DEBUGGING - ANTES del try-catch
-    console.log("🔍 URL que se está usando:", `${BASE_URL}/api/encuesta/usuario/${usuario._id}`);
-    console.log("🔍 Datos enviados:", {
-      tiempo_area: Number(meses),
-      tasa_olvido: Number(olvido) / 100,
-      comodidad_area: comodidad,
-      estilo_aprendizaje: estilo,
-      tiempo_estudio: tiempo,
-      objetivo,
-    });
-    console.log("🔍 Usuario ID:", usuario._id);
+  // 🔍 DEBUGGING - ANTES del try-catch
+  console.log("🔍 URL que se está usando:", `${BASE_URL}/api/encuesta/usuario/${usuario._id}`);
+  console.log("🔍 Datos enviados:", {
+    tiempo_area: Number(meses),
+    tasa_olvido: Number(olvido) / 100,
+    comodidad_area: comodidad,
+    estilo_aprendizaje: estilo,
+    tiempo_estudio: tiempo,
+    objetivo,
+  });
+  console.log("🔍 Usuario ID:", usuario._id);
 
-    try {
-      const resp = await fetch(
-        `${BASE_URL}/api/encuesta/usuario/${usuario._id}`,
-        {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            area_interes: "matematicas",
-            tiempo_area: Number(meses),
-            tasa_olvido: Number(olvido) / 100,
-            comodidad_area: comodidad,
-            estilo_aprendizaje: estilo,
-            tiempo_estudio: tiempo,
-            objetivo,
-          }),
-        }
-      );
-
-      console.log("🔍 Status de respuesta:", resp.status);
-      console.log("🔍 Respuesta OK?", resp.ok);
-
-      if (!resp.ok) {
-        const errorText = await resp.text();
-        console.error("❌ Error del servidor:", errorText);
-        throw new Error(`Error ${resp.status}: ${errorText}`);
+  try {
+    const resp = await fetch(
+      `${BASE_URL}/api/encuesta/usuario/${usuario._id}`,
+      {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          area_interes: "matematicas",
+          tiempo_area: Number(meses),
+          tasa_olvido: Number(olvido) / 100,
+          comodidad_area: comodidad,
+          estilo_aprendizaje: estilo,
+          tiempo_estudio: tiempo,
+          objetivo,
+        }),
       }
+    );
 
-      const result = await resp.json();
-      console.log("✅ Respuesta exitosa:", result);
+    console.log("🔍 Status de respuesta:", resp.status);
+    console.log("🔍 Respuesta OK?", resp.ok);
 
-      if (result.usuario) {
-        localStorage.setItem("usuario", JSON.stringify(result.usuario));
-      }
-      setMostrarModal(true);
-
-    } catch (error) {
-      console.error("❌ Error completo:", error);
-      alert(`Error de conexión: ${error.message}`);
+    if (!resp.ok) {
+      const errorText = await resp.text();
+      console.error("❌ Error del servidor:", errorText);
+      throw new Error(`Error ${resp.status}: ${errorText}`);
     }
-  };
+
+    const result = await resp.json();
+    console.log("✅ Respuesta exitosa:", result);
+
+    if (result.usuario) {
+      localStorage.setItem("usuario", JSON.stringify(result.usuario));
+    }
+    setMostrarModal(true);
+    
+  } catch (error) {
+    console.error("❌ Error completo:", error);
+    alert(`Error de conexión: ${error.message}`);
+  }
+};
 
   return (
     <>
