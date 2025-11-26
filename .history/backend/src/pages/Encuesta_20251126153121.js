@@ -52,14 +52,14 @@ router.put("/usuario/:id", async (req, res) => {
 
           // ⭐ Campos matemáticos CORREGIDOS
           nivel_recordacion: nivel_recordacion,
-
+          
           // ⭐ Nuevos campos para recálculos
           lambda_original: lambda_original,
           tiempo_original_meses: tiempo_meses,
           lambda_nueva: lambda_nueva,
           tiempo_nuevo_meses: tiempo_nuevo_meses,
           nivel_recordacion_nuevo: nivel_recordacion_nuevo,
-
+          
           ultima_actualizacion_recordacion: new Date()
         }
       },

@@ -35,9 +35,10 @@ function Encuesta({ usuario, onEncuestaCompletada }) {
     const tasa_olvido = olvidoNum / 100; // ⭐ Convertir porcentaje a decimal
 
     try {
-      const resp = await fetch(`/api/encuesta/usuario/${usuario._id}`, {
+      const resp = await fetch(`/api/encuesta/usuario/${usuario._id}`)
+`, {
         method: "PUT",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json" },/*  */
         body: JSON.stringify({
           area_interes: "matematicas",
           tiempo_area: tiempo_meses,    // ⭐ En MESES
