@@ -140,6 +140,53 @@
   object-fit: cover;
 }
 
+/* =============== SECCIÓN SEGURIDAD =============== */
+.info-seguridad {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  padding: 20px;
+  margin-top: 15px;
+}
+
+.seguridad-contenido h3 {
+  color: #e7d2ff;
+  margin-bottom: 20px;
+  text-align: center;
+  font-size: 1.3rem;
+}
+
+.seguridad-item {
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  padding: 15px;
+  margin-bottom: 15px;
+  border-left: 4px solid #9d4edd;
+  transition: 0.3s;
+}
+
+.seguridad-item:hover {
+  background: rgba(255, 255, 255, 0.12);
+  transform: translateX(5px);
+}
+
+.seguridad-item strong {
+  color: #d8c4ff;
+  display: block;
+  margin-bottom: 8px;
+  font-size: 1rem;
+}
+
+.seguridad-item p {
+  color: #ccb4ff;
+  margin: 0;
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+
+.seguridad-item:last-child {
+  margin-bottom: 0;
+}
+
 /* =============== BOTÓN GUARDAR =============== */
 .guardar-container {
   display: flex;
@@ -155,9 +202,17 @@
   border-radius: 10px;
   font-weight: bold;
   transition: 0.3s;
+  cursor: pointer;
 }
 .btn-guardar:hover {
   background: #b86bff;
+  transform: translateY(-2px);
+}
+
+.btn-guardar:disabled {
+  background: #6d6875;
+  cursor: not-allowed;
+  transform: none;
 }
 
 /* =============== MODAL =============== */
@@ -168,6 +223,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
+  z-index: 1000;
 }
 .modal-card {
   background: linear-gradient(145deg, #4a148c, #240046);
@@ -176,6 +232,8 @@
   text-align: center;
   width: 90%;
   max-width: 400px;
+  border: 1px solid rgba(255,255,255,0.1);
+  box-shadow: 0 20px 40px rgba(0,0,0,0.5);
 }
 .modal-buttons-vertical {
   display: flex;
@@ -191,9 +249,11 @@
   color: white;
   cursor: pointer;
   transition: 0.3s;
+  font-weight: bold;
 }
 .btn-modal-cancelar:hover {
   background: #777;
+  transform: translateY(-1px);
 }
 .btn-modal-confirmar {
   padding: 12px;
@@ -203,7 +263,65 @@
   color: white;
   cursor: pointer;
   transition: 0.3s;
+  font-weight: bold;
 }
 .btn-modal-confirmar:hover {
   background: #b86bff;
+  transform: translateY(-1px);
+}
+
+.btn-modal-confirmar:disabled {
+  background: #6d6875;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* =============== RESPONSIVE =============== */
+@media (max-width: 768px) {
+  .editar-container {
+    flex-direction: column;
+    padding: 20px;
+    gap: 20px;
+  }
+  
+  .panel-lateral {
+    width: 100%;
+    order: 2;
+  }
+  
+  .editar-contenido {
+    width: 100%;
+    order: 1;
+  }
+  
+  .galeria-categoria {
+    justify-content: center;
+  }
+  
+  .btn-volver-top {
+    position: relative;
+    top: 0;
+    left: 0;
+    margin-bottom: 15px;
+  }
+}
+
+@media (max-width: 480px) {
+  .editar-contenido {
+    padding: 20px;
+  }
+  
+  .item-galeria {
+    width: 70px;
+    height: 70px;
+  }
+  
+  .btn-guardar {
+    width: 90%;
+  }
+  
+  .modal-card {
+    padding: 25px;
+    margin: 20px;
+  }
 }
