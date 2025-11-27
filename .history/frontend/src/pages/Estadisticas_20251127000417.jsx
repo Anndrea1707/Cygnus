@@ -27,8 +27,10 @@ export default function Estadisticas({ usuario, onLogout, onNavigate, currentPag
         const formatoFecha = (fecha) => fecha.toISOString().slice(0, 10);
 
         // Habilidad: mostrar crecimiento desde inicial hasta nueva
-        const habilidadInicial = Math.min(Math.max(usuario.prueba_conocimiento?.habilidad || 1, 1), 5);
-        const habilidadNueva = Math.min(Math.max(usuario.habilidad_nueva || habilidadInicial, 1), 5);
+const habilidadInicial = Math.min(Math.max(
+        usuario.prueba_conocimiento?.habilidad || 1,  // ✅ Corregido aquí
+        1
+    ), 5);        const habilidadNueva = Math.min(Math.max(usuario.habilidad_nueva || habilidadInicial, 1), 5);
 
         const datosH = [
             {
@@ -50,16 +52,16 @@ export default function Estadisticas({ usuario, onLogout, onNavigate, currentPag
 
         const datosR = [
             {
-                fecha: "Creación",
-                recordacion: Math.round((recordacionInicial / 1) * 100), // ya en 0-100
-                recordacion_nueva: Math.round((recordacionInicial / 1) * 100)
+              fecha: "Creación",
+              recordacion: Math.round((recordacionInicial / 1) * 100), // ya en 0-100
+              recordacion_nueva: Math.round((recordacionInicial / 1) * 100)
             },
             {
-                fecha: "Hoy",
-                recordacion: Math.round((recordacionInicial / 1) * 100),
-                recordacion_nueva: Math.round((recordacionNueva / 1) * 100)
+              fecha: "Hoy",
+              recordacion: Math.round((recordacionInicial / 1) * 100),
+              recordacion_nueva: Math.round((recordacionNueva / 1) * 100)
             }
-        ];
+          ];
         setDatosRecordacion(datosR);
 
     }, [usuario]);
@@ -77,7 +79,7 @@ export default function Estadisticas({ usuario, onLogout, onNavigate, currentPag
     };
 
     const formatoHabilidad = (value) => value.toFixed(1);
-    const formatoPorcentaje = (value) => `${Math.round(value)}%`;
+    const formatoPorcentaje = (value) => `${Math.round(value )}%`;
 
 
     return (

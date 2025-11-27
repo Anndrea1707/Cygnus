@@ -27,7 +27,9 @@ export default function Estadisticas({ usuario, onLogout, onNavigate, currentPag
         const formatoFecha = (fecha) => fecha.toISOString().slice(0, 10);
 
         // Habilidad: mostrar crecimiento desde inicial hasta nueva
-        const habilidadInicial = Math.min(Math.max(usuario.prueba_conocimiento?.habilidad || 1, 1), 5);
+        const habilidadInicial = Math.min(Math.max(
+            usuario.prueba_conocimiento?.habilidad || 1, 1
+        ), 5);
         const habilidadNueva = Math.min(Math.max(usuario.habilidad_nueva || habilidadInicial, 1), 5);
 
         const datosH = [

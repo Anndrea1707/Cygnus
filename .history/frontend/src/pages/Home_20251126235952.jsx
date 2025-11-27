@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import api from '../api/axios';
+import api from '../api/axios'; // 🔥 AGREGAR IMPORT
 import './Home.css';
 import cube from '../imagenes/CuboPrincipal.png';
 import logo from '../imagenes/logo.png';
@@ -70,6 +70,7 @@ export default function Home({ currentPage, onLoginClick, onNavigate }) {
   useEffect(() => {
     const cargarCursos = async () => {
       try {
+        // 🔥 CORREGIR: Usar api en lugar de fetch
         const response = await api.get("/api/cursos/ultimos");
         const data = response.data;
 
@@ -85,24 +86,13 @@ export default function Home({ currentPage, onLoginClick, onNavigate }) {
     cargarCursos();
   }, []);
 
-  // 🔥 FUNCIÓN PARA IR AL LOGIN
-  const irALogin = () => {
-    if (onNavigate) {
-      onNavigate('login');
-    } else {
-      console.error("❌ Error: No hay función de navegación disponible");
-      // Mostrar mensaje al usuario
-      alert("Error de navegación. Por favor recarga la página.");
-    }
-  };
-
   return (
     <div>
       {/* ===== SECCIÓN HERO PRINCIPAL ===== */}
       <section className="home-container" id="inicio">
         <NavbarPrincipal
           currentPage={currentPage}
-          onLoginClick={irALogin}
+          onLoginClick={onLoginClick}
           onNavigate={onNavigate}
         />
         <div className="hero">
@@ -111,10 +101,7 @@ export default function Home({ currentPage, onLoginClick, onNavigate }) {
             <p>
               Cygnus ajusta los contenidos según tu forma de aprender, potenciando tu autonomía y tus resultados.
             </p>
-            {/* 🔥 BOTÓN 1 CORREGIDO */}
-            <button className="btn-primaryHome" onClick={irALogin}>
-              Comenzar ahora
-            </button>
+            <button className="btn-primaryHome">Comenzar ahora</button>
           </div>
 
           <div className="hero-image">
@@ -183,10 +170,7 @@ export default function Home({ currentPage, onLoginClick, onNavigate }) {
         </div>
 
         <div className="features-button">
-          {/* 🔥 BOTÓN 2 CORREGIDO */}
-          <button className="btn-start" onClick={irALogin}>
-            Comenzar ahora
-          </button>
+          <button className="btn-start">Comenzar ahora</button>
         </div>
       </section>
 

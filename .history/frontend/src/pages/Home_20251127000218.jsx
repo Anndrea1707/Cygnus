@@ -87,14 +87,14 @@ export default function Home({ currentPage, onLoginClick, onNavigate }) {
 
   // 🔥 FUNCIÓN PARA IR AL LOGIN
   const irALogin = () => {
-    if (onNavigate) {
-      onNavigate('login');
-    } else {
-      console.error("❌ Error: No hay función de navegación disponible");
-      // Mostrar mensaje al usuario
-      alert("Error de navegación. Por favor recarga la página.");
-    }
-  };
+  if (onNavigate) {
+    onNavigate('login');
+  } else {
+    console.error("❌ Error: No hay función de navegación disponible");
+    // Mostrar mensaje al usuario
+    alert("Error de navegación. Por favor recarga la página.");
+  }
+};
 
   return (
     <div>
@@ -102,7 +102,7 @@ export default function Home({ currentPage, onLoginClick, onNavigate }) {
       <section className="home-container" id="inicio">
         <NavbarPrincipal
           currentPage={currentPage}
-          onLoginClick={irALogin}
+          onLoginClick={irALogin} 
           onNavigate={onNavigate}
         />
         <div className="hero">
