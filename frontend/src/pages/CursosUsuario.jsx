@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import api from "../api/axios"; // 🔥 AGREGAR IMPORT
 import NavbarPrincipal from "../components/NavbarPrincipal";
 import Footer from "../components/Footer";
 import fondoCursos from "../imagenes/fondoCursos.jpg";
@@ -15,8 +16,9 @@ export default function CursosUsuario({ currentPage, usuario, onNavigate, onLogo
         const cargarCursos = async () => {
             try {
                 setLoading(true);
-                const res = await fetch("https://cygnus-xjo4.onrender.com/api/cursos");
-                const data = await res.json();
+                // 🔥 CORREGIR: Usar api en lugar de fetch
+                const response = await api.get("/api/cursos");
+                const data = response.data;
                 const cursosNormalizados = data.map(curso => ({
                     ...curso,
                     id: curso._id || curso.id
@@ -75,7 +77,6 @@ export default function CursosUsuario({ currentPage, usuario, onNavigate, onLogo
                 <div className="modal-contenido" onClick={(e) => e.stopPropagation()}>
                     <button className="modal-boton-cerrar" onClick={onClose}>Cerrar</button>
 
-
                     <div className="modal-header">
                         <img src={curso.imagen} alt={curso.nombre} className="modal-imagen" />
                         <div className="modal-info-basica">
@@ -122,7 +123,6 @@ export default function CursosUsuario({ currentPage, usuario, onNavigate, onLogo
                     </div>
 
                     <div className="modal-actions">
-
                         <button
                             className="btn-primario"
                             onClick={() => onVerDetalles(curso)}
@@ -155,7 +155,6 @@ export default function CursosUsuario({ currentPage, usuario, onNavigate, onLogo
             />
 
             <section className="seccion-cursos">
-
                 <div className="hero-cursos">
                     <div className="hero-text">
                         <h1 className="titulo-hero">Explora Nuestros Cursos</h1>
@@ -163,7 +162,6 @@ export default function CursosUsuario({ currentPage, usuario, onNavigate, onLogo
                             Aprende a tu propio ritmo con nuestra plataforma educativa
                         </p>
                     </div>
-
                 </div>
 
                 {/* Filtros: solo buscador con recuadro */}

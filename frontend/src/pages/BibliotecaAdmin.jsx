@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import api from "../api/axios"; // 🔥 AGREGAR IMPORT
 import NavbarPrincipal from "../components/NavbarPrincipal";
 import Footer from "../components/Footer";
 import "./BibliotecaAdmin.css";
@@ -19,7 +20,6 @@ export default function BibliotecaAdmin({ usuario, onNavigate, onLogout, current
   const [recursoAEliminar, setRecursoAEliminar] = useState(null);
   const [guardando, setGuardando] = useState(false);
 
-
   const [form, setForm] = useState({
     titulo: "",
     descripcion: "",
@@ -32,42 +32,60 @@ export default function BibliotecaAdmin({ usuario, onNavigate, onLogout, current
   }, []);
 
   const cargarRecursos = async () => {
-    const res = await fetch("https://cygnus-xjo4.onrender.com/api/biblioteca");
-    const data = await res.json();
-    setRecursos(data);
+    try {
+      // 🔥 CORREGIR: Usar api en lugar de fetch
+      const res = await api.get("/api/biblioteca");
+      setRecursos(res.data);
+    } catch (error) {
+      console.error("Error cargando recursos:", error);
+    }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setGuardando(true); // ← comienza el loading
+    setGuardando(true);
 
-    const data = new FormData();
-    data.append("titulo", form.titulo);
-    data.append("descripcion", form.descripcion);
-    data.append("tipo", form.tipo);
-    if (form.archivo) data.append("archivo", form.archivo);
+    try {
+      const data = new FormData();
+      data.append("titulo", form.titulo);
+      data.append("descripcion", form.descripcion);
+      data.append("tipo", form.tipo);
+      if (form.archivo) data.append("archivo", form.archivo);
 
-    const url = editando
-      ? `https://cygnus-xjo4.onrender.com/api/biblioteca/${editando._id}`
-      : "https://cygnus-xjo4.onrender.com/api/biblioteca/nuevo";
-    const method = editando ? "PUT" : "POST";
+      // 🔥 CORREGIR: Usar api en lugar de fetch
+      if (editando) {
+        await api.put(`/api/biblioteca/${editando._id}`, data, {
+          headers: { "Content-Type": "multipart/form-data" },
+        });
+      } else {
+        await api.post("/api/biblioteca/nuevo", data, {
+          headers: { "Content-Type": "multipart/form-data" },
+        });
+      }
 
-    await fetch(url, { method, body: data });
-
-    setGuardando(false); // ← termina el loading
-    cargarRecursos();
-    setMostrarForm(false);
-    setEditando(null);
-    setForm({ titulo: "", descripcion: "", tipo: "documento", archivo: null });
+      cargarRecursos();
+      setMostrarForm(false);
+      setEditando(null);
+      setForm({ titulo: "", descripcion: "", tipo: "documento", archivo: null });
+    } catch (error) {
+      console.error("Error guardando recurso:", error);
+      alert("Error al guardar el recurso");
+    } finally {
+      setGuardando(false);
+    }
   };
 
-
-  // ← FUNCIÓN PARA ELIMINAR CON MODAL
+  // 🔥 CORREGIR: Usar api en lugar de fetch
   const eliminarRecurso = async () => {
     if (!recursoAEliminar) return;
-    await fetch(`https://cygnus-xjo4.onrender.com/api/biblioteca/${recursoAEliminar._id}`, { method: "DELETE" });
-    cargarRecursos();
-    setRecursoAEliminar(null);
+    try {
+      await api.delete(`/api/biblioteca/${recursoAEliminar._id}`);
+      cargarRecursos();
+      setRecursoAEliminar(null);
+    } catch (error) {
+      console.error("Error eliminando recurso:", error);
+      alert("Error al eliminar el recurso");
+    }
   };
 
   const abrirModalEliminar = (recurso) => {
@@ -164,7 +182,7 @@ export default function BibliotecaAdmin({ usuario, onNavigate, onLogout, current
         </div>
       )}
 
-      {/* MODAL DE CONFIRMACIÓN DE ELIMINACIÓN – HERMOSO */}
+      {/* MODAL DE CONFIRMACIÓN DE ELIMINACIÓN */}
       {recursoAEliminar && (
         <div className="modal-overlay">
           <div className="modal-delete">

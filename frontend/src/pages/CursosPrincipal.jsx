@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
+import api from "../api/axios"; // 🔥 AGREGAR IMPORT
 import "./CursosPrincipal.css";
 import NavbarPrincipal from "../components/NavbarPrincipal";
 import Footer from "../components/Footer";
@@ -12,26 +13,30 @@ export default function CursosPrincipal({ currentPage, onLoginClick, onNavigate 
   const [cursos, setCursos] = useState([]);
   const [ultimosCursos, setUltimosCursos] = useState([]);
 
-
   useEffect(() => {
-    // Obtener TODOS los cursos
-    fetch("https://cygnus-xjo4.onrender.com/api/cursos")
-      .then((res) => res.json())
-      .then((data) => setCursos(data))
-      .catch((err) => console.error("❌ Error cargando cursos:", err));
+    // 🔥 CORREGIR: Usar api en lugar de fetch
+    const cargarCursos = async () => {
+      try {
+        // Obtener TODOS los cursos
+        const responseCursos = await api.get("/api/cursos");
+        setCursos(responseCursos.data);
 
-    // Obtener los 3 últimos
-    fetch("https://cygnus-xjo4.onrender.com/api/cursos/ultimos")
-      .then((res) => res.json())
-      .then((data) => setUltimosCursos(data.cursos))
-      .catch((err) => console.error("❌ Error cargando últimos cursos:", err));
+        // Obtener los 3 últimos
+        const responseUltimos = await api.get("/api/cursos/ultimos");
+        setUltimosCursos(responseUltimos.data.cursos || []);
+      } catch (error) {
+        console.error("❌ Error cargando cursos:", error);
+      }
+    };
+
+    cargarCursos();
   }, []);
 
   const [contador, setContador] = useState(0);
   const animado = useRef(false);
 
   useEffect(() => {
-    if (cursos.length === 0) return; // Solo cuando ya llegaron los cursos
+    if (cursos.length === 0) return;
 
     let inicio = 0;
     const fin = cursos.length;
@@ -58,15 +63,16 @@ export default function CursosPrincipal({ currentPage, onLoginClick, onNavigate 
   useEffect(() => {
     if (animadoEstudiantes.current) return;
 
-    fetch("https://cygnus-xjo4.onrender.com/api/usuarios/count")
-      .then(res => res.json())
-      .then(data => {
-        const total = data.total || 0;
+    // 🔥 CORREGIR: Usar api en lugar de fetch
+    const cargarEstudiantes = async () => {
+      try {
+        const response = await api.get("/api/usuarios/count");
+        const total = response.data.total || 0;
         animadoEstudiantes.current = true;
 
         let inicio = 0;
-        const duracion = 4000; // más lento
-        const pasos = 100; // más suave
+        const duracion = 4000;
+        const pasos = 100;
         const incremento = total / pasos;
 
         let pasoActual = 0;
@@ -82,10 +88,13 @@ export default function CursosPrincipal({ currentPage, onLoginClick, onNavigate 
 
           setContadorEstudiantes(Math.floor(inicio));
         }, duracion / pasos);
-      })
-      .catch(err => console.error("❌ Error cargando estudiantes:", err));
-  }, []);
+      } catch (error) {
+        console.error("❌ Error cargando estudiantes:", error);
+      }
+    };
 
+    cargarEstudiantes();
+  }, []);
 
   const niveles = ["Todos", "Básico", "Intermedio", "Avanzado"];
 
@@ -200,7 +209,6 @@ export default function CursosPrincipal({ currentPage, onLoginClick, onNavigate 
           <span className="contador-numero">{contadorEstudiantes}</span>
         </div>
       </div>
-
 
       {/* ÚLTIMOS CURSOS */}
       <section className="seccion-cursos">

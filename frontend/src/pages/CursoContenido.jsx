@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import api from "../api/axios"; // 🔥 AGREGAR IMPORT
 import "./CursoContenido.css";
 
 export default function CursoContenido({
@@ -36,10 +37,10 @@ export default function CursoContenido({
 
                 setCargandoProgresoBackend(true);
 
-                const resp = await fetch(`https://cygnus-xjo4.onrender.com/api/progreso/curso/${usuarioLS._id}/${cursoId}`);
-                if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
-
-                const data = await resp.json();
+                // 🔥 CORREGIR: Usar api en lugar de fetch
+                const response = await api.get(`/api/progreso/curso/${usuarioLS._id}/${cursoId}`);
+                const data = response.data;
+                
                 if (data.success && data.progreso) {
                     setProgresoBackend(data.progreso);
                 } else {
@@ -89,18 +90,15 @@ export default function CursoContenido({
         if (!usuarioLS || !cursoId) return;
 
         try {
-            const response = await fetch("https://cygnus-xjo4.onrender.com/api/progreso/contenido-visto", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    usuarioId: usuarioLS._id,
-                    cursoId,
-                    moduloIndex: mod,
-                    contenidoIndex: cont
-                })
+            // 🔥 CORREGIR: Usar api en lugar de fetch
+            const response = await api.post("/api/progreso/contenido-visto", {
+                usuarioId: usuarioLS._id,
+                cursoId,
+                moduloIndex: mod,
+                contenidoIndex: cont
             });
 
-            const data = await response.json();
+            const data = response.data;
             if (data.success) {
                 console.log("Progreso guardado:", data.progreso);
             }
@@ -127,9 +125,9 @@ export default function CursoContenido({
             const usuarioLS = JSON.parse(localStorage.getItem("usuario"));
             const cursoId = curso?._id || curso?.id;
 
-            const response = await fetch(`https://cygnus-xjo4.onrender.com/api/progreso/puede-evaluacion-final/${usuarioLS._id}/${cursoId}/${curso.modulos.length}`);
-
-            const data = await response.json();
+            // 🔥 CORREGIR: Usar api en lugar de fetch
+            const response = await api.get(`/api/progreso/puede-evaluacion-final/${usuarioLS._id}/${cursoId}/${curso.modulos.length}`);
+            const data = response.data;
 
             if (data.success && data.puedeHacerEvaluacion) {
                 setTipoEvaluacion("final");

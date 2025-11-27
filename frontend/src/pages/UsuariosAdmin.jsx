@@ -1,23 +1,18 @@
 import React, { useState, useEffect } from "react";
+import api from "../api/axios"; // 🔥 AGREGAR IMPORT
 import Navbar from "../components/NavbarPrincipal";
 import Footer from "../components/Footer";
 import "./UsuariosAdmin.css";
 
-const API_URL = "https://cygnus-xjo4.onrender.com/api/usuarios";
-
 const UsuariosAdmin = ({ onNavigate, onLogout, usuario, currentPage }) => {
   const [usuarios, setUsuarios] = useState([]);
-
   const [modal, setModal] = useState(null);
-  // "editar" | "crear" | "eliminar" | "verEncuesta" | null
-
   const [usuarioActual, setUsuarioActual] = useState({
     _id: "",
     nombre_completo: "",
     correo: "",
     rol: "",
   });
-
   const [usuarioEncuesta, setUsuarioEncuesta] = useState(null);
 
   /* ====================================================
@@ -59,9 +54,9 @@ const UsuariosAdmin = ({ onNavigate, onLogout, usuario, currentPage }) => {
 
   const cargarUsuarios = async () => {
     try {
-      const res = await fetch(API_URL);
-      const data = await res.json();
-      setUsuarios(data);
+      // 🔥 CORREGIR: Usar api en lugar de fetch
+      const res = await api.get("/api/usuarios");
+      setUsuarios(res.data);
     } catch (error) {
       console.log("Error cargando usuarios", error);
     }
@@ -82,17 +77,13 @@ const UsuariosAdmin = ({ onNavigate, onLogout, usuario, currentPage }) => {
 
   const guardarUsuario = async () => {
     try {
-      const metodo = modal === "editar" ? "PUT" : "POST";
-      const url =
-        modal === "editar"
-          ? `${API_URL}/${usuarioActual._id}`
-          : API_URL;
-
-      await fetch(url, {
-        method: metodo,
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(usuarioActual),
-      });
+      if (modal === "editar") {
+        // 🔥 CORREGIR: Usar api en lugar de fetch
+        await api.put(`/api/usuarios/${usuarioActual._id}`, usuarioActual);
+      } else {
+        // 🔥 CORREGIR: Usar api en lugar de fetch
+        await api.post("/api/usuarios", usuarioActual);
+      }
 
       setModal(null);
       cargarUsuarios();
@@ -111,7 +102,8 @@ const UsuariosAdmin = ({ onNavigate, onLogout, usuario, currentPage }) => {
 
   const confirmarEliminar = async () => {
     try {
-      await fetch(`${API_URL}/${usuarioActual._id}`, { method: "DELETE" });
+      // 🔥 CORREGIR: Usar api en lugar de fetch
+      await api.delete(`/api/usuarios/${usuarioActual._id}`);
       setModal(null);
       cargarUsuarios();
     } catch (error) {

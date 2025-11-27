@@ -1,16 +1,12 @@
 import React, { useEffect, useState } from "react";
+import api from "../api/axios"; // 🔥 AGREGAR IMPORT
 import NavbarPrincipal from "../components/NavbarPrincipal";
 import Footer from "../components/Footer";
 import "./UsuariosAdmin.css";
 
-const API_URL = "https://cygnus-xjo4.onrender.com/api/usuarios";
-
 function GestionarAdmins({ onNavigate, onLogout, usuario, currentPage }) {
   const [admins, setAdmins] = useState([]);
-
   const [modal, setModal] = useState(null);
-  // "crear" | "editar" | "eliminar" | null
-
   const [adminActual, setAdminActual] = useState({
     _id: "",
     nombre_completo: "",
@@ -27,8 +23,9 @@ function GestionarAdmins({ onNavigate, onLogout, usuario, currentPage }) {
 
   const cargarAdmins = async () => {
     try {
-      const res = await fetch(API_URL);
-      const data = await res.json();
+      // 🔥 CORREGIR: Usar api en lugar de fetch
+      const res = await api.get("/api/usuarios");
+      const data = res.data;
       const soloAdmins = data.filter((u) => u.rol === "admin");
       setAdmins(soloAdmins);
     } catch (error) {
@@ -60,17 +57,13 @@ function GestionarAdmins({ onNavigate, onLogout, usuario, currentPage }) {
 
   const guardarAdmin = async () => {
     try {
-      const metodo = modal === "editar" ? "PUT" : "POST";
-      const url =
-        modal === "editar"
-          ? `${API_URL}/${adminActual._id}`
-          : API_URL;
-
-      await fetch(url, {
-        method: metodo,
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(adminActual),
-      });
+      if (modal === "editar") {
+        // 🔥 CORREGIR: Usar api en lugar de fetch
+        await api.put(`/api/usuarios/${adminActual._id}`, adminActual);
+      } else {
+        // 🔥 CORREGIR: Usar api en lugar de fetch
+        await api.post("/api/usuarios", adminActual);
+      }
 
       setModal(null);
       cargarAdmins();
@@ -89,7 +82,8 @@ function GestionarAdmins({ onNavigate, onLogout, usuario, currentPage }) {
 
   const confirmarEliminar = async () => {
     try {
-      await fetch(`${API_URL}/${adminActual._id}`, { method: "DELETE" });
+      // 🔥 CORREGIR: Usar api en lugar de fetch
+      await api.delete(`/api/usuarios/${adminActual._id}`);
       setModal(null);
       cargarAdmins();
     } catch (error) {

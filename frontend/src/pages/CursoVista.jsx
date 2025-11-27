@@ -1,5 +1,6 @@
 // CursoVista.jsx
 import React, { useState, useEffect } from "react";
+import api from "../api/axios"; // 🔥 AGREGAR IMPORT
 import "./CursoVista.css";
 
 export default function CursoVista({ onNavigate, curso }) {
@@ -113,8 +114,9 @@ export default function CursoVista({ onNavigate, curso }) {
 
       try {
         setCargandoProgreso(true);
-        const response = await fetch(`https://cygnus-xjo4.onrender.com/api/progreso/curso/${usuario._id}/${cursoId}`);
-        const data = await response.json();
+        // 🔥 CORREGIR: Usar api en lugar de fetch
+        const response = await api.get(`/api/progreso/curso/${usuario._id}/${cursoId}`);
+        const data = response.data;
 
         console.log("📊 Respuesta del progreso:", data);
 
@@ -290,8 +292,9 @@ export default function CursoVista({ onNavigate, curso }) {
     try {
       setCargandoNotas(true);
       const cursoId = cursoActual._id || cursoActual.id;
-      const response = await fetch(`https://cygnus-xjo4.onrender.com/api/progreso/notas-detalladas/${usuario._id}/${cursoId}`);
-      const data = await response.json();
+      // 🔥 CORREGIR: Usar api en lugar de fetch
+      const response = await api.get(`/api/progreso/notas-detalladas/${usuario._id}/${cursoId}`);
+      const data = response.data;
 
       if (data.success) {
         setNotasDetalladas(data);
@@ -311,16 +314,13 @@ export default function CursoVista({ onNavigate, curso }) {
   // Función para reiniciar progreso
   const reiniciarProgreso = async () => {
     try {
-      const response = await fetch("https://cygnus-xjo4.onrender.com/api/progreso/reiniciar", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          usuarioId: usuario._id,
-          cursoId: cursoActual._id || cursoActual.id
-        })
+      // 🔥 CORREGIR: Usar api en lugar de fetch
+      const response = await api.post("/api/progreso/reiniciar", {
+        usuarioId: usuario._id,
+        cursoId: cursoActual._id || cursoActual.id
       });
 
-      const data = await response.json();
+      const data = response.data;
       if (data.success) {
         // normalizar si viene modulosCompletados
         const progresoNormalizado = {

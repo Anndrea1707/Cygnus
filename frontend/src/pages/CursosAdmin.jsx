@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
+import api from "../api/axios"; // 🔥 AGREGAR IMPORT
 import Navbar from "../components/NavbarPrincipal";
 import Footer from "../components/Footer";
 import "./CursosAdmin.css";
 
-const API_URL = "https://cygnus-xjo4.onrender.com/api/cursos";
+// ❌ ELIMINAR: const API_URL = "https://cygnus-xjo4.onrender.com/api/cursos";
 
 const CursosAdmin = ({ onNavigate, onLogout, usuario, currentPage }) => {
     const [cursos, setCursos] = useState([]);
@@ -24,9 +25,9 @@ const CursosAdmin = ({ onNavigate, onLogout, usuario, currentPage }) => {
 
     const cargarCursos = async () => {
         try {
-            const res = await fetch(API_URL);
-            const data = await res.json();
-            setCursos(Array.isArray(data) ? data : []);
+            // 🔥 CORREGIR: Usar api en lugar de fetch
+            const response = await api.get("/api/cursos");
+            setCursos(Array.isArray(response.data) ? response.data : []);
         } catch (error) {
             console.log("Error cargando cursos", error);
         }
@@ -44,8 +45,9 @@ const CursosAdmin = ({ onNavigate, onLogout, usuario, currentPage }) => {
     */
     const abrirEditar = async (curso) => {
         try {
-            const res = await fetch(`${API_URL}/${curso._id}`);
-            const cursoCompleto = await res.json();
+            // 🔥 CORREGIR: Usar api en lugar de fetch
+            const response = await api.get(`/api/cursos/${curso._id}`);
+            const cursoCompleto = response.data;
 
             console.log("Curso completo para editar:", cursoCompleto);
 
@@ -63,7 +65,8 @@ const CursosAdmin = ({ onNavigate, onLogout, usuario, currentPage }) => {
 
     const confirmarEliminar = async () => {
         try {
-            await fetch(`${API_URL}/${cursoActual._id}`, { method: "DELETE" });
+            // 🔥 CORREGIR: Usar api en lugar de fetch
+            await api.delete(`/api/cursos/${cursoActual._id}`);
             setModal(null);
             cargarCursos();
         } catch (error) {

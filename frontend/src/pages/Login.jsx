@@ -1,5 +1,6 @@
 // src/pages/Login.jsx
 import React, { useState } from "react";
+import api from "../api/axios"; // 🔥 AGREGAR IMPORT
 import "./Login.css";
 import fondo from "../imagenes/login.jpg";
 import cohete from "../imagenes/cohete.png";
@@ -39,25 +40,16 @@ function Login({ onBackToHome, onRegisterClick, onLoginSuccess }) {
     setLoading(true);
 
     try {
-      const response = await fetch("https://cygnus-xjo4.onrender.com/api/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ correo, contrasena }),
+      // 🔥 CORREGIR: Usar api en lugar de fetch
+      const response = await api.post("/api/login", { 
+        correo, 
+        contrasena 
       });
 
-      const data = await response.json();
+      const data = response.data;
 
-      if (response.ok) {
+      if (response.status === 200) {
         const usuario = data.usuario || {};
-
-        // ⛔⛔⛔ DESACTIVADO: Modal de bienvenida
-        /*
-        setModalIcono("🚀");
-        setModalTitulo(`¡Bienvenido ${nombreVisible}!`);
-        setModalMensaje("Inicio de sesión exitoso.");
-        setMostrarModal(true);
-        window.__loginUsuario = data.usuario;
-        */
 
         // ⭐ Redirección inmediata sin modal
         onLoginSuccess(usuario);
@@ -71,9 +63,18 @@ function Login({ onBackToHome, onRegisterClick, onLoginSuccess }) {
     } catch (error) {
       console.error("Error al iniciar sesión:", error);
 
-      setModalIcono("❌");
-      setModalTitulo("Error de conexión");
-      setModalMensaje("No se pudo conectar al servidor.");
+      // 🔥 CORREGIR: Manejar errores de axios
+      if (error.response) {
+        // El servidor respondió con un código de error
+        setModalIcono("❌");
+        setModalTitulo("Error al iniciar sesión");
+        setModalMensaje(error.response.data.message || "Credenciales incorrectas.");
+      } else {
+        // Error de conexión
+        setModalIcono("❌");
+        setModalTitulo("Error de conexión");
+        setModalMensaje("No se pudo conectar al servidor.");
+      }
       setMostrarModal(true);
     } finally {
       setLoading(false);

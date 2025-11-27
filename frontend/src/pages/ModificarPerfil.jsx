@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import api from "../api/axios"; // 🔥 AGREGAR IMPORT
 import NavbarPrincipal from "../components/NavbarPrincipal";
 import Footer from "../components/Footer";
 import "./ModificarPerfil.css";
@@ -19,8 +20,9 @@ function ModificarPerfil({ usuario, onLogout }) {
   useEffect(() => {
     const fetchAvatares = async () => {
       try {
-        const res = await fetch("https://cygnus-xjo4.onrender.com/api/perfil/avatar");
-        const data = await res.json();
+        // 🔥 CORREGIR: Usar api en lugar de fetch
+        const res = await api.get("/api/perfil/avatar");
+        const data = res.data;
         const agrupados = data.reduce((acc, avatar) => {
           if (!acc[avatar.categoria]) acc[avatar.categoria] = [];
           acc[avatar.categoria].push(avatar.url);
@@ -34,8 +36,9 @@ function ModificarPerfil({ usuario, onLogout }) {
 
     const fetchFondos = async () => {
       try {
-        const res = await fetch("https://cygnus-xjo4.onrender.com/api/perfil/fondo");
-        const data = await res.json();
+        // 🔥 CORREGIR: Usar api en lugar de fetch
+        const res = await api.get("/api/perfil/fondo");
+        const data = res.data;
         setFondosDisponibles(data.map(f => f.url));
       } catch (err) {
         console.error("Error cargando fondos:", err);
@@ -76,19 +79,17 @@ function ModificarPerfil({ usuario, onLogout }) {
   const guardarCambios = async () => {
     setGuardando(true);
     try {
-      const res = await fetch("https://cygnus-xjo4.onrender.com/api/perfil/modificarPerfil", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          id: usuario._id,
-          nombre_completo: nombre,
-          apodo,
-          correo,
-          avatar: avatarVista,
-          fondo,
-        }),
+      // 🔥 CORREGIR: Usar api en lugar de fetch
+      const res = await api.post("/api/perfil/modificarPerfil", {
+        id: usuario._id,
+        nombre_completo: nombre,
+        apodo,
+        correo,
+        avatar: avatarVista,
+        fondo,
       });
-      const data = await res.json();
+      
+      const data = res.data;
       if (data.ok) {
         const u = data.usuarioActualizado;
         localStorage.setItem("usuario", JSON.stringify(u));

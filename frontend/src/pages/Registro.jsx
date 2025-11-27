@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import api from "../api/axios"; // 🔥 AGREGAR IMPORT
 import "./Registro.css";
 import fondo from "../imagenes/login.jpg";
 import cohete from "../imagenes/cohete.png";
@@ -111,19 +112,16 @@ function Registro({ onBackToLogin }) {
     }
 
     try {
-      const response = await fetch("https://cygnus-xjo4.onrender.com/api/registro", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          ...formData,
-          contrasena: formData.pass_user,
-          confirmar_contrasena: formData.pass_confirm,
-        }),
+      // 🔥 CORREGIR: Usar api en lugar de fetch
+      const response = await api.post("/api/registro", {
+        ...formData,
+        contrasena: formData.pass_user,
+        confirmar_contrasena: formData.pass_confirm,
       });
 
-      const data = await response.json();
+      const data = response.data;
 
-      if (response.ok) {
+      if (response.status === 201 || response.status === 200) {
         setModalIcono("🎉");
         setModalTitulo("Usuario registrado correctamente");
         setModalMensaje(data.mensaje || "Te has registrado con éxito 🚀");
@@ -135,9 +133,16 @@ function Registro({ onBackToLogin }) {
         setMostrarModalRegistro(true);
       }
     } catch (error) {
-      setModalIcono("❌");
-      setModalTitulo("Error de conexión");
-      setModalMensaje("No se pudo conectar con el servidor.");
+      // 🔥 CORREGIR: Manejar errores de axios
+      if (error.response) {
+        setModalIcono("❌");
+        setModalTitulo("Error al registrar");
+        setModalMensaje(error.response.data.mensaje || "Error en el registro");
+      } else {
+        setModalIcono("❌");
+        setModalTitulo("Error de conexión");
+        setModalMensaje("No se pudo conectar con el servidor.");
+      }
       setMostrarModalRegistro(true);
     }
   };

@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
+import api from '../api/axios'; // 🔥 AGREGAR IMPORT
 import './Home.css';
 import cube from '../imagenes/CuboPrincipal.png';
 import logo from '../imagenes/logo.png';
 import NavbarPrincipal from '../components/NavbarPrincipal';
 import Footer from '../components/Footer';
-
 
 export default function Home({ currentPage, onLoginClick, onNavigate }) {
   const [index, setIndex] = useState(0);
@@ -70,8 +70,9 @@ export default function Home({ currentPage, onLoginClick, onNavigate }) {
   useEffect(() => {
     const cargarCursos = async () => {
       try {
-        const response = await fetch("https://cygnus-xjo4.onrender.com/api/cursos/ultimos");
-        const data = await response.json();
+        // 🔥 CORREGIR: Usar api en lugar de fetch
+        const response = await api.get("/api/cursos/ultimos");
+        const data = response.data;
 
         if (data.ok) {
           setCursos(data.cursos);
@@ -84,7 +85,6 @@ export default function Home({ currentPage, onLoginClick, onNavigate }) {
 
     cargarCursos();
   }, []);
-
 
   return (
     <div>
@@ -225,7 +225,7 @@ export default function Home({ currentPage, onLoginClick, onNavigate }) {
             >
               <img src={t.foto} alt={t.nombre} className="testimonial-avatar" />
               <h3>{t.nombre}</h3>
-              <p>“{t.texto}”</p>
+              <p>"{t.texto}"</p>
             </div>
           ))}
         </div>
@@ -242,7 +242,6 @@ export default function Home({ currentPage, onLoginClick, onNavigate }) {
           className="scroll-icon"
         />
       </button>
-
 
       {/* ===== FOOTER / FRONTING ===== */}
       <Footer />

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import api from "../api/axios"; // 🔥 AGREGAR IMPORT
 import "./GestionarPruebas.css";
 
 export default function GestionarPruebas({ onNavigate }) {
@@ -15,15 +16,13 @@ export default function GestionarPruebas({ onNavigate }) {
     const cargarPruebaActual = async () => {
         try {
             setLoading(true);
-            const resp = await fetch("https://cygnus-xjo4.onrender.com/api/pruebas/actual", {
-                method: "GET",
-                headers: { "Content-Type": "application/json" }
-            });
+            // 🔥 CORREGIR: Usar api en lugar de fetch
+            const resp = await api.get("/api/pruebas/actual");
 
             if (resp.status === 404) {
                 setPrueba(null);
             } else {
-                const result = await resp.json();
+                const result = resp.data;
                 if (result.success) {
                     setPrueba({
                         ...result.prueba,
@@ -37,8 +36,13 @@ export default function GestionarPruebas({ onNavigate }) {
                 }
             }
         } catch (error) {
-            console.error("Error de conexión al cargar prueba:", error);
-            setPrueba(null);
+            // 🔥 CORREGIR: Manejar error 404 correctamente
+            if (error.response && error.response.status === 404) {
+                setPrueba(null);
+            } else {
+                console.error("Error de conexión al cargar prueba:", error);
+                setPrueba(null);
+            }
         } finally {
             setLoading(false);
         }
@@ -47,16 +51,22 @@ export default function GestionarPruebas({ onNavigate }) {
     const handleCrearPrueba = async () => {
         try {
             setAccionLoading(true);
-            const resp = await fetch("https://cygnus-xjo4.onrender.com/api/pruebas/actual", { method: "GET" });
+            // 🔥 CORREGIR: Usar api en lugar de fetch
+            const resp = await api.get("/api/pruebas/actual");
+            
             if (resp.status === 404) {
                 onNavigate("crearprueba");
             } else {
-                const r = await resp.json();
                 alert("❌ Ya existe una prueba diagnóstica activa. Debes eliminarla antes de crear otra.");
             }
         } catch (error) {
-            console.error("Error comprobando existencia de prueba:", error);
-            alert("Error de conexión al verificar existencia de prueba");
+            // 🔥 CORREGIR: Manejar error 404 correctamente
+            if (error.response && error.response.status === 404) {
+                onNavigate("crearprueba");
+            } else {
+                console.error("Error comprobando existencia de prueba:", error);
+                alert("Error de conexión al verificar existencia de prueba");
+            }
         } finally {
             setAccionLoading(false);
         }
@@ -83,12 +93,10 @@ export default function GestionarPruebas({ onNavigate }) {
 
         try {
             setAccionLoading(true);
-            const resp = await fetch(`https://cygnus-xjo4.onrender.com/api/pruebas/${pruebaAEliminar}`, {
-                method: "DELETE",
-                headers: { "Content-Type": "application/json" }
-            });
-
-            const result = await resp.json();
+            // 🔥 CORREGIR: Usar api en lugar de fetch
+            const resp = await api.delete(`/api/pruebas/${pruebaAEliminar}`);
+            
+            const result = resp.data;
             if (result.success) {
                 alert("✅ Prueba eliminada correctamente");
                 cargarPruebaActual();

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import api from "../api/axios"; // 🔥 AGREGAR IMPORT
 import "./Dashboard.css";
 import NavbarPrincipal from "../components/NavbarPrincipal";
 import Footer from "../components/Footer";
@@ -32,8 +33,10 @@ function Dashboard({ usuario, onLogout, onNavigate }) {
       if (!usuario?._id || !usuario.prueba_conocimiento?.completada) return;
       try {
         setLoading(true);
-        const respCursos = await fetch("https://cygnus-xjo4.onrender.com/api/cursos");
-        const cursosData = await respCursos.json();
+        
+        // 🔥 CORREGIR: Usar api en lugar de fetch
+        const respCursos = await api.get("/api/cursos");
+        const cursosData = respCursos.data;
         setTodosLosCursos(cursosData);
 
         const rec = recomendarCursos(cursosData, usuario);
@@ -45,8 +48,9 @@ function Dashboard({ usuario, onLogout, onNavigate }) {
         await Promise.all(
           (cursosData || []).map(async (curso) => {
             try {
-              const respProg = await fetch(`https://cygnus-xjo4.onrender.com/api/progreso/curso/${usuario._id}/${curso._id}`);
-              const progData = await respProg.json();
+              // 🔥 CORREGIR: Usar api en lugar de fetch
+              const respProg = await api.get(`/api/progreso/curso/${usuario._id}/${curso._id}`);
+              const progData = respProg.data;
               if (progData?.success && progData.progreso) {
                 const pct = Number(progData.progreso.progresoPorcentual || 0);
                 if (pct >= 100) {

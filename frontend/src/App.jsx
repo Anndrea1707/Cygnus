@@ -1,5 +1,6 @@
 // src/App.jsx
 import React, { useState, useEffect } from "react";
+import api from "./api/axios"; // 🔥 AGREGAR IMPORT
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Registro from "./pages/Registro";
@@ -28,7 +29,7 @@ import CursoVista from "./pages/CursoVista";
 import CursoContenido from "./pages/CursoContenido";
 import EvaluacionModulo from "./pages/EvaluacionModulo";
 import EvaluacionFinal from "./pages/EvaluacionFinal";
-import Estadisticas from "./pages/Estadisticas"; // <-- Import agregado
+import Estadisticas from "./pages/Estadisticas";
 
 function App() {
   const [currentPage, setCurrentPage] = useState("home");
@@ -95,18 +96,18 @@ function App() {
     localStorage.setItem("usuario", JSON.stringify(userData));
 
     try {
-      await fetch("https://cygnus-xjo4.onrender.com/api/sesiones/inicio", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ usuarioId: userData._id }),
+      // 🔥 CORREGIR: Usar api en lugar de fetch
+      await api.post("/api/sesiones/inicio", { 
+        usuarioId: userData._id 
       });
     } catch (error) {
       console.error("Error registrando inicio de sesión:", error);
     }
 
     try {
-      const response = await fetch(`https://cygnus-xjo4.onrender.com/api/pruebas/verificar-estado/${userData._id}`);
-      const result = await response.json();
+      // 🔥 CORREGIR: Usar api en lugar de fetch
+      const response = await api.get(`/api/pruebas/verificar-estado/${userData._id}`);
+      const result = response.data;
 
       if (result.success) {
         const usuarioActualizado = {
@@ -136,10 +137,9 @@ function App() {
   const handleLogout = async () => {
     if (usuario?._id) {
       try {
-        await fetch("https://cygnus-xjo4.onrender.com/api/sesiones/cierre", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ usuarioId: usuario._id }),
+        // 🔥 CORREGIR: Usar api en lugar de fetch
+        await api.post("/api/sesiones/cierre", { 
+          usuarioId: usuario._id 
         });
       } catch (error) {
         console.error("Error registrando cierre de sesión:", error);

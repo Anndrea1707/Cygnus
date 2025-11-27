@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import api from "../api/axios"; // 🔥 AGREGAR IMPORT
 import "./Evaluacion.css";
 
 export default function EvaluacionModulo({ curso, modulo, moduloIndex, onNavigate, onEvaluacionCompletada }) {
@@ -17,13 +18,9 @@ export default function EvaluacionModulo({ curso, modulo, moduloIndex, onNavigat
     // Función para obtener recomendación desde el backend
     const obtenerRecomendacionDesdeBackend = async (porcentaje) => {
         try {
-            const response = await fetch('https://cygnus-xjo4.onrender.com/api/progreso/obtener-recomendacion', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ porcentaje })
-            });
-            const data = await response.json();
-            return data.recomendacion;
+            // 🔥 CORREGIR: Usar api en lugar de fetch
+            const response = await api.post('/api/progreso/obtener-recomendacion', { porcentaje });
+            return response.data.recomendacion;
         } catch (error) {
             console.error('Error obteniendo recomendación:', error);
             // Fallback por si falla el backend
@@ -90,18 +87,15 @@ export default function EvaluacionModulo({ curso, modulo, moduloIndex, onNavigat
         const verificarEstadoBloqueo = async () => {
             try {
                 const usuario = JSON.parse(localStorage.getItem("usuario"));
-                const response = await fetch(`https://cygnus-xjo4.onrender.com/api/progreso/verificar-bloqueo-evaluacion`, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                        usuarioId: usuario._id,
-                        cursoId: curso._id || curso.id,
-                        moduloIndex: moduloIndex,
-                        tipo: "modulo"
-                    })
+                // 🔥 CORREGIR: Usar api en lugar de fetch
+                const response = await api.post(`/api/progreso/verificar-bloqueo-evaluacion`, {
+                    usuarioId: usuario._id,
+                    cursoId: curso._id || curso.id,
+                    moduloIndex: moduloIndex,
+                    tipo: "modulo"
                 });
 
-                const result = await response.json();
+                const result = response.data;
                 if (result.success && result.bloqueado) {
                     setBloqueoInfo(result);
                     return true;
@@ -129,18 +123,15 @@ export default function EvaluacionModulo({ curso, modulo, moduloIndex, onNavigat
 
                 console.log('🔄 Solicitando preguntas adaptativas para módulo...');
 
-                const response = await fetch('https://cygnus-xjo4.onrender.com/api/modelos-matematicos/seleccionar-preguntas', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        preguntas: modulo.evaluacion.preguntas,
-                        usuario: usuario,
-                        tipoEvaluacion: 'modulo', // 10 preguntas para módulo
-                        cursoId: curso._id || curso.id
-                    })
+                // 🔥 CORREGIR: Usar api en lugar de fetch
+                const response = await api.post('/api/modelos-matematicos/seleccionar-preguntas', {
+                    preguntas: modulo.evaluacion.preguntas,
+                    usuario: usuario,
+                    tipoEvaluacion: 'modulo', // 10 preguntas para módulo
+                    cursoId: curso._id || curso.id
                 });
 
-                const data = await response.json();
+                const data = response.data;
                 if (data.success && data.preguntasSeleccionadas.length > 0) {
                     console.log('✅ Preguntas adaptativas cargadas:', data.preguntasSeleccionadas.length);
                     setPreguntasAdaptativas(data.preguntasSeleccionadas);
@@ -321,19 +312,16 @@ export default function EvaluacionModulo({ curso, modulo, moduloIndex, onNavigat
             const usuario = JSON.parse(localStorage.getItem("usuario"));
             const cursoId = curso._id || curso.id;
 
-            const response = await fetch("https://cygnus-xjo4.onrender.com/api/progreso/completar-modulo", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    usuarioId: usuario._id,
-                    cursoId: cursoId,
-                    moduloIndex: moduloIndex,
-                    nota: notaFinal,
-                    minutosBloqueo: recomendacion.bloqueoMinutos
-                })
+            // 🔥 CORREGIR: Usar api en lugar de fetch
+            const response = await api.post("/api/progreso/completar-modulo", {
+                usuarioId: usuario._id,
+                cursoId: cursoId,
+                moduloIndex: moduloIndex,
+                nota: notaFinal,
+                minutosBloqueo: recomendacion.bloqueoMinutos
             });
 
-            const result = await response.json();
+            const result = response.data;
             if (result.success) {
                 console.log("✅ Evaluación guardada:", result);
 

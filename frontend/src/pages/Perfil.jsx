@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import api from "../api/axios"; // 🔥 AGREGAR IMPORT
 import NavbarPrincipal from "../components/NavbarPrincipal";
 import Footer from "../components/Footer";
 import "./Perfil.css";
@@ -74,9 +75,9 @@ function Perfil({ usuario, onLogout, onNavigate }) {
 
     const obtenerProgreso = async () => {
       try {
-        const resp = await fetch(`https://cygnus-xjo4.onrender.com/api/sesiones/semana/${usuarioActual._id}`);
-
-        const data = await resp.json();
+        // 🔥 CORREGIR: Usar api en lugar de fetch
+        const resp = await api.get(`/api/sesiones/semana/${usuarioActual._id}`);
+        const data = resp.data;
 
         if (data.success) {
           // Asegurar que las fechas vengan en formato esperado y ordenar por fecha
@@ -110,17 +111,18 @@ function Perfil({ usuario, onLogout, onNavigate }) {
         setLoadingCursos(true);
 
         // 1. Obtener todos los cursos
-        const responseCursos = await fetch("https://cygnus-xjo4.onrender.com/api/cursos");
-        const cursosData = await responseCursos.json();
+        // 🔥 CORREGIR: Usar api en lugar de fetch
+        const responseCursos = await api.get("/api/cursos");
+        const cursosData = responseCursos.data;
 
         // 2. Para cada curso, verificar si hay progreso
         const cursosConProgresoArray = [];
 
         for (const curso of cursosData) {
           try {
-            const responseProgreso = await fetch(`https://cygnus-xjo4.onrender.com/api/progreso/curso/${usuarioActual._id}/${curso._id}`);
-
-            const progresoData = await responseProgreso.json();
+            // 🔥 CORREGIR: Usar api en lugar de fetch
+            const responseProgreso = await api.get(`/api/progreso/curso/${usuarioActual._id}/${curso._id}`);
+            const progresoData = responseProgreso.data;
 
             if (progresoData.success && progresoData.progreso) {
               cursosConProgresoArray.push({

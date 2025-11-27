@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import api from "../api/axios"; // 🔥 AGREGAR IMPORT
 import "./PruebaConocimiento.css";
 
 export default function PruebaConocimiento({ onNavigate }) {
@@ -76,11 +77,9 @@ export default function PruebaConocimiento({ onNavigate }) {
 
         try {
             // 1️⃣ VERIFICAR SI YA EXISTE UNA PRUEBA
-            const verificacionResponse = await fetch("https://cygnus-xjo4.onrender.com/api/pruebas/verificar-existe", {
-                method: "GET",
-            });
-
-            const verificacionResult = await verificacionResponse.json();
+            // 🔥 CORREGIR: Usar api en lugar de fetch
+            const verificacionResponse = await api.get("/api/pruebas/verificar-existe");
+            const verificacionResult = verificacionResponse.data;
 
             if (verificacionResult.existe) {
                 mostrarAlerta("❌", "Prueba existente", "Ya existe una prueba diagnóstica. Solo se puede tener UNA.");
@@ -88,15 +87,12 @@ export default function PruebaConocimiento({ onNavigate }) {
             }
 
             // 2️⃣ CREAR LA PRUEBA
-            const response = await fetch("https://cygnus-xjo4.onrender.com/api/pruebas/crear", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    preguntas: pruebaData.preguntas,
-                }),
+            // 🔥 CORREGIR: Usar api en lugar de fetch
+            const response = await api.post("/api/pruebas/crear", {
+                preguntas: pruebaData.preguntas,
             });
 
-            const result = await response.json();
+            const result = response.data;
 
             if (result.success) {
                 mostrarAlerta("✅", "¡Éxito!", "Prueba creada exitosamente");
@@ -106,7 +102,12 @@ export default function PruebaConocimiento({ onNavigate }) {
             }
 
         } catch (error) {
-            mostrarAlerta("❌", "Error de conexión", error.message);
+            // 🔥 CORREGIR: Manejar errores de axios
+            if (error.response) {
+                mostrarAlerta("❌", "Error del servidor", error.response.data.message || "Error al crear la prueba");
+            } else {
+                mostrarAlerta("❌", "Error de conexión", error.message);
+            }
         }
     };
 

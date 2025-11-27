@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import api from "../api/axios"; // 🔥 AGREGAR IMPORT
 import "./PruebaConocimiento.css";
 
 export default function EditarPrueba({ onNavigate, params }) {
@@ -32,13 +33,10 @@ export default function EditarPrueba({ onNavigate, params }) {
     const cargarPruebaPorId = async (id) => {
         try {
             setLoading(true);
-            const response = await fetch(`https://cygnus-xjo4.onrender.com/api/pruebas/${id}`);
+            // 🔥 CORREGIR: Usar api en lugar de fetch
+            const response = await api.get(`/api/pruebas/${id}`);
+            const result = response.data;
 
-            if (!response.ok) {
-                throw new Error(`Error ${response.status}: ${response.statusText}`);
-            }
-
-            const result = await response.json();
             console.log("📊 Resultado de carga por ID:", result); // Para debug
 
             if (!result.success) {
@@ -61,13 +59,10 @@ export default function EditarPrueba({ onNavigate, params }) {
     const cargarPruebaActiva = async () => {
         try {
             setLoading(true);
-            const response = await fetch("https://cygnus-xjo4.onrender.com/api/pruebas/actual");
+            // 🔥 CORREGIR: Usar api en lugar de fetch
+            const response = await api.get("/api/pruebas/actual");
+            const result = response.data;
 
-            if (!response.ok) {
-                throw new Error(`Error ${response.status}: ${response.statusText}`);
-            }
-
-            const result = await response.json();
             console.log("📊 Resultado de prueba activa:", result); // Para debug
 
             if (!result.success) {
@@ -186,19 +181,12 @@ export default function EditarPrueba({ onNavigate, params }) {
         try {
             setSaving(true);
 
-            const response = await fetch(`https://cygnus-xjo4.onrender.com/api/pruebas/${pruebaId}`, {
-                method: "PUT",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    preguntas: pruebaData.preguntas
-                })
+            // 🔥 CORREGIR: Usar api en lugar de fetch
+            const response = await api.put(`/api/pruebas/${pruebaId}`, {
+                preguntas: pruebaData.preguntas
             });
 
-            if (!response.ok) {
-                throw new Error(`Error ${response.status}: ${response.statusText}`);
-            }
-
-            const result = await response.json();
+            const result = response.data;
 
             if (result.success) {
                 alert("✅ Prueba actualizada correctamente");

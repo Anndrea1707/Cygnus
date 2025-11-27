@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import api from "../api/axios"; // 🔥 AGREGAR IMPORT
 import NavbarPrincipal from "../components/NavbarPrincipal";
 import Footer from "../components/Footer";
 import "./BibliotecaUsuario.css";
@@ -20,9 +21,13 @@ export default function Biblioteca({ usuario, onNavigate, onLogout, currentPage 
   }, []);
 
   const cargarRecursos = async () => {
-    const res = await fetch("https://cygnus-xjo4.onrender.com/api/biblioteca");
-    const data = await res.json();
-    setRecursos(data);
+    try {
+      // 🔥 CORREGIR: Usar api en lugar de fetch
+      const res = await api.get("/api/biblioteca");
+      setRecursos(res.data);
+    } catch (error) {
+      console.error("Error cargando recursos:", error);
+    }
   };
 
   const recursosFiltrados = recursos.filter((r) => {

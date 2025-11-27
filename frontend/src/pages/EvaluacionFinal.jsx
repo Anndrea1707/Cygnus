@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import api from "../api/axios"; // 🔥 AGREGAR IMPORT
 import "./Evaluacion.css";
 
 export default function EvaluacionFinal({ curso, evaluacion, onNavigate, onEvaluacionCompletada }) {
@@ -17,13 +18,9 @@ export default function EvaluacionFinal({ curso, evaluacion, onNavigate, onEvalu
     // Función para obtener recomendación desde el backend
     const obtenerRecomendacionDesdeBackend = async (porcentaje) => {
         try {
-            const response = await fetch('https://cygnus-xjo4.onrender.com/api/progreso/obtener-recomendacion', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ porcentaje })
-            });
-            const data = await response.json();
-            return data.recomendacion;
+            // 🔥 CORREGIR: Usar api en lugar de fetch
+            const response = await api.post('/api/progreso/obtener-recomendacion', { porcentaje });
+            return response.data.recomendacion;
         } catch (error) {
             console.error('Error obteniendo recomendación:', error);
             // Fallback por si falla el backend
@@ -90,17 +87,14 @@ export default function EvaluacionFinal({ curso, evaluacion, onNavigate, onEvalu
         const verificarEstadoBloqueo = async () => {
             try {
                 const usuario = JSON.parse(localStorage.getItem("usuario"));
-                const response = await fetch(`https://cygnus-xjo4.onrender.com/api/progreso/verificar-bloqueo-evaluacion`, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                        usuarioId: usuario._id,
-                        cursoId: curso._id || curso.id,
-                        tipo: "final"
-                    })
+                // 🔥 CORREGIR: Usar api en lugar de fetch
+                const response = await api.post(`/api/progreso/verificar-bloqueo-evaluacion`, {
+                    usuarioId: usuario._id,
+                    cursoId: curso._id || curso.id,
+                    tipo: "final"
                 });
 
-                const result = await response.json();
+                const result = response.data;
                 if (result.success && result.bloqueado) {
                     setBloqueoInfo(result);
                     return true;
@@ -128,18 +122,15 @@ export default function EvaluacionFinal({ curso, evaluacion, onNavigate, onEvalu
 
                 console.log('🔄 Solicitando preguntas adaptativas para evaluación final...');
 
-                const response = await fetch('https://cygnus-xjo4.onrender.com/api/modelos-matematicos/seleccionar-preguntas', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        preguntas: evaluacion.preguntas,
-                        usuario: usuario,
-                        tipoEvaluacion: 'final', // 15 preguntas para final
-                        cursoId: curso._id || curso.id
-                    })
+                // 🔥 CORREGIR: Usar api en lugar de fetch
+                const response = await api.post('/api/modelos-matematicos/seleccionar-preguntas', {
+                    preguntas: evaluacion.preguntas,
+                    usuario: usuario,
+                    tipoEvaluacion: 'final', // 15 preguntas para final
+                    cursoId: curso._id || curso.id
                 });
 
-                const data = await response.json();
+                const data = response.data;
                 if (data.success && data.preguntasSeleccionadas.length > 0) {
                     console.log('✅ Preguntas adaptativas cargadas:', data.preguntasSeleccionadas.length);
                     console.log('📊 Distribución de dificultades seleccionadas:', data.distribucionDificultades);
@@ -329,18 +320,15 @@ export default function EvaluacionFinal({ curso, evaluacion, onNavigate, onEvalu
             const cursoId = curso._id || curso.id;
 
             // Registrar evaluación final con información de bloqueo
-            const responseEvaluacion = await fetch("https://cygnus-xjo4.onrender.com/api/progreso/evaluacion-final", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    usuarioId: usuario._id,
-                    cursoId: cursoId,
-                    notaFinal: notaFinal,
-                    minutosBloqueo: recomendacion.bloqueoMinutos
-                })
+            // 🔥 CORREGIR: Usar api en lugar de fetch
+            const responseEvaluacion = await api.post("/api/progreso/evaluacion-final", {
+                usuarioId: usuario._id,
+                cursoId: cursoId,
+                notaFinal: notaFinal,
+                minutosBloqueo: recomendacion.bloqueoMinutos
             });
 
-            const resultEvaluacion = await responseEvaluacion.json();
+            const resultEvaluacion = responseEvaluacion.data;
 
             if (resultEvaluacion.success) {
                 // Actualizar localStorage con habilidad_nueva
@@ -356,16 +344,13 @@ export default function EvaluacionFinal({ curso, evaluacion, onNavigate, onEvalu
                 // Solo marcar curso como completado si aprobó
                 if (notaFinal >= 70) {
                     // Marcar curso como completado
-                    const responseCompletado = await fetch("https://cygnus-xjo4.onrender.com/api/progreso/completar-curso", {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({
-                            usuarioId: usuario._id,
-                            cursoId: cursoId
-                        })
+                    // 🔥 CORREGIR: Usar api en lugar de fetch
+                    const responseCompletado = await api.post("/api/progreso/completar-curso", {
+                        usuarioId: usuario._id,
+                        cursoId: cursoId
                     });
 
-                    const resultCompletado = await responseCompletado.json();
+                    const resultCompletado = responseCompletado.data;
                     if (resultCompletado.success) {
                         setCertificadoGenerado(true);
                     }
